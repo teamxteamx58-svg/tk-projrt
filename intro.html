@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BASSARI-ZIK</title>
+<meta name="theme-color" content="#0E3B34">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+html,body{margin:0;height:100%}
+body{background:#0E3B34 url(banner.jpg) center/cover no-repeat;font-family:"Source Sans 3",system-ui,sans-serif;color:#fff}
+.veil{min-height:100vh;display:flex;flex-direction:column;justify-content:flex-end;align-items:center;text-align:center;padding:24px 18px 40px;box-sizing:border-box;background:linear-gradient(180deg,rgba(7,21,19,.15) 0%,rgba(7,21,19,.55) 45%,rgba(7,21,19,.92) 100%)}
+h1{font-family:"Bricolage Grotesque",system-ui,sans-serif;font-weight:800;font-size:clamp(30px,7vw,60px);line-height:1.05;margin:0 0 12px;color:#E4B23C;text-shadow:0 2px 14px rgba(0,0,0,.6)}
+p{margin:0 0 26px;font-size:clamp(16px,2.6vw,20px);color:#f1f6f3}
+button{font:800 18px "Bricolage Grotesque",sans-serif;border:0;border-radius:12px;padding:14px 28px;cursor:pointer;background:#E4B23C;color:#12201D;box-shadow:0 6px 20px rgba(0,0,0,.35)}
+button:focus-visible{outline:3px solid #fff;outline-offset:3px}
+</style>
+</head>
+<body>
+<div class="veil">
+<h1>SOUTENONS LA ZIK DE T'CHE</h1>
+<p>La musique de chez nous, pour la jeunesse de chez nous.</p>
+<button id="enter">Entrer sur BASSARI-ZIK</button>
+</div>
+<script>
+document.getElementById("enter").onclick=function(){try{localStorage.setItem("bzIntro","1")}catch(e){}location.href="index.html"};
+</script>
+</body>
+</html>
