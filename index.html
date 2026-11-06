@@ -93,7 +93,7 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 <body>
 <header><div class="wrap">
 <div class="logo">BASSARI-ZIK</div>
-<nav><a href="#catalogue" id="navQ">Rechercher</a><a href="#catalogue">Musiques</a><a href="#playlists">Playlists</a><a href="#billetterie">Billetterie</a><a href="#artiste">Artistes</a><a href="politique.html">Politique</a></nav>
+<nav><a href="#catalogue" id="navQ">Rechercher</a><a href="#catalogue">Musiques</a><a href="#playlists">Playlists</a><a href="#billetterie">Billetterie</a><a href="#artiste">Espace artiste</a><a href="artistes.html">Guide artiste</a><a href="billetterie.html">Billets en photos</a><a href="politique.html">Politique</a></nav>
 <button id="authBtn" class="alt">Créer un compte</button></div></header>
 
 <img src="banner.jpg" alt="BASSARI-ZIK, la musique de chez nous, pour la jeunesse de chez nous" style="display:block;width:100%;height:auto"><div class="hero"><div class="wrap">
@@ -207,6 +207,7 @@ function F(n){return n.toLocaleString("fr-FR")+" F"}
 function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
 function escA(s){return esc(s).replace(/"/g,"&quot;")}
 function makeCover(f,cb){if(!f){cb("");return}var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var c=document.createElement("canvas");c.width=c.height=240;var m=Math.min(im.width,im.height);c.getContext("2d").drawImage(im,(im.width-m)/2,(im.height-m)/2,m,m,0,0,240,240);cb(c.toDataURL("image/jpeg",.7))};im.onerror=function(){cb("")};im.src=r.result};r.onerror=function(){cb("")};r.readAsDataURL(f)}
+function makeWide(f,cb){if(!f){cb("");return}var r=new FileReader();r.onload=function(){var im=new Image();im.onload=function(){var k=Math.min(1,1200/im.width);var c=document.createElement("canvas");c.width=Math.round(im.width*k);c.height=Math.round(im.height*k);c.getContext("2d").drawImage(im,0,0,c.width,c.height);cb(c.toDataURL("image/jpeg",.8))};im.onerror=function(){cb("")};im.src=r.result};r.onerror=function(){cb("")};r.readAsDataURL(f)}
 function cover(x){return x.cv&&x.cv.indexOf("data:image/")===0?'<img class="cv" alt="Cover de '+escA(x.t)+'" src="'+x.cv+'">':'<div class="cv" aria-hidden="true">'+esc(x.t.charAt(0).toUpperCase())+'</div>'}
 function subActive(){return S.sub>now}
 function render(){
@@ -313,7 +314,7 @@ if(!t||!p||!d||pr<100||c<1){toast("Remplissez tous les champs (prix minimum 100 
 if(new Date(d+"T23:59:59")<Date.now()){toast("La date doit être dans le futur.");return}
 var im=$("evImg").files[0];
 if(im&&!$("evRight").checked){toast("Certifiez avoir le droit d'utiliser la photo.");return}
-makeCover(im,function(cv){S.events.push({id:"e"+Date.now(),t:t,a:S.user.name,place:p,date:d,price:pr,cap:c,sold:0,ts:[],own:1,cv:cv});
+makeWide(im,function(cv){S.events.push({id:"e"+Date.now(),t:t,a:S.user.name,place:p,date:d,price:pr,cap:c,sold:0,ts:[],own:1,cv:cv});
 ["evT","evP","evD","evPr","evC","evImg"].forEach(function(i){$(i).value=""});$("evRight").checked=false;save();render();toast("Événement publié.")})};
 function hostOk(n){return (S.host[n]||0)>Date.now()}
 function vis(x){return (x.r||0)<3&&(!x.own||hostOk(x.a))}
