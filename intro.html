@@ -23,7 +23,7 @@ button:focus-visible{outline:3px solid #fff;outline-offset:3px}
 <button id="enter">Entrer sur BASSARI-ZIK</button>
 </div>
 <script>
-document.getElementById("enter").onclick=function(){try{localStorage.setItem("bzIntro","1")}catch(e){}location.href="index.html"};
+document.getElementById("enter").onclick=function(){try{sessionStorage.setItem("bzEntered","1")}catch(e){}location.href="index.html"};
 </script>
 </body>
 </html>
