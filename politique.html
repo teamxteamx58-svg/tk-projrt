@@ -87,10 +87,10 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 @media(prefers-reduced-motion:reduce){.rail{overflow-x:auto}.track{animation:none}}
 @media(max-width:640px){.hero .wrap{grid-template-columns:1fr}.disc{width:150px;height:150px}.disc div{width:112px;height:112px;font-size:12px}}
 @media(prefers-reduced-motion:no-preference){.bar i{transition:width .5s}}
-</style>
+#bnav{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--forest);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));border-top:2px solid var(--gold)}#bnav a{color:#fff;text-decoration:none;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:52px;text-align:center}#bnav .i{font-size:22px;line-height:1}body{padding-bottom:70px}</style>
 </head>
 <body>
-<header><div class="wrap"><a class="logo" href="index.html" style="text-decoration:none">BASSARI-ZIK</a><nav><a href="index.html">Accueil</a></nav></div></header>
+<header><div class="wrap"><a class="logo" href="index.html" style="text-decoration:none">BASSARI-ZIK</a></div></header>
 <main class="wrap" style="padding-top:20px;padding-bottom:60px">
 <section id="politique" class="pol"><h2>Politique du site</h2>
 <div class="box"><ol>
@@ -115,6 +115,6 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 <li><b>Acceptation.</b> En créant un compte, chaque membre accepte cette politique.</li>
 </ol></div></section>
 </main>
-<footer class="wrap note" style="padding-bottom:40px">BASSARI-ZIK · <a href="index.html">Retour à l'accueil</a></footer>
+<nav id="bnav" aria-label="Menu principal"><a href="index.html"><span class="i" aria-hidden="true">🏠</span>Accueil</a><a href="index.html#catalogue"><span class="i" aria-hidden="true">🔎</span>Recherche</a><a href="index.html#catalogue"><span class="i" aria-hidden="true">🎵</span>Musiques</a><a href="billetterie.html"><span class="i" aria-hidden="true">🎟️</span>Billets</a><a href="artistes.html"><span class="i" aria-hidden="true">🎤</span>Artiste</a><a href="politique.html"><span class="i" aria-hidden="true">📜</span>Politique</a></nav><footer class="wrap note" style="padding-bottom:40px">BASSARI-ZIK · <a href="index.html">Retour à l'accueil</a></footer>
 </body>
 </html>

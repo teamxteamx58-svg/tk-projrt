@@ -52,7 +52,7 @@ dialog{border:0;border-radius:14px;max-width:420px;width:calc(100% - 28px);paddi
 dialog::backdrop{background:rgba(0,0,0,.55)}
 .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
 .pol li{margin-bottom:8px}.pol ol{padding-left:20px}
-#toast{position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--forest);color:#fff;padding:10px 18px;border-radius:99px;display:none;z-index:9;border:1px solid var(--gold)}
+#toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--forest);color:#fff;padding:10px 18px;border-radius:99px;display:none;z-index:9;border:1px solid var(--gold)}
 .note{font-size:14px;color:var(--mute)}
 textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit;resize:vertical}
 .toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0 16px}
@@ -72,7 +72,7 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 .vote button{padding:6px 12px}.vote button.on{background:var(--gold);color:#12201D;border-color:var(--gold)}
 .cmp{border-top:1px solid var(--line);margin-top:6px;padding-top:8px}
 .cmi p{margin:2px 0 8px}
-#pbar{position:fixed;left:0;right:0;bottom:0;z-index:6;background:var(--forest);color:#fff;padding:8px 14px calc(8px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#pbar{position:fixed;left:0;right:0;bottom:64px;z-index:6;background:var(--forest);color:#fff;padding:8px 14px calc(8px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;flex-wrap:wrap}
 #pbar[hidden]{display:none}#pbar audio{flex:1 1 220px;min-width:0;height:36px}#pnow{font-weight:600;font-size:14px}
 .railbox{background:var(--forest);color:#fff;padding:6px 0 26px}
 .railbox h2{font-size:20px;color:var(--gold)}
@@ -87,13 +87,13 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 @media(prefers-reduced-motion:reduce){.rail{overflow-x:auto}.track{animation:none}}
 @media(max-width:640px){.hero .wrap{grid-template-columns:1fr}.disc{width:150px;height:150px}.disc div{width:112px;height:112px;font-size:12px}}
 @media(prefers-reduced-motion:no-preference){.bar i{transition:width .5s}}
-</style>
+#bnav{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--forest);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));border-top:2px solid var(--gold)}#bnav a{color:#fff;text-decoration:none;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:52px;text-align:center}#bnav .i{font-size:22px;line-height:1}body{padding-bottom:70px}</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <header><div class="wrap">
 <div class="logo">BASSARI-ZIK</div>
-<nav><a href="#catalogue" id="navQ">Rechercher</a><a href="#catalogue">Musiques</a><a href="#playlists">Playlists</a><a href="#billetterie">Billetterie</a><a href="#artiste">Espace artiste</a><a href="artistes.html">Guide artiste</a><a href="billetterie.html">Billets en photos</a><a href="politique.html">Politique</a></nav>
+
 <button id="authBtn" class="alt">Créer un compte</button></div></header>
 
 <img src="banner.jpg" alt="BASSARI-ZIK, la musique de chez nous, pour la jeunesse de chez nous" style="display:block;width:100%;height:auto"><div class="hero"><div class="wrap">
@@ -179,7 +179,7 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 <label for="plSel">Playlist existante</label><select id="plSel"></select>
 <label for="plNew">Ou nouvelle playlist</label><input id="plNew" maxlength="40" placeholder="Nom de la nouvelle playlist">
 <div class="row"><button id="plAdd">Ajouter</button><button class="alt" data-close>Annuler</button></div></dialog>
-<div id="toast" role="status"></div>
+<nav id="bnav" aria-label="Menu principal"><a href="#"><span class="i" aria-hidden="true">🏠</span>Accueil</a><a href="#catalogue" id="navQ"><span class="i" aria-hidden="true">🔎</span>Recherche</a><a href="#catalogue"><span class="i" aria-hidden="true">🎵</span>Musiques</a><a href="#billetterie"><span class="i" aria-hidden="true">🎟️</span>Billets</a><a href="#artiste"><span class="i" aria-hidden="true">🎤</span>Artiste</a><a href="politique.html"><span class="i" aria-hidden="true">📜</span>Politique</a></nav><div id="toast" role="status"></div>
 
 <script>
 var MAX=5000,GOLD=1000,YEAR=365*864e5,KEY="bassarizik1";
