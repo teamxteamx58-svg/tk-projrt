@@ -153,6 +153,8 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 <label for="evD">Date</label><input id="evD" type="date">
 <label for="evPr">Prix du billet (F)</label><input id="evPr" type="number" min="100" step="100">
 <label for="evC">Nombre de places</label><input id="evC" type="number" min="1">
+<label for="evImg">Photo de la salle ou du spectacle (facultatif)</label><input id="evImg" type="file" accept="image/*">
+<label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="evRight" style="width:auto;margin-top:5px">Je certifie avoir le droit d'utiliser cette photo.</label>
 <div class="row"><button id="evBtn">Publier l'événement</button></div></div></section>
 
 <section id="politique" class="pol"><h2>Politique du site</h2>
@@ -241,7 +243,7 @@ if(art)S.songs.forEach(function(x){if(x.own&&x.a===S.user.name)(x.ts||new Array(
 if(art)S.events.forEach(function(e){if(e.own&&e.a===S.user.name)(e.ts||[]).forEach(function(t){var m=Math.round(e.price*.9);if(t<=lim)g+=m;else pend+=m})});
 window.avail=g-(S.paid||0);
 var eh="";S.events.filter(function(e){return new Date(e.date+"T23:59:59")>=now}).forEach(function(e){var left=e.cap-e.sold;
-eh+='<div class="song"><div class="t"><b>'+esc(e.t)+'</b><small>'+esc(e.a)+' · '+esc(e.place)+' · '+new Date(e.date).toLocaleDateString("fr-FR")+'</small><small>'+F(e.price)+' · '+(left>0?left+' places restantes':'Complet')+'</small></div>'+(left>0?'<button data-tk="'+e.id+'">Acheter un billet</button>':'')+'</div>'});
+eh+='<div class="song">'+cover(e)+'<div class="t"><b>'+esc(e.t)+'</b><small>'+esc(e.a)+' · '+esc(e.place)+' · '+new Date(e.date).toLocaleDateString("fr-FR")+'</small><small>'+F(e.price)+' · '+(left>0?left+' places restantes':'Complet')+'</small></div>'+(left>0?'<button data-tk="'+e.id+'">Acheter un billet</button>':'')+'</div>'});
 $("evList").innerHTML=eh||'<p class="note">Aucun événement pour le moment.</p>';
 var th="";if(S.user)S.tickets.filter(function(t){return t.mail===S.user.mail}).forEach(function(t){th+='<div class="song"><div class="t"><b>'+esc(t.title)+'</b><small>'+new Date(t.date).toLocaleDateString("fr-FR")+'</small></div><span class="gold">'+t.code+'</span></div>'});
 $("myTk").innerHTML=S.user?(th||"Vous n'avez pas encore de billet."):"Connectez-vous pour voir vos billets.";
@@ -331,8 +333,10 @@ if(S.user.role!=="artiste"){toast("Seuls les comptes artiste peuvent publier un 
 var t=$("evT").value.trim(),p=$("evP").value.trim(),d=$("evD").value,pr=+$("evPr").value,c=+$("evC").value;
 if(!t||!p||!d||pr<100||c<1){toast("Remplissez tous les champs (prix minimum 100 F).");return}
 if(new Date(d+"T23:59:59")<Date.now()){toast("La date doit être dans le futur.");return}
-S.events.push({id:"e"+Date.now(),t:t,a:S.user.name,place:p,date:d,price:pr,cap:c,sold:0,ts:[],own:1});
-["evT","evP","evD","evPr","evC"].forEach(function(i){$(i).value=""});save();render();toast("Événement publié.")};
+var im=$("evImg").files[0];
+if(im&&!$("evRight").checked){toast("Certifiez avoir le droit d'utiliser la photo.");return}
+makeCover(im,function(cv){S.events.push({id:"e"+Date.now(),t:t,a:S.user.name,place:p,date:d,price:pr,cap:c,sold:0,ts:[],own:1,cv:cv});
+["evT","evP","evD","evPr","evC","evImg"].forEach(function(i){$(i).value=""});$("evRight").checked=false;save();render();toast("Événement publié.")})};
 function hostOk(n){return (S.host[n]||0)>Date.now()}
 function vis(x){return (x.r||0)<3&&(!x.own||hostOk(x.a))}
 var V={f:"all",q:"",open:{}},drafts={};
