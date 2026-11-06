@@ -88,6 +88,7 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 @media(max-width:640px){.hero .wrap{grid-template-columns:1fr}.disc{width:150px;height:150px}.disc div{width:112px;height:112px;font-size:12px}}
 @media(prefers-reduced-motion:no-preference){.bar i{transition:width .5s}}
 </style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
 <header><div class="wrap">
@@ -179,12 +180,13 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 </main>
 <footer class="wrap note" style="padding-bottom:90px">BASSARI-ZIK · Prototype : les paiements sont simulés et les données restent dans ce navigateur.</footer>
 
-<dialog id="dAuth"><h3>Créer un compte</h3>
-<label for="aName">Nom</label><input id="aName">
+<dialog id="dAuth"><h3 id="aTitle">Créer un compte</h3>
+<div id="aSignFields"><label for="aName">Nom</label><input id="aName">
 <label for="aMail">Email</label><input id="aMail" type="email">
-<label for="aRole">Je suis</label><select id="aRole"><option value="fan">Fan</option><option value="artiste">Artiste</option></select>
-<label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="aAcc" style="width:auto;margin-top:5px">J'ai lu et j'accepte la politique du site, y compris l'interdiction du plagiat et de la réutilisation des contenus.</label>
-<div class="row"><button id="aOk">Créer mon compte</button><button class="alt" data-close>Annuler</button></div></dialog>
+<label for="aRole">Je suis</label><select id="aRole"><option value="fan">Fan</option><option value="artiste">Artiste</option></select></div>
+<label for="aPass">Mot de passe (6 caractères minimum)</label><input id="aPass" type="password" minlength="6" autocomplete="current-password">
+<div id="aAccWrap"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="aAcc" style="width:auto;margin-top:5px">J'ai lu et j'accepte la politique du site, y compris l'interdiction du plagiat et de la réutilisation des contenus.</label></div>
+<div class="row"><button id="aOk">Créer mon compte</button><button class="alt" id="aSwitch" type="button">J'ai déjà un compte</button><button class="alt" data-close>Annuler</button></div></dialog>
 
 <dialog id="dPay"><h3>Paiement</h3><p id="pWhat"></p>
 <label for="pCountry">Où êtes-vous ?</label>
@@ -254,11 +256,32 @@ function need(){if(!S.user){toast("Créez d'abord un compte.");$("dAuth").showMo
 var pending=null;
 function ask(txt,fn){if(!need())return;pending=fn;$("pWhat").textContent=txt;$("dPay").showModal()}
 function sale(id){var x=S.songs.filter(function(s){return s.id===id})[0];if(x&&!S.owned[id]){x.s++;S.owned[id]=1;if(x.own){x.ts=x.ts||[];x.ts.push(Date.now())}}}
-$("authBtn").onclick=function(){if(S.user){S.user=null;save();render();toast("Déconnecté")}else $("dAuth").showModal()};
-$("aOk").onclick=function(){var n=$("aName").value.trim(),m=$("aMail").value.trim();
-if(!n||m.indexOf("@")<1){toast("Entrez un nom et un email valides.");return}
+var sb=supabase.createClient("https://loqxgegixjnrfiihthjq.supabase.co","sb_publishable_ei0GgZ26l3KJv8qTCWS3Cg_iizOBYgR");
+var authMode="signup";
+function setAuthMode(m){authMode=m;var s=m==="signup";$("aTitle").textContent=s?"Créer un compte":"Se connecter";$("aSignFields").hidden=!s;$("aAccWrap").hidden=!s;$("aOk").textContent=s?"Créer mon compte":"Se connecter";$("aSwitch").textContent=s?"J'ai déjà un compte":"Créer un compte"}
+$("aSwitch").onclick=function(){setAuthMode(authMode==="signup"?"login":"signup")};
+$("authBtn").onclick=function(){if(S.user){sb.auth.signOut();S.user=null;save();render();toast("Déconnecté")}else{setAuthMode("signup");$("dAuth").showModal()}};
+async function loadUser(u){
+var pr=await sb.from("profiles").select("*").eq("id",u.id).maybeSingle();
+var prof=pr.data;
+if(!prof){var md=u.user_metadata||{};var ins=await sb.from("profiles").insert({id:u.id,name:md.name||u.email,role:md.role==="artiste"?"artiste":"fan"}).select().single();prof=ins.data}
+if(!prof){toast("Profil introuvable. Réessayez.");return}
+S.user={id:u.id,name:prof.name,mail:u.email,role:prof.role};save();render()}
+async function initAuth(){var r=await sb.auth.getSession();
+if(r.data.session){await loadUser(r.data.session.user)}else{S.user=null;save();render()}}
+$("aOk").onclick=async function(){
+var m=$("aMail").value.trim(),p=$("aPass").value;
+if(m.indexOf("@")<1||p.length<6){toast("Email valide et mot de passe de 6 caractères minimum.");return}
+if(authMode==="login"){var l=await sb.auth.signInWithPassword({email:m,password:p});
+if(l.error){toast("Connexion impossible : "+l.error.message);return}
+await loadUser(l.data.user);$("dAuth").close();toast("Connecté");return}
+var n=$("aName").value.trim();
+if(!n){toast("Entrez un nom.");return}
 if(!$("aAcc").checked){toast("Acceptez la politique du site pour continuer.");return}
-S.user={name:n,mail:m,role:$("aRole").value};save();$("dAuth").close();render();toast("Compte créé. Bienvenue "+n+" !")};
+var s=await sb.auth.signUp({email:m,password:p,options:{data:{name:n,role:$("aRole").value}}});
+if(s.error){toast("Inscription impossible : "+s.error.message);return}
+if(s.data.session){await loadUser(s.data.user);$("dAuth").close();toast("Compte créé. Bienvenue "+n+" !")}
+else{$("dAuth").close();toast("Vérifiez votre email pour confirmer le compte, puis connectez-vous.")}};
 document.querySelectorAll("[data-close]").forEach(function(b){b.onclick=function(){b.closest("dialog").close()}});
 $("pCountry").onchange=function(){var tg=this.value==="tg";$("pTg").hidden=!tg;$("pExt").hidden=tg};
 $("pOk").onclick=function(){var tg=$("pCountry").value==="tg";
@@ -394,7 +417,7 @@ $("skipBtn").onclick=function(){S.skip=(S.skip||0)+30;save();render();toast("Tes
 $("cashBtn").onclick=function(){var a=window.avail||0;
 if(a<1000){toast("Retrait possible à partir de 1 000 F. Disponible : "+F(a));return}
 ask("Retrait de "+F(a)+" vers votre TMoney ou votre carte Visa",function(){S.paid=(S.paid||0)+a;toast("Retrait de "+F(a)+" demandé. Il sera versé sur votre compte de paiement.")})};
-load();render();
+load();render();initAuth();
 </script>
 </body>
 </html>
