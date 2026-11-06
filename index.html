@@ -84,7 +84,7 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 <body>
 <header><div class="wrap">
 <div class="logo">BASSARI-ZIK</div>
-<nav><a href="#catalogue">Musiques</a><a href="#playlists">Playlists</a><a href="#billetterie">Billetterie</a><a href="#artiste">Artistes</a><a href="#politique">Politique</a></nav>
+<nav><a href="#catalogue" id="navQ">Rechercher</a><a href="#catalogue">Musiques</a><a href="#playlists">Playlists</a><a href="#billetterie">Billetterie</a><a href="#artiste">Artistes</a><a href="#politique">Politique</a></nav>
 <button id="authBtn" class="alt">Créer un compte</button></div></header>
 
 <div class="hero"><div class="wrap">
@@ -109,7 +109,7 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 <div class="row"><button data-sub="1">Abonnement 1 mois</button><button data-sub="3">Abonnement 3 mois</button></div>
 <p class="note" id="subInfo"></p></section>
 
-<section id="catalogue"><h2>Musiques</h2><p class="note">Parcourez les chansons et leurs covers librement. Le paiement sert uniquement à débloquer l'écoute.</p><div class="toolbar"><input id="q" type="search" placeholder="Rechercher une chanson ou un artiste" aria-label="Rechercher">
+<section id="catalogue"><h2>Musiques</h2><p class="note">Parcourez les chansons et leurs covers librement. Le paiement sert uniquement à débloquer l'écoute.</p><div class="toolbar"><input id="q" type="search" placeholder="Rechercher une chanson ou un artiste" aria-label="Rechercher"><button id="qBtn" type="button">Rechercher</button>
 <div class="chips"><button class="chip on" data-f="all">Tout</button><button class="chip" data-f="new">Nouveautés</button><button class="chip" data-f="pop">Populaires</button><button class="chip" data-f="gold">Disques d'or</button><button class="chip" data-f="mine">Mes chansons</button></div></div>
 <div id="list" class="grid"></div>
 <div id="pbar" hidden><span id="pnow"></span><audio id="player" controls></audio></div>
@@ -337,6 +337,10 @@ h+='<article class="card" id="s-'+x.id+'">'+cover(x)+'<div class="cb"><div class
 '<button class="alt" data-cm="'+x.id+'" style="margin-top:6px">💬 Commentaires ('+x.cm.length+')</button>'+(V.open[x.id]?cmPanel(x):'')+'</div></article>'});
 $("list").innerHTML=h||'<p class="note">Aucune chanson trouvée.</p>'}
 $("q").oninput=function(){V.q=this.value;drawMusic()};
+function doSearch(){V.q=$("q").value;drawMusic();$("catalogue").scrollIntoView({behavior:"smooth"});$("q").focus()}
+$("qBtn").onclick=doSearch;
+$("q").onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();doSearch()}};
+$("navQ").onclick=function(e){e.preventDefault();doSearch()};
 document.querySelectorAll("[data-f]").forEach(function(b){b.onclick=function(){V.f=b.dataset.f;drawMusic()}});
 $("list").oninput=function(e){var i=e.target.closest("[data-ci]");if(i)drafts[i.dataset.ci]=i.value};
 $("list").onkeydown=function(e){if(e.key==="Enter"&&e.target.dataset&&e.target.dataset.ci){e.preventDefault();sendCm(e.target.dataset.ci)}};
