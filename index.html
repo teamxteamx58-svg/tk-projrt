@@ -149,7 +149,7 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 <div class="row"><button id="evBtn">Publier l'événement</button></div></div></section>
 
 </main>
-<footer class="wrap note" style="padding-bottom:90px">BASSARI-ZIK · Prototype : les paiements sont simulés et les données restent dans ce navigateur. · <a href="politique.html">Politique du site</a></footer>
+<footer class="wrap note" style="padding-bottom:90px">BASSARI-ZIK · Prototype : les paiements sont simulés et les données restent dans ce navigateur. · <a href="politique.html">Politique du site</a> · <a href="top.html">Top du mois</a></footer>
 
 <dialog id="dAuth"><h3 id="aTitle">Créer un compte</h3>
 <div id="aSignFields"><label for="aName">Nom</label><input id="aName">
@@ -227,7 +227,7 @@ drawMusic();drawRail();drawPl()}
 function need(){if(!S.user){toast("Créez d'abord un compte.");$("dAuth").showModal();return false}return true}
 var pending=null;
 function ask(txt,fn){if(!need())return;pending=fn;$("pWhat").textContent=txt;$("dPay").showModal()}
-function sale(id){var x=S.songs.filter(function(s){return s.id===id})[0];if(x&&!S.owned[id]){x.s++;S.owned[id]=1;if(x.own){x.ts=x.ts||[];x.ts.push(Date.now())}}}
+function sale(id){var x=S.songs.filter(function(s){return s.id===id})[0];if(x&&!S.owned[id]){x.s++;S.owned[id]=1;if(x.own){x.ts=x.ts||[];x.ts.push(Date.now())}S.sales=S.sales||[];S.sales.push({id:id,a:x.a,at:Date.now()})}}
 var sb=supabase.createClient("https://loqxgegixjnrfiihthjq.supabase.co","sb_publishable_ei0GgZ26l3KJv8qTCWS3Cg_iizOBYgR");
 var authMode="signup";
 function setAuthMode(m){authMode=m;var s=m==="signup";$("aTitle").textContent=s?"Créer un compte":"Se connecter";$("aSignFields").hidden=!s;$("aAccWrap").hidden=!s;$("aOk").textContent=s?"Créer mon compte":"Se connecter";$("aSwitch").textContent=s?"J'ai déjà un compte":"Créer un compte"}
@@ -276,7 +276,7 @@ S.rep[k]=1;sx.r=(sx.r||0)+1;save();render();
 toast(sx.r>=3?"Chanson suspendue pour vérification.":"Signalement envoyé. Merci.");return}
 var b=e.target.closest("button");if(!b)return;
 if(b.dataset.buy){var id=b.dataset.buy;ask("Débloquer cette chanson : 200 F",function(){sale(id);toast("Paiement reçu. Merci pour votre soutien !")})}
-if(b.dataset.play){var id2=b.dataset.play;if(!need())return;
+if(b.dataset.play){var id2=b.dataset.play;if(!need())return;recordPlay(id2);
 if(subActive())sale(id2);save();var a=$("player");
 if(urls[id2]){a.src=urls[id2];$("pbar").hidden=false;var sx2=S.songs.filter(function(s){return s.id===id2})[0];$("pnow").textContent=sx2?sx2.t+" · "+sx2.a:"";a.play()}else{toast("Lecture simulée (morceau de démonstration)")}render()}};
 document.querySelectorAll("[data-sub]").forEach(function(b){b.onclick=function(){var m=+b.dataset.sub,pr=m===1?2000:5000;
@@ -365,6 +365,7 @@ var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").mat
 $("track").innerHTML=reduce?h:h+h;$("track").style.setProperty("--d",(base.length*4)+"s")}
 $("rail").onclick=function(e){var b=e.target.closest("[data-go]");if(!b)return;var el=$("s-"+b.dataset.go);
 if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.style.outline="3px solid var(--gold)";setTimeout(function(){el.style.outline=""},2000)}};
+function recordPlay(id){var x=findSong(id);if(!x)return;S.plays=S.plays||[];var day=new Date().toDateString();var k=S.user.mail+"|"+id;if(S.plays.some(function(p){return p.k===k&&p.d===day}))return;S.plays.push({k:k,id:id,a:x.a,at:Date.now(),d:day});save()}
 function plOf(){return S.user?S.playlists.filter(function(p){return p.mail===S.user.mail}):[]}
 function drawPl(){var ok=S.user&&subActive();$("plMake").hidden=!ok;
 $("plInfo").textContent=!S.user?"Connectez-vous pour voir vos playlists.":ok?"Ajoutez des chansons avec le lien « + Playlist » sous chaque chanson.":"Les playlists sont réservées aux abonnés. Prenez un abonnement pour en créer.";
