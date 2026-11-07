@@ -88,34 +88,81 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 @media(prefers-reduced-motion:reduce){.rail{overflow-x:auto}.track{animation:none}}
 @media(max-width:640px){.hero .wrap{grid-template-columns:1fr}.disc{width:150px;height:150px}.disc div{width:112px;height:112px;font-size:12px}}
 @media(prefers-reduced-motion:no-preference){.bar i{transition:width .5s}}
-#bnav{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--forest);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));border-top:2px solid var(--gold)}#bnav a{color:#fff;text-decoration:none;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:52px;text-align:center}#bnav .i{font-size:22px;line-height:1}body{padding-bottom:70px}</style>
+#bnav{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--forest);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));border-top:2px solid var(--gold)}#bnav a{color:#fff;text-decoration:none;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:52px;text-align:center}#bnav .i{font-size:22px;line-height:1}body{padding-bottom:70px}
+:root:root{--bg:#000;--card:#121212;--ink:#f5f5f5;--mute:#9a9a9a;--line:#262626;--forest:#0a0a0a;--orange:#FF6A1A}
+body{background:#000;color:#f5f5f5;padding-bottom:110px}
+header{background:#0a0a0a;border-bottom:1px solid #1f1f1f}
+.view{animation:fadeUp .4s ease both}
+.view[hidden]{display:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.view-hero{padding:26px 0 6px}
+.htitle{font:800 clamp(28px,6vw,44px)/1.08 "Bricolage Grotesque",sans-serif;margin:0 0 8px;color:#fff}
+.view section{padding:18px 0}
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sh h2{margin:0;font-size:22px}
+.hscroll{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.hscroll::-webkit-scrollbar{display:none}
+.hscroll>*{flex:none;scroll-snap-align:start}
+.feat{width:76vw;max-width:330px;background:#141414;border:1px solid #222;border-radius:18px;padding:12px}
+.feat .cv{width:100%;height:auto;aspect-ratio:1;border-radius:14px;font-size:96px}
+.feat h3{font-size:20px;margin:12px 0 2px}
+.feat .ar{color:var(--mute);font-size:15px}
+.feat .pr{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-weight:700}
+.buy{background:var(--orange);color:#fff;border-radius:99px;padding:10px 18px;font-weight:700}
+.tile2{width:130px;background:none;border:0;padding:0;text-align:left;color:var(--ink)}
+.tile2 .cv{width:130px;height:130px;border-radius:12px;font-size:44px}
+.tile2 b{display:block;font:600 14px/1.2 "Source Sans 3",sans-serif;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile2 small{color:var(--mute)}
+.quick{display:flex;gap:10px;flex-wrap:wrap}
+.pill{background:#1c1c1c;color:#fff;border:0;border-radius:99px;padding:10px 16px;font-weight:600}
+button{transition:transform .15s ease}button:active{transform:scale(.97)}
+#pbar{bottom:88px}
+#toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+#bnav{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:7;display:flex;justify-content:space-around;background:rgba(18,18,18,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid #262626;border-radius:22px;box-shadow:0 12px 32px rgba(0,0,0,.55);padding:6px}
+#bnav button{background:none;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 10px;border-radius:16px;font:600 12px "Source Sans 3",sans-serif;min-width:70px}
+#bnav button.on{color:var(--orange);background:rgba(255,106,26,.12)}
+#bnav .i{font-size:20px;line-height:1}
+@media (prefers-reduced-motion:reduce){.view{animation:none}}
+</style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<header><div class="wrap">
-<div class="logo">BASSARI-ZIK</div>
+<header><div class="wrap"><div class="logo">BASSARI-ZIK</div><button id="navQ" class="alt" aria-label="Rechercher" style="padding:8px 12px">🔎</button><button id="authBtn" class="alt">Créer un compte</button></div></header>
 
-<button id="authBtn" class="alt">Créer un compte</button></div></header>
-
-<img src="banner.jpg" alt="BASSARI-ZIK, la musique de chez nous, pour la jeunesse de chez nous" style="display:block;width:100%;height:auto"><div class="hero"><div class="wrap">
-<div><h1>La musique d'ici, soutenue par ceux d'ici.</h1>
-<p>Les artistes de la localité hébergent leurs chansons. Les fans paient pour écouter et soutenir directement leurs artistes.</p>
-<div class="stats"><span id="stSongs"></span><span>Disque d'or à 1000 ventes</span><span>TMoney · Visa</span></div></div>
-<div class="disc" id="disc"><div id="discTxt"></div></div>
-</div></div>
-
-<div class="railbox"><div class="wrap"><h2>Nouveautés</h2></div>
-<div class="rail" id="rail" aria-label="Chansons récemment publiées"><div class="track" id="track"></div></div></div>
-
-<main class="wrap">
-<section id="tarifs"><h2>Abonnements</h2><p class="note">Écoutez tout le catalogue avec un abonnement. Découvrez les formules sur une page dédiée.</p><div class="row"><button onclick="location.href='abonnements.html'">Voir les abonnements</button></div><p class="note" id="subInfo"></p></section>
-
+<main class="wrap app">
+<div class="view" id="v-decouverte">
+<div class="view-hero"><h1 class="htitle">La musique d'ici, soutenue par ceux d'ici.</h1><p class="note">Écoutez, soutenez et découvrez les artistes de chez nous.</p><div hidden><span id="stSongs"></span><div id="disc"><div id="discTxt"></div></div></div></div>
+<section><div class="sh"><h2>Albums du moment</h2></div><div class="hscroll big" id="featured"></div></section>
+<section><div class="sh"><h2>Tendances de la semaine</h2></div><div class="hscroll" id="trend"></div></section>
+<section><div class="sh"><h2>Meilleures ventes</h2></div><div class="hscroll" id="best"></div></section>
+<section class="quick"><button class="pill" onclick="location.href='billetterie.html'">🎟️ Billetterie</button><button class="pill" onclick="location.href='abonnements.html'">💳 Abonnements</button><button class="pill" onclick="location.href='top.html'">🏆 Top du mois</button></section>
 <section id="catalogue"><h2>Musiques</h2><p class="note">Parcourez les chansons et leurs covers librement. Le paiement sert uniquement à débloquer l'écoute.</p><div class="toolbar"><input id="q" type="search" placeholder="Rechercher une chanson ou un artiste" aria-label="Rechercher"><button id="qBtn" type="button">Rechercher</button>
 <div class="chips"><button class="chip on" data-f="all">Tout</button><button class="chip" data-f="new">Nouveautés</button><button class="chip" data-f="pop">Populaires</button><button class="chip" data-f="gold">Disques d'or</button><button class="chip" data-f="mine">Mes chansons</button></div></div>
 <div id="list" class="grid"></div>
 <div id="pbar" hidden><span id="pnow"></span><audio id="player" controls></audio></div>
 <p class="note">Les morceaux de démonstration n'ont pas de fichier audio : la lecture est simulée. Les morceaux que vous ajoutez se lisent vraiment.</p></section>
-
+</div>
+<div class="view" id="v-playlist" hidden>
+<section id="playlists"><h2>Mes playlists</h2><p class="note" id="plInfo"></p>
+<div id="plMake" hidden><div class="row" style="margin:0 0 12px"><input id="plName" placeholder="Nom de la playlist" maxlength="40" style="flex:1 1 200px;width:auto"><button id="plBtn">Créer</button></div></div>
+<div id="plList"></div></section>
+</div>
+<div class="view" id="v-actu" hidden>
+<section><h2>Actualités</h2><p class="note">Événements, sorties et classement du mois.</p><div class="row"><a class="btn" href="top.html">Voir le Top du mois</a></div></section>
+<section id="billetterie"><h2>Billetterie</h2><div id="evList"></div>
+<h3>Mes billets</h3><div id="myTk" class="note">Connectez-vous pour voir vos billets.</div>
+<div class="box" style="margin-top:14px"><h3>Publier un événement (artistes)</h3>
+<label for="evT">Nom de l'événement</label><input id="evT" maxlength="60">
+<label for="evP">Lieu</label><input id="evP" maxlength="80">
+<label for="evD">Date</label><input id="evD" type="date">
+<label for="evPr">Prix du billet (F)</label><input id="evPr" type="number" min="100" step="100">
+<label for="evC">Nombre de places</label><input id="evC" type="number" min="1">
+<label for="evImg">Photo de la salle ou du spectacle (facultatif)</label><input id="evImg" type="file" accept="image/*">
+<label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="evRight" style="width:auto;margin-top:5px">Je certifie avoir le droit d'utiliser cette photo.</label>
+<div class="row"><button id="evBtn">Publier l'événement</button></div></div></section>
+</div>
+<div class="view" id="v-ma" hidden>
+<section><h2>Ma musique</h2><p class="note">Votre compte, vos gains et vos abonnements.</p></section>
 <section id="artiste"><h2>Espace artiste</h2>
 <div class="box">
 <p>Hébergement : 500 F par mois pour publier et garder toutes vos chansons en ligne. Les fichiers sont conservés tels quels, sans compression qui altère le son.</p>
@@ -132,24 +179,12 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 <label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="fOrig" style="width:auto;margin-top:5px">Je certifie que cette chanson est mon œuvre originale (ou que j'ai tous les droits) et qu'elle ne contient aucun plagiat.</label>
 <div class="row"><button id="upBtn">Publier la chanson</button></div>
 </div></section>
-
-<section id="playlists"><h2>Mes playlists</h2><p class="note" id="plInfo"></p>
-<div id="plMake" hidden><div class="row" style="margin:0 0 12px"><input id="plName" placeholder="Nom de la playlist" maxlength="40" style="flex:1 1 200px;width:auto"><button id="plBtn">Créer</button></div></div>
-<div id="plList"></div></section>
-
-<section id="billetterie"><h2>Billetterie</h2><div id="evList"></div>
-<h3>Mes billets</h3><div id="myTk" class="note">Connectez-vous pour voir vos billets.</div>
-<div class="box" style="margin-top:14px"><h3>Publier un événement (artistes)</h3>
-<label for="evT">Nom de l'événement</label><input id="evT" maxlength="60">
-<label for="evP">Lieu</label><input id="evP" maxlength="80">
-<label for="evD">Date</label><input id="evD" type="date">
-<label for="evPr">Prix du billet (F)</label><input id="evPr" type="number" min="100" step="100">
-<label for="evC">Nombre de places</label><input id="evC" type="number" min="1">
-<label for="evImg">Photo de la salle ou du spectacle (facultatif)</label><input id="evImg" type="file" accept="image/*">
-<label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="evRight" style="width:auto;margin-top:5px">Je certifie avoir le droit d'utiliser cette photo.</label>
-<div class="row"><button id="evBtn">Publier l'événement</button></div></div></section>
-
+<section id="tarifs"><h2>Abonnements</h2><p class="note">Écoutez tout le catalogue avec un abonnement. Découvrez les formules sur une page dédiée.</p><div class="row"><button onclick="location.href='abonnements.html'">Voir les abonnements</button></div><p class="note" id="subInfo"></p></section>
+<p class="note"><a href="politique.html">Politique du site</a></p>
+</div>
 </main>
+<div id="pbar" hidden><span id="pnow"></span><audio id="player" controls></audio></div>
+
 <footer class="wrap note" style="padding-bottom:90px">BASSARI-ZIK · Prototype : les paiements sont simulés et les données restent dans ce navigateur. · <a href="politique.html">Politique du site</a> · <a href="top.html">Top du mois</a></footer>
 
 <dialog id="dAuth"><h3 id="aTitle">Créer un compte</h3>
@@ -171,7 +206,7 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 <label for="plSel">Playlist existante</label><select id="plSel"></select>
 <label for="plNew">Ou nouvelle playlist</label><input id="plNew" maxlength="40" placeholder="Nom de la nouvelle playlist">
 <div class="row"><button id="plAdd">Ajouter</button><button class="alt" data-close>Annuler</button></div></dialog>
-<nav id="bnav" aria-label="Menu principal"><a href="#"><span class="i" aria-hidden="true">🏠</span>Accueil</a><a href="#catalogue" id="navQ"><span class="i" aria-hidden="true">🔎</span>Recherche</a><a href="#catalogue"><span class="i" aria-hidden="true">🎵</span>Musiques</a><a href="#billetterie"><span class="i" aria-hidden="true">🎟️</span>Billets</a><a href="#artiste"><span class="i" aria-hidden="true">🎤</span>Artiste</a><a href="abonnements.html"><span class="i" aria-hidden="true">💳</span>Abonnements</a></nav><div id="toast" role="status"></div>
+<nav id="bnav" aria-label="Menu principal"><button data-view="decouverte" class="on"><span class="i" aria-hidden="true">🎧</span>Découverte</button><button data-view="playlist"><span class="i" aria-hidden="true">🎶</span>Playlist</button><button data-view="actu"><span class="i" aria-hidden="true">📰</span>Actualités</button><button data-view="ma"><span class="i" aria-hidden="true">👤</span>Ma musique</button></nav><div id="toast" role="status"></div>
 
 <script>
 var MAX=5000,GOLD=1000,YEAR=365*864e5,KEY="bassarizik1";
@@ -224,7 +259,7 @@ if(!S.user)$("bio").dataset.u="";
 $("gains").textContent=art?"Disponibles : "+F(window.avail)+" · en attente (30 jours max) : "+F(pend)+" · déjà retirés : "+F(S.paid||0):"";
 $("cashBtn").hidden=!art;$("skipBtn").hidden=!art;
 $("subInfo").textContent=subActive()?"Abonnement actif jusqu'au "+new Date(S.sub).toLocaleDateString("fr-FR"):"";
-drawMusic();drawRail();drawPl()}
+drawMusic();drawRails();drawPl()}
 function need(){if(!S.user){toast("Créez d'abord un compte.");$("dAuth").showModal();return false}return true}
 var pending=null;
 function ask(txt,fn){if(!need())return;pending=fn;$("pWhat").textContent=txt;$("dPay").showModal()}
@@ -343,7 +378,7 @@ h+='<article class="card" id="s-'+x.id+'">'+cover(x)+'<div class="cb"><div class
 '<button class="alt" data-cm="'+x.id+'" style="margin-top:6px">💬 Commentaires ('+x.cm.length+')</button>'+(V.open[x.id]?cmPanel(x):'')+'</div></article>'});
 $("list").innerHTML=h||'<p class="note">Aucune chanson trouvée.</p>'}
 $("q").oninput=function(){V.q=this.value;drawMusic()};
-function doSearch(){V.q=$("q").value;drawMusic();$("catalogue").scrollIntoView({behavior:"smooth"});$("q").focus()}
+function doSearch(){showView("decouverte");V.q=$("q").value;drawMusic();$("catalogue").scrollIntoView({behavior:"smooth"});$("q").focus()}
 $("qBtn").onclick=doSearch;
 $("q").onkeydown=function(e){if(e.key==="Enter"){e.preventDefault();doSearch()}};
 $("navQ").onclick=function(e){e.preventDefault();doSearch()};
@@ -357,15 +392,25 @@ $("bioBtn").onclick=function(){if(!need())return;if(S.user.role!=="artiste"){toa
 var b=$("bio").value.trim();if(b.split("\n").length>3||b.length>240){toast("Biographie : 3 lignes et 240 caractères maximum.");return}
 S.bios[S.user.name]=b;save();render();toast("Biographie enregistrée.")};
 var plTarget=null;
-function drawRail(){var L=S.songs.filter(vis).sort(function(a,b){return b.at-a.at}).slice(0,12);
-var sig=L.map(function(x){return x.id}).join();if(sig===drawRail.s)return;drawRail.s=sig;
-if(!L.length){$("track").innerHTML="";return}
-var base=L.slice();while(base.length<8)base=base.concat(L);
-var h=base.map(function(x){return '<button class="tile" data-go="'+x.id+'">'+cover(x)+'<b>'+esc(x.t)+'</b><small>'+esc(x.a)+'</small></button>'}).join("");
-var reduce=window.matchMedia&&matchMedia("(prefers-reduced-motion: reduce)").matches;
-$("track").innerHTML=reduce?h:h+h;$("track").style.setProperty("--d",(base.length*4)+"s")}
-$("rail").onclick=function(e){var b=e.target.closest("[data-go]");if(!b)return;var el=$("s-"+b.dataset.go);
-if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.style.outline="3px solid var(--gold)";setTimeout(function(){el.style.outline=""},2000)}};
+function weekScore(x){var w=now-7*864e5,p=0,v=0;(S.plays||[]).forEach(function(q){if(q.id===x.id&&q.at>=w)p++});(S.sales||[]).forEach(function(q){if(q.id===x.id&&q.at>=w)v++});return p+v*10}
+function tile(x,sub){return '<button class="tile2" data-go="'+x.id+'">'+cover(x)+'<b>'+esc(x.t)+'</b><small>'+esc(sub||x.a)+'</small></button>'}
+function drawRails(){var vs=S.songs.filter(vis);
+if(!vs.length){$("featured").innerHTML='<p class="note">Aucune chanson pour le moment.</p>';$("trend").innerHTML="";$("best").innerHTML="";return}
+var sc={};vs.forEach(function(x){sc[x.id]=weekScore(x)});
+var trend=vs.slice().sort(function(a,b){return (sc[b.id]-sc[a.id])||(b.lk-a.lk)||(b.s-a.s)}).slice(0,10);
+var best=vs.slice().sort(function(a,b){return b.s-a.s}).slice(0,10);
+$("featured").innerHTML=trend.slice(0,4).map(function(x){return '<article class="feat">'+cover(x)+'<h3>'+esc(x.t)+'</h3><div class="ar">'+esc(x.a)+'</div><div class="pr"><span>200 F</span>'+(S.owned[x.id]?'<button class="buy" data-play="'+x.id+'">Écouter</button>':'<button class="buy" data-buy="'+x.id+'">Acheter</button>')+'</div></article>'}).join("");
+$("trend").innerHTML=trend.map(function(x){return tile(x)}).join("");
+$("best").innerHTML=best.map(function(x){return tile(x,x.s+' ventes')}).join("")}
+function showView(v){document.querySelectorAll(".view").forEach(function(x){x.hidden=x.id!=="v-"+v});document.querySelectorAll("#bnav button").forEach(function(b){b.classList.toggle("on",b.dataset.view===v)});window.scrollTo(0,0)}
+document.querySelectorAll("#bnav button").forEach(function(b){b.onclick=function(){showView(b.dataset.view)}});
+$("v-decouverte").addEventListener("click",function(e){if(e.target.closest("#list"))return;
+var g=e.target.closest("[data-go]");
+if(g){V.f="all";V.q="";$("q").value="";drawMusic();var el=$("s-"+g.dataset.go);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.style.outline="3px solid var(--orange)";setTimeout(function(){el.style.outline=""},2000)}return}
+var b=e.target.closest("[data-buy],[data-play]");if(!b)return;
+if(b.dataset.buy){var id=b.dataset.buy;ask("Débloquer cette chanson : 200 F",function(){sale(id);toast("Paiement reçu. Merci pour votre soutien !")})}
+else{var id2=b.dataset.play;if(!need())return;recordPlay(id2);if(subActive())sale(id2);save();var a=$("player");
+if(urls[id2]){a.src=urls[id2];$("pbar").hidden=false;var sx2=findSong(id2);$("pnow").textContent=sx2?sx2.t+" · "+sx2.a:"";a.play()}else{toast("Lecture simulée (morceau de démonstration)")}render()}});
 function recordPlay(id){var x=findSong(id);if(!x)return;S.plays=S.plays||[];var day=new Date().toDateString();var k=S.user.mail+"|"+id;if(S.plays.some(function(p){return p.k===k&&p.d===day}))return;S.plays.push({k:k,id:id,a:x.a,at:Date.now(),d:day});save()}
 function plOf(){return S.user?S.playlists.filter(function(p){return p.mail===S.user.mail}):[]}
 function drawPl(){var ok=S.user&&subActive();$("plMake").hidden=!ok;
@@ -393,6 +438,8 @@ $("skipBtn").onclick=function(){S.skip=(S.skip||0)+30;save();render();toast("Tes
 $("cashBtn").onclick=function(){var a=window.avail||0;
 if(a<1000){toast("Retrait possible à partir de 1 000 F. Disponible : "+F(a));return}
 ask("Retrait de "+F(a)+" vers votre TMoney ou votre carte Visa",function(){S.paid=(S.paid||0)+a;toast("Retrait de "+F(a)+" demandé. Il sera versé sur votre compte de paiement.")})};
+var HM={catalogue:"decouverte",billetterie:"actu",artiste:"ma",tarifs:"ma",playlists:"playlist"};
+showView(HM[location.hash.slice(1)]||"decouverte");
 load();render();initAuth();
 </script>
 </body>
