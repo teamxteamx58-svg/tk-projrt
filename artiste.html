@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>BASSARI-ZIK</title>
+<meta name="description" content="La musique d'ici, soutenue par ceux d'ici.">
+<meta name="theme-color" content="#0E3B34">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="BASSARI">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF2EC;--ink:#12201D;--mute:#4D6360;--card:#fff;--line:#CBD6CF;--forest:#0E3B34;--gold:#E4B23C;--red:#C8372D;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B1F1C;--ink:#EAF1EC;--mute:#9DB3AE;--card:#10302B;--line:#24473F;--forest:#071513}}
+:root[data-theme="dark"]{--bg:#0B1F1C;--ink:#EAF1EC;--mute:#9DB3AE;--card:#10302B;--line:#24473F;--forest:#071513}
+*{box-sizing:border-box}html{scroll-padding-top:70px}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 "Source Sans 3",system-ui,sans-serif}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.1;margin:0 0 .5em}
+a{color:inherit}.wrap{max-width:980px;margin:0 auto;padding:0 18px}
+header{position:sticky;top:0;z-index:5;background:var(--forest);color:#fff}
+header .wrap{display:flex;align-items:center;gap:12px;padding-top:10px;padding-bottom:10px;flex-wrap:wrap}
+.logo{font:800 20px "Bricolage Grotesque",sans-serif;letter-spacing:.5px;margin-right:auto;color:var(--gold)}
+nav a{color:#fff;text-decoration:none;margin-right:12px;font-size:15px}
+button,.btn{font:600 15px "Source Sans 3",sans-serif;border:0;border-radius:8px;padding:10px 16px;cursor:pointer;background:var(--gold);color:#12201D}
+button.alt{background:transparent;color:inherit;border:1.5px solid currentColor}
+button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.hero{background:var(--forest);color:#fff;padding:34px 0 40px}
+.hero .wrap{display:grid;grid-template-columns:1fr 200px;gap:24px;align-items:center}
+.hero h1{font-size:clamp(34px,7vw,56px);font-weight:800}
+.hero p{color:#cfe0da;max-width:46ch}
+.disc{width:200px;height:200px;border-radius:50%;background:conic-gradient(var(--gold) var(--p,0%),#1d4a42 0);display:grid;place-items:center}
+.disc div{width:150px;height:150px;border-radius:50%;background:var(--forest);display:grid;place-items:center;text-align:center;font:800 15px "Bricolage Grotesque";color:var(--gold);padding:10px}
+section{padding:28px 0}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin:14px 0 0}
+.stats span{background:rgba(255,255,255,.1);padding:6px 12px;border-radius:99px;font-size:14px}
+.price{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.box{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px}
+.box b.n{font:800 28px "Bricolage Grotesque";display:block}
+.song{display:flex;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:12px;padding:12px 14px;margin-bottom:10px;flex-wrap:wrap}
+.song .t{flex:1 1 180px;min-width:0}.song .t b{display:block}.song small{color:var(--mute)}
+.cv{width:64px;height:64px;border-radius:10px;flex:none;object-fit:cover;background:linear-gradient(135deg,var(--forest),#2a7a6b);display:grid;place-items:center;font:800 26px "Bricolage Grotesque",sans-serif;color:var(--gold)}
+.gold{background:var(--gold);color:#12201D;border-radius:99px;padding:2px 10px;font-size:13px;font-weight:600}
+.bar{height:6px;background:var(--line);border-radius:9px;margin-top:6px;overflow:hidden}.bar i{display:block;height:100%;background:var(--gold)}
+label{display:block;font-weight:600;margin:10px 0 4px}
+input,select{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit}
+dialog{border:0;border-radius:14px;max-width:420px;width:calc(100% - 28px);padding:20px;background:var(--card);color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.55)}
+.row{display:flex;gap:8px;flex-wrap:wrap;margin-top:14px}
+.pol li{margin-bottom:8px}.pol ol{padding-left:20px}
+#toast{position:fixed;left:50%;bottom:calc(76px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--forest);color:#fff;padding:10px 18px;border-radius:99px;display:none;z-index:9;border:1px solid var(--gold)}
+.note{font-size:14px;color:var(--mute)}
+textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8px;background:var(--card);color:var(--ink);font:inherit;resize:vertical}
+.toolbar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:10px 0 16px}
+.toolbar input{flex:1 1 220px;width:auto}
+.chips{display:flex;gap:8px;flex-wrap:wrap}
+.chip{background:transparent;color:var(--ink);border:1.5px solid var(--line);border-radius:99px;padding:6px 14px}
+.chip.on{background:var(--gold);color:#12201D;border-color:var(--gold)}
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px;display:flex;flex-direction:column}
+.card .cv{width:100%;height:auto;aspect-ratio:1;border-radius:10px;font-size:72px}
+.card .cb{padding-top:10px;display:flex;flex-direction:column;gap:4px}
+.card .ttl b{font:800 18px "Bricolage Grotesque",sans-serif}
+.card .art{font-weight:600;color:var(--mute)}
+.bio{display:-webkit-box;-webkit-line-clamp:3;line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;margin:2px 0;font-size:14px;color:var(--mute)}
+.cr{color:var(--mute)}
+.vote{display:flex;gap:8px;margin-top:6px}
+.vote button{padding:6px 12px}.vote button.on{background:var(--gold);color:#12201D;border-color:var(--gold)}
+.cmp{border-top:1px solid var(--line);margin-top:6px;padding-top:8px}
+.cmi p{margin:2px 0 8px}
+#pbar{position:fixed;left:0;right:0;bottom:64px;z-index:6;background:var(--forest);color:#fff;padding:8px 14px calc(8px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+#pbar[hidden]{display:none}#pbar audio{flex:1 1 220px;min-width:0;height:36px}#pnow{font-weight:600;font-size:14px}
+.railbox{background:var(--forest);color:#fff;padding:6px 0 26px}
+.railbox h2{font-size:20px;color:var(--gold)}
+.rail{overflow:hidden}
+.track{display:flex;gap:14px;width:max-content;animation:slide var(--d,40s) linear infinite}
+.rail:hover .track,.rail:focus-within .track{animation-play-state:paused}
+@keyframes slide{to{transform:translateX(-50%)}}
+.tile{background:none;border:0;padding:0;width:120px;text-align:left;color:#fff;flex:none}
+.tile .cv{width:120px;height:120px;border-radius:12px;font-size:44px}
+.tile b{display:block;font:600 14px/1.2 "Source Sans 3",sans-serif;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile small{color:#cfe0da}
+@media(prefers-reduced-motion:reduce){.rail{overflow-x:auto}.track{animation:none}}
+@media(max-width:640px){.hero .wrap{grid-template-columns:1fr}.disc{width:150px;height:150px}.disc div{width:112px;height:112px;font-size:12px}}
+@media(prefers-reduced-motion:no-preference){.bar i{transition:width .5s}}
+#bnav{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--forest);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));border-top:2px solid var(--gold)}#bnav a{color:#fff;text-decoration:none;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:52px;text-align:center}#bnav .i{font-size:22px;line-height:1}body{padding-bottom:70px}
+:root:root{--bg:#000;--card:#121212;--ink:#f5f5f5;--mute:#9a9a9a;--line:#262626;--forest:#0a0a0a;--orange:#FF6A1A}
+body{background:#000;color:#f5f5f5;padding-bottom:110px}
+header{background:#0a0a0a;border-bottom:1px solid #1f1f1f}
+.view{animation:fadeUp .4s ease both}
+.view[hidden]{display:none}
+@keyframes fadeUp{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.view-hero{padding:26px 0 6px}
+.htitle{font:800 clamp(28px,6vw,44px)/1.08 "Bricolage Grotesque",sans-serif;margin:0 0 8px;color:#fff}
+.view section{padding:18px 0}
+.sh{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.sh h2{margin:0;font-size:22px}
+.hscroll{display:flex;gap:14px;overflow-x:auto;scroll-snap-type:x mandatory;padding:4px 2px 12px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+.hscroll::-webkit-scrollbar{display:none}
+.hscroll>*{flex:none;scroll-snap-align:start}
+.feat{width:76vw;max-width:330px;background:#141414;border:1px solid #222;border-radius:18px;padding:12px}
+.feat .cv{width:100%;height:auto;aspect-ratio:1;border-radius:14px;font-size:96px}
+.feat h3{font-size:20px;margin:12px 0 2px}
+.feat .ar{color:var(--mute);font-size:15px}
+.feat .pr{display:flex;justify-content:space-between;align-items:center;margin-top:12px;font-weight:700}
+.buy{background:var(--orange);color:#fff;border-radius:99px;padding:10px 18px;font-weight:700}
+.tile2{width:130px;background:none;border:0;padding:0;text-align:left;color:var(--ink)}
+.tile2 .cv{width:130px;height:130px;border-radius:12px;font-size:44px}
+.tile2 b{display:block;font:600 14px/1.2 "Source Sans 3",sans-serif;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tile2 small{color:var(--mute)}
+.quick{display:flex;gap:10px;flex-wrap:wrap}
+.pill{background:#1c1c1c;color:#fff;border:0;border-radius:99px;padding:10px 16px;font-weight:600}
+button{transition:transform .15s ease}button:active{transform:scale(.97)}
+#pbar{bottom:88px}
+#toast{bottom:calc(92px + env(safe-area-inset-bottom,0px))}
+#bnav{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:7;display:flex;justify-content:space-around;background:rgba(18,18,18,.92);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid #262626;border-radius:22px;box-shadow:0 12px 32px rgba(0,0,0,.55);padding:6px}
+#bnav button{background:none;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 10px;border-radius:16px;font:600 12px "Source Sans 3",sans-serif;min-width:70px}
+#bnav button.on{color:var(--orange);background:rgba(255,106,26,.12)}
+#bnav .i{font-size:20px;line-height:1}
+@media (prefers-reduced-motion:reduce){.view{animation:none}}
+
+.banner{display:block;width:100%;height:auto;border-radius:18px;margin:12px 0 4px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+#pbar{position:fixed;left:12px;right:12px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:6;background:#151515;color:#fff;border:1px solid #2a2a2a;border-radius:18px;padding:10px 14px 10px 10px;box-shadow:0 16px 40px rgba(0,0,0,.65);display:grid;grid-template-columns:46px 1fr;gap:4px 12px;align-items:center}
+#pbar[hidden]{display:none}
+#pvBtn{grid-row:1/3;width:46px;height:46px;border-radius:50%;padding:0;background:var(--orange);color:#fff;font-size:15px;display:grid;place-items:center;box-shadow:0 6px 16px rgba(255,106,26,.35)}
+#pvBtn:active{transform:scale(.92)}
+#pnow{grid-column:2;font:700 15px "Bricolage Grotesque",sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.pv-prog{grid-column:2;min-width:0}
+#pvSeek{width:100%;height:18px;margin:0;padding:0;border:0;background:transparent;accent-color:var(--orange);cursor:pointer}
+.pv-time{display:flex;justify-content:space-between;font-size:12px;color:#9a9a9a;font-variant-numeric:tabular-nums;margin-top:-2px}
+#pbar.playing #pvBtn{animation:pvpulse 1.6s ease-out infinite}
+@keyframes pvpulse{from{box-shadow:0 0 0 0 rgba(255,106,26,.55)}to{box-shadow:0 0 0 14px rgba(255,106,26,0)}}
+#player{display:none}
+body.has-player{padding-bottom:190px}
+#toast{bottom:calc(170px + env(safe-area-inset-bottom,0px))}
+
+.ph{width:140px;height:140px;border-radius:50%;object-fit:cover;background:linear-gradient(135deg,#0E3B34,#2a7a6b);display:grid;place-items:center;font:800 56px "Bricolage Grotesque",sans-serif;color:#E4B23C;margin:0 auto}
+.prof{text-align:center;padding:24px 0 8px}
+.prof h1{margin:14px 0 4px;font-size:clamp(28px,6vw,40px)}
+.stats2{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:14px 0}
+.stats2 div{background:#151515;border:1px solid #262626;border-radius:14px;padding:10px 14px;min-width:96px}
+.stats2 b{display:block;font:800 22px "Bricolage Grotesque",sans-serif;color:#FF6A1A}
+.stats2 small{color:#9a9a9a}
+.bio2{max-width:56ch;margin:0 auto;color:#cfcfcf}
+.item{display:flex;gap:12px;align-items:center;background:#121212;border:1px solid #262626;border-radius:14px;padding:12px;margin-bottom:10px}
+.item .cv{width:64px;height:64px;border-radius:10px;flex:none;object-fit:cover;background:linear-gradient(135deg,#0E3B34,#2a7a6b);display:grid;place-items:center;font:800 24px "Bricolage Grotesque",sans-serif;color:#E4B23C}
+.item .tx{flex:1;min-width:0}
+.item .tx b{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.item .tx small{color:#9a9a9a}
+.tag{background:#E4B23C;color:#12201D;border-radius:99px;padding:2px 8px;font-size:12px;font-weight:700}
+.next{border:1px dashed #FF6A1A;border-radius:14px;padding:12px;margin-bottom:10px;color:#f5f5f5}
+a{color:inherit}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="logo" href="index.html" style="text-decoration:none">BASSARI-ZIK</a></div></header>
+<main class="wrap" style="padding-top:8px;padding-bottom:40px">
+<div id="prof" class="prof"></div>
+<section><h2>Chansons</h2><div id="songs"></div></section>
+<section><h2>Albums</h2><div id="albums"></div></section>
+<section id="nextSec" hidden><h2>Prochaines sorties (visibles par vous seul)</h2><div id="next"></div></section>
+</main>
+<footer class="wrap note" style="padding-bottom:110px">BASSARI-ZIK · <a href="index.html">Retour à l'accueil</a> · <a href="politique.html">Politique du site</a></footer>
+<nav id="bnav" aria-label="Menu principal"><a href="index.html"><span class="i" aria-hidden="true">🏠</span>Accueil</a><a href="index.html#catalogue"><span class="i" aria-hidden="true">🎵</span>Musiques</a><a href="billetterie.html"><span class="i" aria-hidden="true">🎟️</span>Billets</a><a href="artistes.html"><span class="i" aria-hidden="true">🎤</span>Guide</a><a href="top.html"><span class="i" aria-hidden="true">🏆</span>Top</a></nav>
+<script>
+var KEY="bassarizik1";var S={};try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
+var now=Date.now();
+function esc(s){var d=document.createElement("div");d.textContent=String(s==null?"":s);return d.innerHTML}
+function F(n){return (n||0).toLocaleString("fr-FR")+" F"}
+function escA(s){return esc(s).replace(/"/g,"&quot;")}
+var name=new URLSearchParams(location.search).get("n")||"";
+var me=S.user&&S.user.role==="artiste"?S.user.name:"";
+var isMe=!!name&&name===me;
+function hostOk(n){return ((S.host||{})[n]||0)>now}
+function shareOf(x,n){if(!x.sp)return x.a===n?1:0;var e=x.sp.filter(function(s){return s.n===n})[0];return e?e.p/100:0}
+function inCat(x){if(shareOf(x,name)<=0)return false;if(x.rel&&x.rel>now&&!isMe)return false;if(x.r>=3)return false;if(!x.own)return true;return hostOk(x.a)}
+function cover(x){return x.cv&&x.cv.indexOf("data:image/")===0?'<img class="cv" alt="" src="'+x.cv+'">':'<div class="cv" aria-hidden="true">'+esc(String(x.t||"?").charAt(0).toUpperCase())+'</div>'}
+function rankOf(){var m=new Date().toISOString().slice(0,7),a={};
+(S.sales||[]).forEach(function(q){if(new Date(q.at).toISOString().slice(0,7)!==m)return;a[q.a]=a[q.a]||0;a[q.a]+=10});
+(S.plays||[]).forEach(function(q){if(new Date(q.at).toISOString().slice(0,7)!==m)return;a[q.a]=a[q.a]||0;a[q.a]+=1});
+var arr=Object.keys(a).sort(function(x,y){return a[y]-a[x]});var i=arr.indexOf(name);return {pos:i<0?0:i+1,score:a[name]||0}}
+function render(){
+if(!name){document.getElementById("prof").innerHTML='<p class="note">Aucun artiste sélectionné.</p>';return}
+var photo=(S.photos||{})[name];
+var bio=(S.bios||{})[name]||"";
+var songs=(S.songs||[]).filter(function(x){return inCat(x)});
+var albums=(S.albums||[]).filter(function(al){return al.a===name&&hostOk(al.a)&&(!al.rel||al.rel<=now||isMe)});
+var sales=(S.songs||[]).filter(function(x){return shareOf(x,name)>0}).reduce(function(s,x){return s+(x.s||0)},0);
+var r=rankOf();
+document.title=name+" · BASSARI-ZIK";
+document.getElementById("prof").innerHTML=(photo?'<img class="ph" alt="Photo de '+escA(name)+'" src="'+photo+'" style="object-fit:cover">':'<div class="ph" aria-hidden="true">'+esc(name.charAt(0).toUpperCase())+'</div>')
++'<h1>'+esc(name)+'</h1>'
++(bio?'<p class="bio2">'+esc(bio)+'</p>':'<p class="note">Cet artiste n\'a pas encore écrit sa biographie.</p>')
++'<div class="stats2"><div><b>'+songs.length+'</b><small>chansons</small></div><div><b>'+albums.length+'</b><small>albums</small></div><div><b>'+sales+'</b><small>ventes</small></div>'+(r.pos?'<div><b>#'+r.pos+'</b><small>Top du mois</small></div>':'')+'</div>';
+document.getElementById("songs").innerHTML=songs.length?songs.map(function(x){var feat=x.sp&&x.sp.length>1?' · feat. '+x.sp.slice(1).map(function(s){return esc(s.n)}).join(', '):'';
+return '<div class="item">'+cover(x)+'<div class="tx"><b>'+esc(x.t)+'</b><small>'+esc(x.a)+feat+' · '+F(x.pr||200)+'</small></div><a class="tag" href="index.html#catalogue">Écouter</a></div>'}).join(""):'<p class="note">Aucune chanson pour le moment.</p>';
+document.getElementById("albums").innerHTML=albums.length?albums.map(function(al){return '<div class="item">'+(al.cv&&al.cv.indexOf("data:image/")===0?'<img class="cv" alt="" src="'+al.cv+'">':'<div class="cv" aria-hidden="true">'+esc(al.t.charAt(0).toUpperCase())+'</div>')+'<div class="tx"><b>'+esc(al.t)+'</b><small>'+al.tracks.length+' titre(s) · '+F(al.pr)+'</small></div><a class="tag" href="index.html#decouverte">Acheter</a></div>'}).join(""):'<p class="note">Aucun album pour le moment.</p>';
+var nx=(S.songs||[]).filter(function(x){return x.own&&x.a===name&&x.rel&&x.rel>now});
+document.getElementById("nextSec").hidden=!(isMe&&nx.length);
+document.getElementById("next").innerHTML=nx.map(function(x){return '<div class="next"><b>'+esc(x.t)+'</b> · sortie le '+new Date(x.rel).toLocaleString("fr-FR")+'</div>'}).join("");
+}
+render();
+</script>
+</body>
+</html>

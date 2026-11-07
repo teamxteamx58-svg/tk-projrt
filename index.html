@@ -185,7 +185,7 @@ body.has-player{padding-bottom:190px}
 <p id="hostInfo" style="font-weight:600"></p>
 <div class="row" style="margin:0 0 12px"><button id="hostBtn" class="alt">Activer ou renouveler l'hébergement (500 F)</button></div>
 <label for="bio">Ma biographie (3 lignes maximum)</label><textarea id="bio" rows="3" maxlength="240"></textarea>
-<div class="row" style="margin:6px 0 12px"><button id="bioBtn" class="alt">Enregistrer ma bio</button></div>
+<div class="row" style="margin:6px 0 12px"><button id="bioBtn" class="alt">Enregistrer ma bio</button></div><label for="phFile">Photo de profil (facultatif)</label><input id="phFile" type="file" accept="image/*"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="phOk" style="width:auto;margin-top:5px">J'accepte que cette photo soit affichée publiquement sur mon profil artiste.</label><div class="row" style="margin:0 0 12px"><button id="phBtn" class="alt">Enregistrer la photo</button></div>
 <p id="gains" style="font-weight:600"></p>
 <div class="row" style="margin:0 0 8px"><button id="cashBtn" class="alt" hidden>Retirer mes gains</button><button id="skipBtn" class="alt" hidden>Test : avancer de 30 jours</button></div>
 <label for="fTitle">Titre</label><input id="fTitle" maxlength="60">
@@ -243,7 +243,7 @@ if(!S.songs||!S.songs.length){S.songs=[
 {id:"d5",t:"Vieille chanson",a:"Yao Tem",s:970,at:now-400*864e5}];S.owned={}}
 S.songs=S.songs.filter(function(x){return now-x.at<YEAR});
 if(!S.events)S.events=[{id:"e1",t:"Concert Bassar en fête",a:"Kossi Mawuli",place:"Place de l'Indépendance, Bassar",date:"2026-12-20",price:2000,cap:300,sold:120,ts:[]},{id:"e2",t:"Soirée Afro-Zik",a:"DJ Tchaa",place:"Lomé",date:"2026-11-14",price:5000,cap:150,sold:150,ts:[]}];
-S.tickets=S.tickets||[];S.albums=S.albums||[];S.playlists=S.playlists||[];S.host=S.host||{};S.votes=S.votes||{};
+S.tickets=S.tickets||[];S.albums=S.albums||[];S.photos=S.photos||{};S.playlists=S.playlists||[];S.host=S.host||{};S.votes=S.votes||{};
 S.bios=S.bios||{"Kossi Mawuli":"Chanteur originaire de Bassar. Il mêle rythmes traditionnels et sons modernes.","Abla Tchalim":"Auteure-compositrice. Ses textes parlent de sagesse et de mémoire.","DJ Tchaa":"DJ et producteur de Sokodé. Spécialiste des soirées afro."};
 var DM={d1:["Son : Koffi A. · Mixage : Ama T.",34,2],d2:["Enregistrement : Studio Nawdm · Mastering : Yao P.",21,1],d3:["Mixage : DJ Tchaa",12,0],d4:["Son : Efua K.",5,0],d5:["Mixage : Studio Tem",18,3]};
 S.songs.forEach(function(x){if(x.lk==null){var d=DM[x.id];x.lk=d?d[1]:0;x.dl=d?d[2]:0;if(d&&!x.cr)x.cr=d[0]}x.dl=x.dl||0;x.cm=x.cm||[]});
@@ -422,7 +422,7 @@ var ma=shareOf(a,me)>0?1:0,mb=shareOf(b,me)>0?1:0;return mb-ma||b.at-a.at});
 var h="";L.forEach(function(x){var mine=shareOf(x,me)>0,days=Math.max(0,Math.ceil((x.at+YEAR-now)/864e5)),can=S.owned[x.id],
 myv=S.user?(S.votes[S.user.mail+"|"+x.id]||0):0,bio=S.bios[x.a]||"";
 h+='<article class="card" id="s-'+x.id+'">'+cover(x)+'<div class="cb"><div class="ttl"><b>'+esc(x.t)+'</b>'+(x.s>=GOLD?' <span class="gold">Disque d\'or</span>':'')+'</div>'+
-'<div class="art">'+esc(x.a)+(x.sp&&x.sp.length>1?' feat. '+esc(x.sp.slice(1).map(function(s){return s.n}).join(', ')):'')+(mine?' (vous)':'')+'</div>'+(bio?'<p class="bio">'+esc(bio)+'</p>':'')+(x.cr?'<small class="cr">Crédits : '+esc(x.cr)+'</small>':'')+
+'<div class="art"><a href="artiste.html?n='+encodeURIComponent(x.a)+'">'+esc(x.a)+'</a>'+(x.sp&&x.sp.length>1?' feat. '+esc(x.sp.slice(1).map(function(s){return s.n}).join(', ')):'')+(mine?' (vous)':'')+'</div>'+(bio?'<p class="bio">'+esc(bio)+'</p>':'')+(x.cr?'<small class="cr">Crédits : '+esc(x.cr)+'</small>':'')+
 (x.rel&&x.rel>Date.now()?'<small class="cr">Sortie prévue le '+new Date(x.rel).toLocaleString('fr-FR')+'</small>':'')+'<div class="bar"><i style="width:'+Math.min(100,x.s/GOLD*100)+'%"></i></div><small>'+x.s+' ventes · supprimée dans '+days+' j</small>'+
 '<div class="vote"><button class="alt'+(myv===1?' on':'')+'" data-like="'+x.id+'" aria-label="J\'aime">👍 '+x.lk+'</button><button class="alt'+(myv===-1?' on':'')+'" data-dis="'+x.id+'" aria-label="Je n\'aime pas">👎 '+x.dl+'</button></div>'+
 '<div class="row" style="margin-top:8px">'+(can?'<button data-play="'+x.id+'">Écouter</button>':'<button data-buy="'+x.id+'">Débloquer '+F(priceOf(x))+'</button>'+(subActive()?'<button class="alt" data-play="'+x.id+'">Écouter (abonné)</button>':''))+'</div>'+
@@ -438,6 +438,10 @@ if("serviceWorker" in navigator){window.addEventListener("load",function(){navig
 document.querySelectorAll("[data-f]").forEach(function(b){b.onclick=function(){V.f=b.dataset.f;drawMusic()}});
 $("list").oninput=function(e){var i=e.target.closest("[data-ci]");if(i)drafts[i.dataset.ci]=i.value};
 $("list").onkeydown=function(e){if(e.key==="Enter"&&e.target.dataset&&e.target.dataset.ci){e.preventDefault();sendCm(e.target.dataset.ci)}};
+$("phBtn").onclick=function(){if(!need())return;if(S.user.role!=="artiste"){toast("Réservé aux comptes artiste.");return}
+var f=$("phFile").files[0];if(!f){toast("Choisissez une photo.");return}
+if(!$("phOk").checked){toast("Cochez l'accord pour afficher la photo sur votre profil.");return}
+makeCover(f,function(cv){if(!cv){toast("Photo illisible.");return}S.photos[S.user.name]=cv;$("phFile").value="";$("phOk").checked=false;save();render();toast("Photo de profil enregistrée.")})};
 $("hostBtn").onclick=function(){if(!need())return;if(S.user.role!=="artiste"){toast("Réservé aux comptes artiste.");return}
 ask("Hébergement artiste : 500 F pour 30 jours",function(){S.host[S.user.name]=Math.max(S.host[S.user.name]||0,Date.now())+30*864e5;toast("Hébergement activé.")})};
 $("bioBtn").onclick=function(){if(!need())return;if(S.user.role!=="artiste"){toast("Réservé aux comptes artiste.");return}
@@ -452,7 +456,7 @@ var sc={};vs.forEach(function(x){sc[x.id]=weekScore(x)});
 var trend=vs.slice().sort(function(a,b){return (sc[b.id]-sc[a.id])||(b.lk-a.lk)||(b.s-a.s)}).slice(0,10);
 var best=vs.slice().sort(function(a,b){return b.s-a.s}).slice(0,10);
 var als=(S.albums||[]).filter(function(a){return hostOk(a.a)&&(!a.rel||a.rel<=Date.now())}).sort(function(a,b){return b.at-a.at}).slice(0,2);
-$("featured").innerHTML=als.map(function(al){return '<article class="feat">'+(al.cv&&al.cv.indexOf("data:image/")===0?'<img class="cv" alt="Pochette de '+escA(al.t)+'" src="'+al.cv+'">':'<div class="cv" aria-hidden="true">'+esc(al.t.charAt(0).toUpperCase())+'</div>')+'<h3>'+esc(al.t)+'</h3><div class="ar">Album · '+esc(al.a)+' · '+al.tracks.length+' titre(s)</div><div class="pr"><span>'+F(al.pr)+'</span>'+(S.owned["A"+al.id]?'<button class="buy" disabled>Acheté</button>':'<button class="buy" data-abuy="'+al.id+'">Acheter l\'album</button>')+'</div></article>'}).concat(trend.slice(0,Math.max(0,4-als.length)).map(function(x){return '<article class="feat">'+cover(x)+'<h3>'+esc(x.t)+'</h3><div class="ar">'+esc(x.a)+'</div><div class="pr"><span>'+F(priceOf(x))+'</span>'+(S.owned[x.id]?'<button class="buy" data-play="'+x.id+'">Écouter</button>':'<button class="buy" data-buy="'+x.id+'">Acheter</button>')+'</div></article>'})).join("");
+$("featured").innerHTML=als.map(function(al){return '<article class="feat">'+(al.cv&&al.cv.indexOf("data:image/")===0?'<img class="cv" alt="Pochette de '+escA(al.t)+'" src="'+al.cv+'">':'<div class="cv" aria-hidden="true">'+esc(al.t.charAt(0).toUpperCase())+'</div>')+'<h3>'+esc(al.t)+'</h3><div class="ar">Album · <a href="artiste.html?n='+encodeURIComponent(al.a)+'">'+esc(al.a)+'</a>'+' · '+al.tracks.length+' titre(s)</div><div class="pr"><span>'+F(al.pr)+'</span>'+(S.owned["A"+al.id]?'<button class="buy" disabled>Acheté</button>':'<button class="buy" data-abuy="'+al.id+'">Acheter l\'album</button>')+'</div></article>'}).concat(trend.slice(0,Math.max(0,4-als.length)).map(function(x){return '<article class="feat">'+cover(x)+'<h3>'+esc(x.t)+'</h3><div class="ar">'+esc(x.a)+'</div><div class="pr"><span>'+F(priceOf(x))+'</span>'+(S.owned[x.id]?'<button class="buy" data-play="'+x.id+'">Écouter</button>':'<button class="buy" data-buy="'+x.id+'">Acheter</button>')+'</div></article>'})).join("");
 $("trend").innerHTML=trend.map(function(x){return tile(x)}).join("");
 $("best").innerHTML=best.map(function(x){return tile(x,x.s+' ventes')}).join("")}
 function showView(v){document.querySelectorAll(".view").forEach(function(x){x.hidden=x.id!=="v-"+v});document.querySelectorAll("#bnav button").forEach(function(b){b.classList.toggle("on",b.dataset.view===v)});window.scrollTo(0,0)}
