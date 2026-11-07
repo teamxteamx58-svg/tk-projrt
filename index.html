@@ -254,7 +254,7 @@ if(!S.songs||!S.songs.length){S.songs=[
 {id:"d5",t:"Vieille chanson",a:"Yao Tem",s:970,at:now-400*864e5}];S.owned={}}
 S.songs=S.songs.filter(function(x){return now-x.at<YEAR});
 if(!S.events)S.events=[{id:"e1",t:"Concert Bassar en fête",a:"Kossi Mawuli",place:"Place de l'Indépendance, Bassar",date:"2026-12-20",price:2000,cap:300,sold:120,ts:[]},{id:"e2",t:"Soirée Afro-Zik",a:"DJ Tchaa",place:"Lomé",date:"2026-11-14",price:5000,cap:150,sold:150,ts:[]}];
-S.tickets=S.tickets||[];S.albums=S.albums||[];S.photos=S.photos||{};S.promo=S.promo||{};S.playlists=S.playlists||[];S.host=S.host||{};S.votes=S.votes||{};
+S.tickets=S.tickets||[];S.albums=S.albums||[];S.photos=S.photos||{};S.promo=S.promo||{};S.autoCert=S.autoCert||{};S.reviews=S.reviews||{};S.playlists=S.playlists||[];S.host=S.host||{};S.votes=S.votes||{};
 S.bios=S.bios||{"Kossi Mawuli":"Chanteur originaire de Bassar. Il mêle rythmes traditionnels et sons modernes.","Abla Tchalim":"Auteure-compositrice. Ses textes parlent de sagesse et de mémoire.","DJ Tchaa":"DJ et producteur de Sokodé. Spécialiste des soirées afro."};
 var DM={d1:["Son : Koffi A. · Mixage : Ama T.",34,2],d2:["Enregistrement : Studio Nawdm · Mastering : Yao P.",21,1],d3:["Mixage : DJ Tchaa",12,0],d4:["Son : Efua K.",5,0],d5:["Mixage : Studio Tem",18,3]};
 S.songs.forEach(function(x){if(x.lk==null){var d=DM[x.id];x.lk=d?d[1]:0;x.dl=d?d[2]:0;if(d&&!x.cr)x.cr=d[0]}x.dl=x.dl||0;x.cm=x.cm||[]});
@@ -388,12 +388,13 @@ var im=$("evImg").files[0];
 if(im&&!$("evRight").checked){toast("Certifiez avoir le droit d'utiliser la photo.");return}
 makeWide(im,function(cv){S.events.push({id:"e"+Date.now(),t:t,a:S.user.name,place:p,date:d,price:pr,cap:c,sold:0,ts:[],own:1,cv:cv});
 ["evT","evP","evD","evPr","evC","evImg"].forEach(function(i){$(i).value=""});$("evRight").checked=false;save();render();toast("Événement publié.")})};
-function badgeOf(n){var p=(S.promo||{})[n];return p&&p+7*864e5<=Date.now()?'<span class="vb" title="Artiste certifié" aria-label="Artiste certifié">✔</span>':''}
+function badgeOf(n){var p=(S.promo||{})[n];return ((p&&p+7*864e5<=Date.now())||(S.autoCert||{})[n])?'<span class="vb" title="Artiste certifié" aria-label="Artiste certifié">✔</span>':''}
 function drawCert(){var box=$("certInfo");if(!box)return;var art=!!(S.user&&S.user.role==="artiste");
-$("certBtn").hidden=!art||!!((S.promo||{})[S.user&&S.user.name]);
+$("certBtn").hidden=!art||!!((S.promo||{})[S.user&&S.user.name])||!!((S.autoCert||{})[S.user&&S.user.name]);
 if(!art){box.textContent="";return}
 var st=(S.promo||{})[S.user.name];
-if(!st){box.textContent="Pas encore certifié.";return}
+if((S.autoCert||{})[S.user.name]){box.textContent="Vous êtes certifié ✔ (première chanson validée)";return}
+if(!st){box.textContent="Pas encore certifié. Il suffit d'une chanson validée, ou d'une publicité de 7 jours.";return}
 var end=st+7*864e5;box.textContent=end<=Date.now()?"Vous êtes certifié ✔":"Publicité en cours : badge dans "+Math.ceil((end-Date.now())/864e5)+" j."}
 $("certBtn").onclick=function(){if(!need())return;if(S.user.role!=="artiste"){toast("Réservé aux comptes artiste.");return}
 ask("Publicité de 7 jours : 5 000 F",function(){S.promo[S.user.name]=Date.now();save();render();toast("Publicité lancée. Votre badge vert arrive dans 7 jours.")})};

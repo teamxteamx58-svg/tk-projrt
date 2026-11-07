@@ -173,6 +173,7 @@ a{color:inherit}
 <div id="prof" class="prof"></div>
 <section><h2>Chansons</h2><div id="songs"></div></section>
 <section><h2>Albums</h2><div id="albums"></div></section>
+<section id="avisSec"><h2>Avis des fans</h2><div id="avgBox"></div><div id="avisList"></div><div id="avisForm"></div></section>
 <section id="nextSec" hidden><h2>Prochaines sorties (visibles par vous seul)</h2><div id="next"></div></section>
 </main>
 <footer class="wrap note" style="padding-bottom:110px">BASSARI-ZIK · <a href="index.html">Retour à l'accueil</a> · <a href="politique.html">Politique du site</a></footer>
@@ -186,7 +187,7 @@ function escA(s){return esc(s).replace(/"/g,"&quot;")}
 var name=new URLSearchParams(location.search).get("n")||"";
 var me=S.user&&S.user.role==="artiste"?S.user.name:"";
 var isMe=!!name&&name===me;
-function badgeOf(n){var p=(S.promo||{})[n];return p&&p+7*864e5<=Date.now()?'<span class="vb" title="Artiste certifié" aria-label="Artiste certifié">✔</span>':''}
+function badgeOf(n){var p=(S.promo||{})[n];return ((p&&p+7*864e5<=Date.now())||(S.autoCert||{})[n])?'<span class="vb" title="Artiste certifié" aria-label="Artiste certifié">✔</span>':''}
 function hostOk(n){return ((S.host||{})[n]||0)>now}
 function shareOf(x,n){if(!x.sp)return x.a===n?1:0;var e=x.sp.filter(function(s){return s.n===n})[0];return e?e.p/100:0}
 function inCat(x){if(shareOf(x,name)<=0)return false;if(x.rel&&x.rel>now&&!isMe)return false;if(x.r>=3)return false;if(x.vs&&x.vs!=="ok")return false;return true}
@@ -215,7 +216,23 @@ var nx=(S.songs||[]).filter(function(x){return x.own&&x.a===name&&x.rel&&x.rel>n
 document.getElementById("nextSec").hidden=!(isMe&&nx.length);
 document.getElementById("next").innerHTML=nx.map(function(x){return '<div class="next"><b>'+esc(x.t)+'</b> · sortie le '+new Date(x.rel).toLocaleString("fr-FR")+'</div>'}).join("");
 }
-render();
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+function drawAvis(){
+var list=((S.reviews||{})[name])||[];
+var avg=list.length?list.reduce(function(s,r){return s+r.n},0)/list.length:0;
+document.getElementById("avgBox").innerHTML=list.length?'<p><b>'+avg.toFixed(1).replace(".",",")+' ★</b> · '+list.length+' avis</p>':'<p class="note">Pas encore d\'avis.</p>';
+document.getElementById("avisList").innerHTML=list.slice().sort(function(a,b){return b.at-a.at}).slice(0,30).map(function(r){return '<div class="item" style="display:block"><b>'+esc(r.name)+'</b> <span style="color:#E4B23C">'+'★'.repeat(r.n)+'</span><small> · '+new Date(r.at).toLocaleDateString("fr-FR")+'</small><p style="margin:6px 0 0">'+esc(r.t)+'</p></div>'}).join("");
+var f=document.getElementById("avisForm");
+if(!S.user){f.innerHTML='<p class="note">Connectez-vous pour laisser un avis.</p>';return}
+if(isMe){f.innerHTML='<p class="note">Vous ne pouvez pas noter votre propre profil.</p>';return}
+var mine=list.filter(function(r){return r.mail===S.user.mail})[0];
+f.innerHTML='<div class="box"><b>'+(mine?'Modifier votre avis':'Laisser un avis')+'</b><label for="avN">Note</label><select id="avN">'+[5,4,3,2,1].map(function(n){return '<option value="'+n+'"'+((mine?mine.n:5)===n?' selected':'')+'>'+n+' ★</option>'}).join("")+'</select><label for="avT">Votre avis (300 caractères max)</label><textarea id="avT" rows="3" maxlength="300">'+esc(mine?mine.t:"")+'</textarea><div class="row"><button id="avBtn">Publier mon avis</button></div><p class="note" style="margin-top:10px">Vous avez aimé ? <a href="index.html#catalogue">Écoutez ses chansons</a>.</p></div>';
+document.getElementById("avBtn").onclick=function(){var tx=document.getElementById("avT").value.trim(),n=+document.getElementById("avN").value;
+if(!tx){alert("Écrivez votre avis.");return}
+S.reviews=S.reviews||{};S.reviews[name]=(S.reviews[name]||[]).filter(function(r){return r.mail!==S.user.mail});
+S.reviews[name].push({mail:S.user.mail,name:S.user.name,n:n,t:tx.slice(0,300),at:Date.now()});save();drawAvis();};
+}
+render();drawAvis();
 </script>
 </body>
 </html>

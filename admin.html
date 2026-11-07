@@ -200,7 +200,7 @@ function find(k,id){return k==="song"?(S.songs||[]).filter(function(x){return x.
 document.getElementById("pinBtn").onclick=function(){if(document.getElementById("pin").value===ADMIN_PIN){document.getElementById("gate").hidden=true;document.getElementById("panel").hidden=false;draw()}else alert("Code incorrect.")};
 document.getElementById("panel").onclick=function(e){var b=e.target.closest("[data-ok],[data-no]");if(!b)return;
 var ok=!!b.dataset.ok,v=(ok?b.dataset.ok:b.dataset.no).split("|"),x=find(v[0],v[1]);if(!x)return;
-x.vs=ok?"ok":"refused";x.dec=Date.now();save();draw()};
+x.vs=ok?"ok":"refused";x.dec=Date.now();if(ok&&v[0]==="song"){S.autoCert=S.autoCert||{};S.autoCert[x.a]=S.autoCert[x.a]||Date.now()}save();draw()};
 </script>
 </body>
 </html>
