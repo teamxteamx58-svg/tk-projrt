@@ -548,6 +548,10 @@ if(p){locAll().then(function(list){var f=list.filter(function(x){return x.id===p
 var a=$("player");if(window._locUrl)URL.revokeObjectURL(window._locUrl);window._locUrl=URL.createObjectURL(f.blob);a.src=window._locUrl;
 $("pbar").hidden=false;$("pcov").textContent="♪";$("pnow").textContent=f.name+" (fichier du téléphone)";a.play().catch(function(){toast("Lecture impossible pour ce fichier.")})})}};
 drawLocal();
+function previewSong(id){var sx=findSong(id),u=urls[id];if(!u){toast("Extrait indisponible pour cette chanson dans ce navigateur.");return}
+window.previewUrl=u;var a=$("player");a.src=u;a.currentTime=0;$("pbar").hidden=false;$("pcov").textContent=sx?sx.t.charAt(0).toUpperCase():"♪";$("pnow").textContent=(sx?sx.t+" · "+sx.a:"Chanson")+" (extrait 10 s)";a.play().catch(function(){toast("Lecture impossible pour cet extrait.")})}
+$("player").addEventListener("timeupdate",function(){if(window.previewUrl&&this.src===window.previewUrl&&this.currentTime>=10){this.pause();this.currentTime=0;window.previewUrl=null;toast("Extrait terminé. Débloquez la chanson pour l'écouter en entier.")}});
+document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-prev]");if(b)previewSong(b.dataset.prev)});
 function drawMusic(){drawArtists();var me=S.user?S.user.name:"",q=V.q.toLowerCase();
 document.querySelectorAll("[data-f]").forEach(function(b){b.classList.toggle("on",b.dataset.f===V.f)});
 var L=S.songs.filter(vis).filter(function(x){return !q||(x.t+" "+x.a).toLowerCase().indexOf(q)>=0});
@@ -562,7 +566,7 @@ h+='<article class="card" id="s-'+x.id+'">'+cover(x)+'<div class="cb"><div class
 '<div class="art"><a href="artiste.html?n='+encodeURIComponent(x.a)+'">'+esc(x.a)+'</a>'+badgeOf(x.a)+(x.sp&&x.sp.length>1?' feat. '+esc(x.sp.slice(1).map(function(s){return s.n}).join(', ')):'')+(mine?' (vous)':'')+'</div>'+(bio?'<p class="bio">'+esc(bio)+'</p>':'')+(x.cr?'<small class="cr">Crédits : '+esc(x.cr)+'</small>':'')+
 (x.vs==='pending'?'<small class="cr">En attente de validation (sous 48 h)</small>':x.vs==='refused'?'<small class="cr">Refusée : contactez l\'équipe</small>':'')+(x.rel&&x.rel>Date.now()?'<small class="cr">Sortie prévue le '+new Date(x.rel).toLocaleString('fr-FR')+'</small>':'')+'<div class="bar"><i style="width:'+Math.min(100,x.s/GOLD*100)+'%"></i></div><small>'+x.s+' ventes · supprimée dans '+days+' j</small>'+
 '<div class="vote"><button class="alt'+(myv===1?' on':'')+'" data-like="'+x.id+'" aria-label="J\'aime">👍 '+x.lk+'</button><button class="alt'+(myv===-1?' on':'')+'" data-dis="'+x.id+'" aria-label="Je n\'aime pas">👎 '+x.dl+'</button></div>'+
-'<div class="row" style="margin-top:8px">'+(can?'<button data-play="'+x.id+'">Écouter</button>':'<button data-buy="'+x.id+'">Débloquer '+F(priceOf(x))+'</button>'+(subActive()?'<button class="alt" data-play="'+x.id+'">Écouter (abonné)</button>':''))+'</div>'+
+'<div class="row" style="margin-top:8px">'+(can?'<button data-play="'+x.id+'">Écouter</button>':'<button class="alt" data-prev="'+x.id+'">Extrait 10 s</button><button data-buy="'+x.id+'">Débloquer '+F(priceOf(x))+'</button>'+(subActive()?'<button class="alt" data-play="'+x.id+'">Écouter (abonné)</button>':''))+'</div>'+
 '<small><a href="#" data-rep="'+x.id+'">Signaler un plagiat</a>'+(subActive()?' · <a href="#" data-pl="'+x.id+'">+ Playlist</a>':'')+'</small>'+
 '<button class="alt" data-cm="'+x.id+'" style="margin-top:6px">💬 Commentaires ('+x.cm.length+')</button>'+(V.open[x.id]?cmPanel(x):'')+'</div></article>'});
 $("list").innerHTML=h||'<p class="note">Aucune chanson trouvée.</p>'}
@@ -643,7 +647,7 @@ function drawPl(){var ok=S.user&&subActive();$("plMake").hidden=!ok;
 $("plInfo").textContent=!S.user?"Connectez-vous pour voir vos playlists.":ok?"Ajoutez des chansons avec le lien « + Playlist » sous chaque chanson.":"Les playlists sont réservées aux abonnés. Prenez un abonnement pour en créer.";
 var h="";plOf().forEach(function(p){h+='<div class="box" style="margin-bottom:10px"><b>'+esc(p.name)+'</b> <small class="note">('+p.ids.length+' titres)</small> · <a href="#" data-delpl="'+p.id+'">Supprimer</a>';
 p.ids.forEach(function(id){var x=S.songs.filter(function(s){return s.id===id&&vis(s)})[0];if(!x)return;var can=S.owned[id]||subActive();
-h+='<div class="song" style="margin:8px 0 0">'+cover(x)+'<div class="t"><b>'+esc(x.t)+'</b><small>'+esc(x.a)+'</small></div>'+(can?'<button data-play="'+x.id+'">Écouter</button>':'<button data-buy="'+x.id+'">Débloquer '+F(priceOf(x))+'</button>')+'<button class="alt" data-rm="'+p.id+'|'+x.id+'">Retirer</button></div>'});
+h+='<div class="song" style="margin:8px 0 0">'+cover(x)+'<div class="t"><b>'+esc(x.t)+'</b><small>'+esc(x.a)+'</small></div>'+(can?'<button data-play="'+x.id+'">Écouter</button>':'<button class="alt" data-prev="'+x.id+'">Extrait 10 s</button><button data-buy="'+x.id+'">Débloquer '+F(priceOf(x))+'</button>')+'<button class="alt" data-rm="'+p.id+'|'+x.id+'">Retirer</button></div>'});
 h+='</div>'});$("plList").innerHTML=h}
 function openPl(id){if(!S.user||!subActive()){toast("Les playlists sont réservées aux abonnés.");return}
 plTarget=id;$("plSel").innerHTML='<option value="">Choisir…</option>'+plOf().map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>'}).join("");$("plNew").value="";$("dPl").showModal()}
