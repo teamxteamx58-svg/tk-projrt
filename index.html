@@ -193,6 +193,7 @@ header .wrap{gap:8px}
 <p class="note">Les morceaux de démonstration n'ont pas de fichier audio : la lecture est simulée. Les morceaux que vous ajoutez se lisent vraiment.</p></section>
 </div>
 <div class="view" id="v-playlist" hidden>
+<section id="nativeSec" hidden><div class="sh"><h2>Musiques trouvées sur ce téléphone</h2></div><div class="box"><div class="row" style="margin:0 0 10px"><button id="nativeAsk" class="alt" hidden>Autoriser l'accès à ma musique</button></div><div id="nativeList"></div></div></section>
 <section><div class="sh"><h2>Mes musiques du téléphone</h2></div><p class="note">Créez des playlists avec vos fichiers audio. Ils restent dans cet appareil et se lisent sans abonnement. Ces écoutes ne sont comptées pour aucun artiste.</p>
 <div class="row" style="margin:0 0 12px"><input id="locPlName" placeholder="Nom de la playlist" maxlength="40" style="flex:1 1 200px;width:auto"><button id="locPlBtn">Créer</button></div>
 <div id="locPlList"></div></section>
@@ -563,6 +564,19 @@ function previewSong(id){var sx=findSong(id),u=urls[id];if(!u){toast("Extrait in
 window.previewUrl=u;var a=$("player");a.src=u;a.currentTime=0;$("pbar").hidden=false;$("pcov").textContent=sx?sx.t.charAt(0).toUpperCase():"♪";$("pnow").textContent=(sx?sx.t+" · "+sx.a:"Chanson")+" (extrait 10 s)";a.play().catch(function(){toast("Lecture impossible pour cet extrait.")})}
 $("player").addEventListener("timeupdate",function(){if(window.previewUrl&&this.src===window.previewUrl&&this.currentTime>=10){this.pause();this.currentTime=0;window.previewUrl=null;toast("Extrait terminé. Débloquez la chanson pour l'écouter en entier.")}});
 document.addEventListener("click",function(e){var b=e.target.closest&&e.target.closest("[data-prev]");if(b)previewSong(b.dataset.prev)});
+function nativeDraw(){if(!window.BzNative)return;var ok=BzNative.hasPermission();$("nativeSec").hidden=false;$("nativeAsk").hidden=ok;
+if(!ok){$("nativeList").innerHTML='<p class="note">Autorisez l\'accès à la musique pour voir les morceaux de ce téléphone.</p>';return}
+var list=JSON.parse(BzNative.listAudio()||"[]");
+$("nativeList").innerHTML=list.length?list.map(function(m){var ti=m.title||"Sans titre";return '<div class="song" style="margin:8px 0 0">'+cover({t:ti,a:m.artist||""})+'<div class="t"><b>'+esc(ti)+'</b><small>'+esc(m.artist||"Téléphone")+'</small></div><button data-nat="'+m.id+'">Écouter</button></div>'}).join(""):'<p class="note">Aucun morceau trouvé sur ce téléphone.</p>'}
+$("nativeAsk").onclick=function(){if(window.BzNative)BzNative.requestPermission()};
+window.bzOnPerm=function(){nativeDraw()};
+$("nativeList").onclick=function(e){var b=e.target.closest("[data-nat]");if(!b||!window.BzNative)return;var b64=BzNative.readAudio(Number(b.dataset.nat));
+if(!b64){toast("Lecture impossible pour ce morceau.");return}
+var bin=atob(b64),u=new Uint8Array(bin.length);for(var i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);
+var url=URL.createObjectURL(new Blob([u]));if(window._natUrl)URL.revokeObjectURL(window._natUrl);window._natUrl=url;
+var a=$("player");a.src=url;$("pbar").hidden=false;$("pcov").textContent="♪";$("pnow").textContent=b.closest(".song").querySelector("b").textContent+" (téléphone)";
+a.play().catch(function(){toast("Lecture impossible.")})};
+if(window.BzNative){if(!BzNative.hasPermission()){var asked=false;try{asked=!!localStorage.getItem("bzAsked");localStorage.setItem("bzAsked","1")}catch(e){}if(!asked)BzNative.requestPermission()}nativeDraw()}
 function drawMusic(){drawArtists();var me=S.user?S.user.name:"",q=V.q.toLowerCase();
 document.querySelectorAll("[data-f]").forEach(function(b){b.classList.toggle("on",b.dataset.f===V.f)});
 var L=S.songs.filter(vis).filter(function(x){return !q||(x.t+" "+x.a).toLowerCase().indexOf(q)>=0});

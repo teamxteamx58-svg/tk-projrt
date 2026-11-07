@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.BassariZik" parent="Theme.AppCompat.NoActionBar">
+        <item name="android:colorBackground">#050D0C</item>
+        <item name="android:statusBarColor">#0E3B34</item>
+    </style>
+</resources>
