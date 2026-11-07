@@ -308,12 +308,12 @@ var top=S.songs.reduce(function(m,x){return x.s>m.s?x:m},{s:0,t:"",a:""});
 var p=Math.min(100,top.s/GOLD*100);$("disc").style.setProperty("--p",p+"%");
 $("discTxt").textContent=top.s>=GOLD?"Disque d'or : "+top.t:top.s+" / "+GOLD+" ventes";
 $("authBtn").hidden=!!S.user;renderParams();
-var g=0,pend=0,lim=Date.now()+(S.skip||0)*864e5-30*864e5;
+var g=0,pend=0,lim=Date.now()+(S.skip||0)*864e5-864e5;
 var art=S.user&&S.user.role==="artiste";
 if(art)S.songs.forEach(function(x){if(!x.own)return;var sh=shareOf(x,S.user.name);if(!sh)return;(x.ts||[]).forEach(function(t){var amt=Math.round(priceOf(x)*.75*sh);if(t<=lim)g+=amt;else pend+=amt})});
 if(art)S.events.forEach(function(e){if(e.own&&e.a===S.user.name)(e.ts||[]).forEach(function(t){var m=Math.round(e.price*.9);if(t<=lim)g+=m;else pend+=m})});
 if(art)(S.albums||[]).forEach(function(al){if(al.a!==S.user.name)return;al.ts.forEach(function(t){var amt=Math.round(al.pr*.75);if(t<=lim)g+=amt;else pend+=amt})});
-if(art)g+=(S.subEarn||{})[S.user.name]||0;
+if(art)(S.subLog||[]).forEach(function(e){if(e.a!==S.user.name)return;if(e.at<=lim)g+=e.amt;else pend+=e.amt});
 window.avail=g-(S.paid||0);
 var eh="";S.events.filter(function(e){return new Date(e.date+"T23:59:59")>=now}).forEach(function(e){var left=e.cap-e.sold;
 eh+='<div class="song">'+cover(e)+'<div class="t"><b>'+esc(e.t)+'</b><small>'+esc(e.a)+' · '+esc(e.place)+' · '+new Date(e.date).toLocaleDateString("fr-FR")+'</small><small>'+F(e.price)+' · '+(left>0?left+' places restantes':'Complet')+'</small></div>'+(left>0?'<button data-tk="'+e.id+'">Acheter un billet</button>':'')+'</div>'});
@@ -323,7 +323,7 @@ $("myTk").innerHTML=S.user?(th||"Vous n'avez pas encore de billet."):"Connectez-
 
 if(S.user&&$("bio").dataset.u!==S.user.name){$("bio").value=S.bios[S.user.name]||"";$("bio").dataset.u=S.user.name}
 if(!S.user)$("bio").dataset.u="";
-$("gains").textContent=art?"Disponibles : "+F(window.avail)+" · en attente (30 jours max) : "+F(pend)+" · déjà retirés : "+F(S.paid||0):"";
+$("gains").textContent=art?"Disponibles : "+F(window.avail)+" · en attente (se débloquent après 24 h) : "+F(pend)+" · déjà retirés : "+F(S.paid||0):"";
 $("cashBtn").hidden=!art;$("skipBtn").hidden=!art;
 $("subInfo").textContent=subActive()?"Abonnement actif jusqu'au "+new Date(S.sub).toLocaleDateString("fr-FR"):"";
 drawMusic();drawRails();drawPl();drawAlbForm();drawCert();drawTrophy()}
@@ -569,7 +569,7 @@ var k=S.user.mail+"|"+id,c=S.credits[k]||0,pool=S.subPool[S.user.mail],fromSub=f
 if(c<=0){if(subActive()&&pool&&pool.left>0&&!S.owned[id])fromSub=true;else return}
 var day=new Date().toDateString();if(S.plays.some(function(p){return p.k===k&&p.d===day}))return;
 var arts=artistsOf(x);
-if(fromSub){pool.left-=1;arts.forEach(function(n){S.subEarn[n]=(S.subEarn[n]||0)+Math.round(15/arts.length)})}else{S.credits[k]=c-1;if(c-1===0)toast("Vos 10 écoutes offertes à l'artiste sont utilisées. Merci !")}
+if(fromSub){pool.left-=1;S.subLog=S.subLog||[];arts.forEach(function(n){S.subLog.push({a:n,amt:Math.round(15/arts.length),at:Date.now()})})}else{S.credits[k]=c-1;if(c-1===0)toast("Vos 10 écoutes offertes à l'artiste sont utilisées. Merci !")}
 arts.forEach(function(n){S.plays.push({k:k,id:id,a:n,at:Date.now(),d:day});S.listens[n]=(S.listens[n]||0)+1});
 if(fromSub&&pool.left===0)toast("Vos 100 écoutes d'abonnement sont utilisées ce mois-ci. Merci !");save()}
 function plOf(){return S.user?S.playlists.filter(function(p){return p.mail===S.user.mail}):[]}
