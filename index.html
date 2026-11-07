@@ -175,6 +175,7 @@ body.has-player{padding-bottom:190px}
 <div id="plList"></div></section>
 </div>
 <div class="view" id="v-actu" hidden>
+<section><div class="sh"><h2>Trophées de la musique</h2></div><div id="troph"></div></section>
 <section><h2>Actualités</h2><p class="note">Événements, sorties et classement du mois.</p><div class="row"><a class="btn" href="top.html">Voir le Top du mois</a></div></section>
 <section id="billetterie"><h2>Billetterie</h2><div id="evList"></div>
 <h3>Mes billets</h3><div id="myTk" class="note">Connectez-vous pour voir vos billets.</div>
@@ -254,7 +255,7 @@ if(!S.songs||!S.songs.length){S.songs=[
 {id:"d5",t:"Vieille chanson",a:"Yao Tem",s:970,at:now-400*864e5}];S.owned={}}
 S.songs=S.songs.filter(function(x){return now-x.at<YEAR});
 if(!S.events)S.events=[{id:"e1",t:"Concert Bassar en fête",a:"Kossi Mawuli",place:"Place de l'Indépendance, Bassar",date:"2026-12-20",price:2000,cap:300,sold:120,ts:[]},{id:"e2",t:"Soirée Afro-Zik",a:"DJ Tchaa",place:"Lomé",date:"2026-11-14",price:5000,cap:150,sold:150,ts:[]}];
-S.tickets=S.tickets||[];S.albums=S.albums||[];S.photos=S.photos||{};S.promo=S.promo||{};S.autoCert=S.autoCert||{};S.reviews=S.reviews||{};S.playlists=S.playlists||[];S.host=S.host||{};S.votes=S.votes||{};
+S.tickets=S.tickets||[];S.albums=S.albums||[];S.photos=S.photos||{};S.promo=S.promo||{};S.autoCert=S.autoCert||{};S.reviews=S.reviews||{};S.eds=S.eds||[];S.playlists=S.playlists||[];S.host=S.host||{};S.votes=S.votes||{};
 S.bios=S.bios||{"Kossi Mawuli":"Chanteur originaire de Bassar. Il mêle rythmes traditionnels et sons modernes.","Abla Tchalim":"Auteure-compositrice. Ses textes parlent de sagesse et de mémoire.","DJ Tchaa":"DJ et producteur de Sokodé. Spécialiste des soirées afro."};
 var DM={d1:["Son : Koffi A. · Mixage : Ama T.",34,2],d2:["Enregistrement : Studio Nawdm · Mastering : Yao P.",21,1],d3:["Mixage : DJ Tchaa",12,0],d4:["Son : Efua K.",5,0],d5:["Mixage : Studio Tem",18,3]};
 S.songs.forEach(function(x){if(x.lk==null){var d=DM[x.id];x.lk=d?d[1]:0;x.dl=d?d[2]:0;if(d&&!x.cr)x.cr=d[0]}x.dl=x.dl||0;x.cm=x.cm||[]});
@@ -293,7 +294,7 @@ if(!S.user)$("bio").dataset.u="";
 $("gains").textContent=art?"Disponibles : "+F(window.avail)+" · en attente (30 jours max) : "+F(pend)+" · déjà retirés : "+F(S.paid||0):"";
 $("cashBtn").hidden=!art;$("skipBtn").hidden=!art;
 $("subInfo").textContent=subActive()?"Abonnement actif jusqu'au "+new Date(S.sub).toLocaleDateString("fr-FR"):"";
-drawMusic();drawRails();drawPl();drawAlbForm();drawCert()}
+drawMusic();drawRails();drawPl();drawAlbForm();drawCert();drawTrophy()}
 function need(){if(!S.user){toast("Créez d'abord un compte.");$("dAuth").showModal();return false}return true}
 var pending=null;
 function ask(txt,fn){if(!need())return;pending=fn;$("pWhat").textContent=txt;$("dPay").showModal()}
@@ -398,6 +399,29 @@ if(!st){box.textContent="Pas encore certifié. Il suffit d'une chanson validée,
 var end=st+7*864e5;box.textContent=end<=Date.now()?"Vous êtes certifié ✔":"Publicité en cours : badge dans "+Math.ceil((end-Date.now())/864e5)+" j."}
 $("certBtn").onclick=function(){if(!need())return;if(S.user.role!=="artiste"){toast("Réservé aux comptes artiste.");return}
 ask("Publicité de 7 jours : 5 000 F",function(){S.promo[S.user.name]=Date.now();save();render();toast("Publicité lancée. Votre badge vert arrive dans 7 jours.")})};
+function edNow(){var n=Date.now();var cur=(S.eds||[]).filter(function(e){return e.start<=n&&e.end>=n})[0];return cur||(S.eds||[]).slice().sort(function(a,b){return b.start-a.start})[0]}
+function trCount(ed,cat,a){var f=0,fr=(ed.free||{})[cat]||{};Object.keys(fr).forEach(function(m){if(fr[m]===a)f++});return f+(((ed.paid||{})[cat]||{})[a]||0)}
+function drawTrophy(){var box=$("troph");if(!box)return;var ed=edNow();
+if(!ed){box.innerHTML='<p class="note">Aucune édition de trophées pour le moment.</p>';return}
+var open=Date.now()<=ed.end,mail=S.user?S.user.mail:"",me=S.user?S.user.name:"";
+var h='<div class="box"><b>'+esc(ed.name)+'</b><div class="note">Du '+new Date(ed.start).toLocaleDateString("fr-FR")+' au '+new Date(ed.end).toLocaleDateString("fr-FR")+(open?' · vote ouvert':' · vote clos')+' · vote payant : '+F(ed.price)+' par vote. Un vote gratuit par catégorie.</div></div>';
+ed.cats.forEach(function(c){var mine=mail?(ed.free[c.id]||{})[mail]:"";
+var rows=c.nom.map(function(a){return {a:a,n:trCount(ed,c.id,a)}}).sort(function(x,y){return y.n-x.n});
+var win=!open&&rows.length&&rows[0].n>0?rows[0].a:"";
+h+='<div class="box" style="margin-top:12px"><h3 style="margin:0 0 6px">'+esc(c.name)+'</h3>';
+rows.forEach(function(r,i){var isMine=mine===r.a,voted=!!mine;var key=esc(ed.id+"|"+c.id+"|"+r.a);
+h+='<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid #222;flex-wrap:wrap"><span style="width:20px;color:#E4B23C;font-weight:800">'+(i+1)+'</span><div style="flex:1;min-width:200px"><a href="artiste.html?n='+encodeURIComponent(r.a)+'">'+esc(r.a)+'</a>'+(r.a===win?' <span class="tag">Lauréat</span>':'')+'<small class="note"> · '+r.n+' vote(s)</small></div>'
++(open&&r.a!==me?'<button class="alt" data-tfree="'+key+'" '+(voted?'disabled':'')+'>'+(isMine?'Votre vote ✔':voted?'Déjà voté':'Voter gratuitement')+'</button><button data-tpay="'+key+'">+1 vote ('+F(ed.price)+')</button>':'')+'</div>'});
+h+='</div>'});
+box.innerHTML=h}
+$("troph").onclick=function(e){var b=e.target.closest("[data-tfree],[data-tpay]");if(!b||b.disabled)return;if(!need())return;
+var parts=(b.dataset.tfree||b.dataset.tpay).split("|"),ed=(S.eds||[]).filter(function(x){return x.id===parts[0]})[0];if(!ed)return;
+var cat=parts[1],artist=parts.slice(2).join("|");
+if(artist===S.user.name){toast("Vous ne pouvez pas voter pour vous-même.");return}
+if(b.dataset.tfree){ed.free=ed.free||{};ed.free[cat]=ed.free[cat]||{};if(ed.free[cat][S.user.mail]){toast("Vous avez déjà voté dans cette catégorie.");return}
+ed.free[cat][S.user.mail]=artist;save();drawTrophy();toast("Merci, votre vote gratuit est enregistré.");return}
+ask("Vote payant pour "+artist+" : "+F(ed.price),function(){ed.paid=ed.paid||{};ed.paid[cat]=ed.paid[cat]||{};ed.paid[cat][artist]=(ed.paid[cat][artist]||0)+1;save();drawTrophy();toast("Vote payant enregistré.")})};
+
 function drawAlbForm(){var box=$("alTracks");if(!box)return;var me=S.user&&S.user.role==="artiste"?S.user.name:"";
 var mine=S.songs.filter(function(x){return x.own&&x.a===me});
 var sig=me+"|"+mine.map(function(x){return x.id}).join();if(sig===drawAlbForm.s)return;drawAlbForm.s=sig;

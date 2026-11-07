@@ -178,6 +178,14 @@ a{color:inherit}
 <h2>En attente</h2><div id="pend"></div>
 <h2 style="margin-top:24px">Décisions récentes</h2><div id="done"></div>
 </div>
+<h2 style="margin-top:28px">Trophées : créer une édition</h2>
+<div class="box"><label for="tName">Nom de l'édition</label><input id="tName" maxlength="80" placeholder="Ex. Trophées BASSARI-ZIK 2026">
+<label for="tStart">Début du vote</label><input id="tStart" type="date">
+<label for="tEnd">Fin du vote</label><input id="tEnd" type="date">
+<label for="tPrice">Prix d'un vote payant (F)</label><input id="tPrice" type="number" min="0" step="50" value="100">
+<label for="tCats">Catégories : une par ligne, au format « Catégorie | artiste 1, artiste 2 »</label>
+<textarea id="tCats" rows="6" placeholder="Meilleur artiste | Kossi Mawuli, Abla Tchalim&#10;Révélation | DJ Tchaa, Efua K."></textarea>
+<div class="row"><button id="tBtn">Créer l'édition</button></div><p id="tMsg" class="note"></p></div>
 </main>
 <script>
 var KEY="bassarizik1",ADMIN_PIN="2026";
@@ -197,6 +205,13 @@ document.getElementById("pend").innerHTML=pend.length?pend.map(function(i){retur
 document.getElementById("done").innerHTML=done.length?done.map(function(i){return row(i,false)}).join(""):'<p class="note">Aucune décision.</p>';
 }
 function find(k,id){return k==="song"?(S.songs||[]).filter(function(x){return x.id===id})[0]:(S.albums||[]).filter(function(x){return x.id===id})[0]}
+document.getElementById("tBtn").onclick=function(){
+var name=document.getElementById("tName").value.trim(),s=new Date(document.getElementById("tStart").value+"T00:00").getTime(),e=new Date(document.getElementById("tEnd").value+"T23:59:59").getTime(),price=Math.round(+document.getElementById("tPrice").value);
+var cats=document.getElementById("tCats").value.split("\n").map(function(l){return l.trim()}).filter(Boolean).map(function(l){var p=l.split("|");return {name:(p[0]||"").trim(),nom:(p[1]||"").split(",").map(function(x){return x.trim()}).filter(Boolean)}}).filter(function(c){return c.name&&c.nom.length});
+if(!name||!s||!e||e<s||!(price>=0)){alert("Nom, dates (fin après début) et prix sont obligatoires.");return}
+if(!cats.length){alert("Ajoutez au moins une catégorie avec un artiste.");return}
+S.eds=S.eds||[];S.eds.push({id:"ed"+Date.now(),name:name,start:s,end:e,price:price,cats:cats.map(function(c,i){return {id:"c"+i,name:c.name,nom:c.nom}}),free:{},paid:{}});
+save();document.getElementById("tMsg").textContent="Édition « "+name+" » créée : "+cats.length+" catégorie(s).";}
 document.getElementById("pinBtn").onclick=function(){if(document.getElementById("pin").value===ADMIN_PIN){document.getElementById("gate").hidden=true;document.getElementById("panel").hidden=false;draw()}else alert("Code incorrect.")};
 document.getElementById("panel").onclick=function(e){var b=e.target.closest("[data-ok],[data-no]");if(!b)return;
 var ok=!!b.dataset.ok,v=(ok?b.dataset.ok:b.dataset.no).split("|"),x=find(v[0],v[1]);if(!x)return;
