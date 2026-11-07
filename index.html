@@ -217,6 +217,7 @@ header .wrap{gap:8px}
 <section id="artiste"><h2>Espace artiste</h2>
 <div class="box">
 <p>Chaque chanson et chaque album sont vérifiés par notre équipe avant publication. La validation se fait sous 48 h.</p>
+<label for="nName">Mon nom de scène (2 à 30 caractères)</label><div class="row" style="margin:0 0 10px"><input id="nName" maxlength="30" autocomplete="nickname" placeholder="Votre nom de scène"><button id="nameBtn" class="alt">Enregistrer le nom</button></div>
 <label for="bio">Ma biographie (3 lignes maximum)</label><textarea id="bio" rows="3" maxlength="240"></textarea>
 <div class="row" style="margin:6px 0 12px"><button id="bioBtn" class="alt">Enregistrer ma bio</button></div><div class="box" style="margin:0 0 12px"><h3>Badge artiste certifié <span class="vb" aria-hidden="true">✔</span></h3><p class="note">Votre badge vert est automatique : il arrive 7 jours après la publication de votre première chanson validée.</p><div id="certInfo" style="font-weight:600"></div><div id="discBox" style="margin-top:8px"></div></div><label for="phFile">Photo de profil (facultatif)</label><input id="phFile" type="file" accept="image/*"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="phOk" style="width:auto;margin-top:5px">J'accepte que cette photo soit affichée publiquement sur mon profil artiste.</label><div class="row" style="margin:0 0 12px"><button id="phBtn" class="alt">Enregistrer la photo</button></div>
 <p id="gains" style="font-weight:600"></p>
@@ -325,6 +326,8 @@ $("evList").innerHTML=eh||'<p class="note">Aucun événement pour le moment.</p>
 var th="";if(S.user)S.tickets.filter(function(t){return t.mail===S.user.mail}).forEach(function(t){th+='<div class="song"><div class="t"><b>'+esc(t.title)+'</b><small>'+new Date(t.date).toLocaleDateString("fr-FR")+'</small></div><span class="gold">'+t.code+'</span></div>'});
 $("myTk").innerHTML=S.user?(th||"Vous n'avez pas encore de billet."):"Connectez-vous pour voir vos billets.";
 
+if(S.user&&$("nName").dataset.u!==S.user.name){$("nName").value=S.user.name;$("nName").dataset.u=S.user.name}
+if(!S.user)$("nName").dataset.u="";
 if(S.user&&$("bio").dataset.u!==S.user.name){$("bio").value=S.bios[S.user.name]||"";$("bio").dataset.u=S.user.name}
 if(!S.user)$("bio").dataset.u="";
 $("gains").textContent=art?"Disponibles : "+F(window.avail)+" · en attente (se débloquent après 24 h) : "+F(pend)+" · déjà retirés : "+F(S.paid||0):"";
@@ -565,6 +568,20 @@ $("phBtn").onclick=function(){if(!need())return;if(S.user.role!=="artiste"){toas
 var f=$("phFile").files[0];if(!f){toast("Choisissez une photo.");return}
 if(!$("phOk").checked){toast("Cochez l'accord pour afficher la photo sur votre profil.");return}
 makeCover(f,function(cv){if(!cv){toast("Photo illisible.");return}S.photos[S.user.name]=cv;$("phFile").value="";$("phOk").checked=false;save();render();toast("Photo de profil enregistrée.")})};
+function renameArtist(nu){var ou=S.user.name;if(nu===ou)return true;
+var taken=[];(S.songs||[]).forEach(function(x){taken.push(x.a);(x.sp||[]).forEach(function(p){taken.push(p.n)})});(S.albums||[]).forEach(function(al){taken.push(al.a)});Object.keys(S.bios||{}).forEach(function(k){taken.push(k)});
+if(taken.indexOf(nu)>=0){toast("Ce nom est déjà utilisé par un autre artiste.");return false}
+var R=function(s){return s===ou?nu:s};
+(S.songs||[]).forEach(function(x){x.a=R(x.a);(x.sp||[]).forEach(function(p){p.n=R(p.n)})});
+(S.albums||[]).forEach(function(al){al.a=R(al.a)});(S.events||[]).forEach(function(e){e.a=R(e.a)});
+["bios","photos","autoCert","wallet","units","listens","subEarn","reviews","promo"].forEach(function(k){if(S[k]&&Object.prototype.hasOwnProperty.call(S[k],ou)){S[k][nu]=S[k][ou];delete S[k][ou]}});
+(S.plays||[]).forEach(function(p){p.a=R(p.a)});(S.subLog||[]).forEach(function(e){e.a=R(e.a)});(S.withdrawals||[]).forEach(function(w){w.a=R(w.a)});(S.subLog||[]);
+(S.eds||[]).forEach(function(ed){(ed.cats||[]).forEach(function(c){c.nom=c.nom.map(R);var pd=(ed.paid||{})[c.id];if(pd&&Object.prototype.hasOwnProperty.call(pd,ou)){pd[nu]=pd[ou];delete pd[ou]}});
+Object.keys(ed.free||{}).forEach(function(cat){Object.keys(ed.free[cat]).forEach(function(m){if(ed.free[cat][m]===ou)ed.free[cat][m]=nu})})});
+S.user.name=nu;save();return true}
+$("nameBtn").onclick=function(){if(!need())return;if(S.user.role!=="artiste"){toast("Réservé aux comptes artiste.");return}
+var n=$("nName").value.trim().replace(/\s+/g," ");if(n.length<2||n.length>30){toast("Le nom doit faire entre 2 et 30 caractères.");return}
+if(renameArtist(n)){$("nName").dataset.u="";render();toast("Nom de scène enregistré : "+n)}};
 $("bioBtn").onclick=function(){if(!need())return;if(S.user.role!=="artiste"){toast("Réservé aux comptes artiste.");return}
 var b=$("bio").value.trim();if(b.split("\n").length>3||b.length>240){toast("Biographie : 3 lignes et 240 caractères maximum.");return}
 S.bios[S.user.name]=b;save();render();toast("Biographie enregistrée.")};
