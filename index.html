@@ -196,7 +196,7 @@ body.has-player{padding-bottom:190px}
 <div class="box">
 <p>Chaque chanson et chaque album sont vérifiés par notre équipe avant publication. La validation se fait sous 48 h.</p>
 <label for="bio">Ma biographie (3 lignes maximum)</label><textarea id="bio" rows="3" maxlength="240"></textarea>
-<div class="row" style="margin:6px 0 12px"><button id="bioBtn" class="alt">Enregistrer ma bio</button></div><div class="box" style="margin:0 0 12px"><h3>Badge artiste certifié <span class="vb" aria-hidden="true">✔</span></h3><p class="note">Votre badge vert est automatique : il arrive 7 jours après la publication de votre première chanson validée.</p><div id="certInfo" style="font-weight:600"></div></div><label for="phFile">Photo de profil (facultatif)</label><input id="phFile" type="file" accept="image/*"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="phOk" style="width:auto;margin-top:5px">J'accepte que cette photo soit affichée publiquement sur mon profil artiste.</label><div class="row" style="margin:0 0 12px"><button id="phBtn" class="alt">Enregistrer la photo</button></div>
+<div class="row" style="margin:6px 0 12px"><button id="bioBtn" class="alt">Enregistrer ma bio</button></div><div class="box" style="margin:0 0 12px"><h3>Badge artiste certifié <span class="vb" aria-hidden="true">✔</span></h3><p class="note">Votre badge vert est automatique : il arrive 7 jours après la publication de votre première chanson validée.</p><div id="certInfo" style="font-weight:600"></div><div id="disc" style="margin-top:8px"></div></div><label for="phFile">Photo de profil (facultatif)</label><input id="phFile" type="file" accept="image/*"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="phOk" style="width:auto;margin-top:5px">J'accepte que cette photo soit affichée publiquement sur mon profil artiste.</label><div class="row" style="margin:0 0 12px"><button id="phBtn" class="alt">Enregistrer la photo</button></div>
 <p id="gains" style="font-weight:600"></p>
 <div class="row" style="margin:0 0 8px"><button id="cashBtn" class="alt" hidden>Retirer mes gains</button><button id="skipBtn" class="alt" hidden>Test : avancer de 30 jours</button></div>
 <label for="fTitle">Titre</label><input id="fTitle" maxlength="60">
@@ -301,7 +301,10 @@ function ask(txt,fn){if(!need())return;pending=fn;$("pWhat").textContent=txt;$("
 function priceOf(x){return (x&&x.pr)||200}
 function shareOf(x,name){if(!x.sp)return x.a===name?1:0;var e=x.sp.filter(function(s){return s.n===name})[0];return e?e.p/100:0}
 function artistsOf(x){return x.sp?x.sp.map(function(s){return s.n}):[x.a]}
-function sale(id){var x=S.songs.filter(function(s){return s.id===id})[0];if(x&&!S.owned[id]){var w=priceOf(x)>=2500?10:1;x.s+=w;S.owned[id]=1;if(x.own){x.ts=x.ts||[];x.ts.push(Date.now())}S.sales=S.sales||[];artistsOf(x).forEach(function(n){for(var k=0;k<w;k++)S.sales.push({id:id,a:n,at:Date.now()})})}}
+function sale(id){var x=S.songs.filter(function(s){return s.id===id})[0];if(x&&!S.owned[id]){var w=priceOf(x)>=2500?10:1;x.s+=w;S.owned[id]=1;if(x.own){x.ts=x.ts||[];x.ts.push(Date.now())}S.sales=S.sales||[];S.units=S.units||{};artistsOf(x).forEach(function(n){S.units[n]=(S.units[n]||0)+1;for(var k=0;k<w;k++)S.sales.push({id:id,a:n,at:Date.now()})})}}
+var DISQUES=[{n:500,t:"Disque d'or"},{n:1500,t:"Disque de platine"},{n:10000,t:"Disque de diamant"}];
+function discOf(n){var c=((S.units||{})[n])||0,best=null;DISQUES.forEach(function(d){if(c>=d.n)best=d});return best?'<span class="disc" style="display:inline-block;background:#E4B23C;color:#0E3B34;padding:4px 12px;border-radius:999px;font-weight:800;font-size:13px;margin:4px 0">'+best.t+'</span>':""}
+function drawDisc(){var d=$("disc");if(d&&S.user&&S.user.role==="artiste")d.innerHTML=discOf(S.user.name)}
 var sb=supabase.createClient("https://loqxgegixjnrfiihthjq.supabase.co","sb_publishable_ei0GgZ26l3KJv8qTCWS3Cg_iizOBYgR");
 var authMode="signup";
 function setAuthMode(m){authMode=m;var s=m==="signup";$("aTitle").textContent=s?"Créer un compte":"Se connecter";$("aSignFields").hidden=!s;$("aAccWrap").hidden=!s;$("aOk").textContent=s?"Créer mon compte":"Se connecter";$("aSwitch").textContent=s?"J'ai déjà un compte":"Créer un compte"}
@@ -390,7 +393,7 @@ if(im&&!$("evRight").checked){toast("Certifiez avoir le droit d'utiliser la phot
 makeWide(im,function(cv){S.events.push({id:"e"+Date.now(),t:t,a:S.user.name,place:p,date:d,price:pr,cap:c,sold:0,ts:[],own:1,cv:cv});
 ["evT","evP","evD","evPr","evC","evImg"].forEach(function(i){$(i).value=""});$("evRight").checked=false;save();render();toast("Événement publié.")})};
 function badgeOf(n){var a=(S.autoCert||{})[n];return (a&&a+7*864e5<=Date.now())?'<span class="vb" title="Artiste certifié" aria-label="Artiste certifié">✔</span>':''}
-function drawCert(){var box=$("certInfo");if(!box)return;var art=!!(S.user&&S.user.role==="artiste");
+function drawCert(){drawDisc();var box=$("certInfo");if(!box)return;var art=!!(S.user&&S.user.role==="artiste");
 if(!art){box.textContent="";return}
 var a=(S.autoCert||{})[S.user.name];
 if(!a){box.textContent="Pas encore certifié. Publiez votre première chanson : le badge arrive 7 jours après sa validation.";return}

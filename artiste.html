@@ -197,6 +197,8 @@ function rankOf(){var m=new Date().toISOString().slice(0,7),a={};
 (S.sales||[]).forEach(function(q){if(new Date(q.at).toISOString().slice(0,7)!==m)return;a[q.a]=a[q.a]||0;a[q.a]+=10});
 (S.plays||[]).forEach(function(q){if(new Date(q.at).toISOString().slice(0,7)!==m)return;a[q.a]=a[q.a]||0;a[q.a]+=1});
 var arr=Object.keys(a).sort(function(x,y){return a[y]-a[x]});var i=arr.indexOf(name);return {pos:i<0?0:i+1,score:a[name]||0}}
+var DISQUES=[{n:500,t:"Disque d'or"},{n:1500,t:"Disque de platine"},{n:10000,t:"Disque de diamant"}];
+function discOf(n){var c=((S.units||{})[n])||0,best=null;DISQUES.forEach(function(d){if(c>=d.n)best=d});return best?'<span class="disc" style="display:inline-block;background:#E4B23C;color:#0E3B34;padding:4px 12px;border-radius:999px;font-weight:800;font-size:13px;margin:4px 0">'+best.t+'</span>':""}
 function render(){
 if(!name){document.getElementById("prof").innerHTML='<p class="note">Aucun artiste sélectionné.</p>';return}
 var photo=(S.photos||{})[name];
@@ -207,7 +209,7 @@ var sales=(S.songs||[]).filter(function(x){return shareOf(x,name)>0}).reduce(fun
 var r=rankOf();
 document.title=name+" · BASSARI-ZIK";
 document.getElementById("prof").innerHTML=(photo?'<img class="ph" alt="Photo de '+escA(name)+'" src="'+photo+'" style="object-fit:cover">':'<div class="ph" aria-hidden="true">'+esc(name.charAt(0).toUpperCase())+'</div>')
-+'<h1>'+esc(name)+badgeOf(name)+'</h1>'
++'<h1>'+esc(name)+badgeOf(name)+'</h1>'+discOf(name)
 +(bio?'<p class="bio2">'+esc(bio)+'</p>':'<p class="note">Cet artiste n\'a pas encore écrit sa biographie.</p>')
 +'<div class="stats2"><div><b>'+songs.length+'</b><small>chansons</small></div><div><b>'+albums.length+'</b><small>albums</small></div><div><b>'+sales+'</b><small>ventes</small></div>'+(r.pos?'<div><b>#'+r.pos+'</b><small>Top du mois</small></div>':'')+'</div>';
 document.getElementById("songs").innerHTML=songs.length?songs.map(function(x){var feat=x.sp&&x.sp.length>1?' · feat. '+x.sp.slice(1).map(function(s){return esc(s.n)}).join(', '):'';
