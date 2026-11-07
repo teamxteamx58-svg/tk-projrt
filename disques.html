@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Disques · BASSARI-ZIK</title>
+<meta name="description" content="Disques d'or, de platine et de diamant des artistes BASSARI-ZIK.">
+<meta name="theme-color" content="#0E3B34">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;800&family=Source+Sans+3:wght@400;600&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#EEF2EC;--ink:#12201D;--mute:#4D6360;--card:#fff;--line:#CBD6CF;--forest:#0E3B34;--gold:#E4B23C}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0B1F1C;--ink:#EAF1EC;--mute:#9DB3AE;--card:#10302B;--line:#24473F;--forest:#071513}}
+:root[data-theme="dark"]{--bg:#0B1F1C;--ink:#EAF1EC;--mute:#9DB3AE;--card:#10302B;--line:#24473F;--forest:#071513}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 16px/1.55 "Source Sans 3",system-ui,sans-serif;padding-bottom:40px}
+h1,h2,h3{font-family:"Bricolage Grotesque",system-ui,sans-serif;line-height:1.1;margin:0 0 .5em}
+a{color:inherit}
+.wrap{max-width:980px;margin:0 auto;padding:0 16px}
+header{position:sticky;top:0;z-index:5;background:var(--forest)}
+header .wrap{padding-top:10px;padding-bottom:10px}
+.logo{font:800 20px "Bricolage Grotesque",sans-serif;letter-spacing:.5px;color:var(--gold);text-decoration:none}
+.note{color:var(--mute);font-size:14px}
+.levels{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:14px;margin:18px 0 8px}
+.lv{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px;text-align:center}
+.lv svg{width:150px;height:150px;display:block;margin:0 auto 10px}
+.lv b{display:block;font:800 20px "Bricolage Grotesque",sans-serif}
+.lv span{color:var(--mute);font-size:15px}
+.crit{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px 16px;margin:8px 0 0;font-size:15px}
+.list{margin-top:26px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.row{display:flex;align-items:center;gap:12px;padding:12px 16px;border-top:1px solid var(--line);flex-wrap:wrap}
+.row:first-child{border-top:0}
+.row .nm{flex:1;min-width:180px}
+.row .nm a{font-weight:600;text-decoration:none}
+.row .nm a:hover{text-decoration:underline}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:4px 12px;border-radius:999px;font-weight:800;font-size:13px;white-space:nowrap}
+.c-or{background:#E4B23C;color:#0E3B34}
+.c-pl{background:#D9DEE3;color:#1d2a31}
+.c-di{background:linear-gradient(120deg,#CFF4FF,#9FD8F0 45%,#E9FBFF);color:#0c2c3a}
+.c-none{background:transparent;color:var(--mute);border:1px dashed var(--line)}
+.prog{font-size:13px;color:var(--mute);min-width:200px}
+.bar{height:6px;border-radius:99px;background:var(--line);overflow:hidden;margin-top:4px}
+.bar i{display:block;height:100%;background:var(--gold)}
+.empty{padding:16px;color:var(--mute)}
+.filter{margin-top:24px;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+input[type=search]{flex:1;min-width:200px;padding:10px 12px;border-radius:10px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit}
+</style>
+</head>
+<body>
+<header><div class="wrap"><a class="logo" href="index.html">BASSARI-ZIK</a></div></header>
+<main class="wrap" style="padding-top:24px">
+<h1>Disques d'or, de platine et de diamant</h1>
+<p class="note">Ces disques récompensent les artistes qui vendent beaucoup de chansons sur BASSARI-ZIK.</p>
+
+<div class="levels">
+  <div class="lv">
+    <svg viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="gO" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#FFE9A0"/><stop offset=".55" stop-color="#E4B23C"/><stop offset="1" stop-color="#9A6E12"/></radialGradient></defs><circle cx="100" cy="100" r="96" fill="url(#gO)"/><g fill="none" stroke="#7a5a10" stroke-opacity=".35" stroke-width="1"><circle cx="100" cy="100" r="78"/><circle cx="100" cy="100" r="62"/><circle cx="100" cy="100" r="46"/></g><circle cx="100" cy="100" r="22" fill="#0E3B34"/><circle cx="100" cy="100" r="5" fill="#E4B23C"/></svg>
+    <b>Disque d'or</b><span>500 ventes de chansons</span>
+  </div>
+  <div class="lv">
+    <svg viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="gP" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#C7CED4"/><stop offset="1" stop-color="#6E7A82"/></radialGradient></defs><circle cx="100" cy="100" r="96" fill="url(#gP)"/><g fill="none" stroke="#3d474e" stroke-opacity=".35" stroke-width="1"><circle cx="100" cy="100" r="78"/><circle cx="100" cy="100" r="62"/><circle cx="100" cy="100" r="46"/></g><circle cx="100" cy="100" r="22" fill="#0E3B34"/><circle cx="100" cy="100" r="5" fill="#D9DEE3"/></svg>
+    <b>Disque de platine</b><span>1 500 ventes de chansons</span>
+  </div>
+  <div class="lv">
+    <svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="gD" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E9FBFF"/><stop offset=".35" stop-color="#9FD8F0"/><stop offset=".7" stop-color="#CFF4FF"/><stop offset="1" stop-color="#5BA9CC"/></linearGradient></defs><circle cx="100" cy="100" r="96" fill="url(#gD)"/><g fill="none" stroke="#0c2c3a" stroke-opacity=".3" stroke-width="1"><circle cx="100" cy="100" r="78"/><circle cx="100" cy="100" r="62"/><circle cx="100" cy="100" r="46"/></g><circle cx="100" cy="100" r="22" fill="#0E3B34"/><circle cx="100" cy="100" r="5" fill="#CFF4FF"/></svg>
+    <b>Disque de diamant</b><span>10 000 ventes de chansons</span>
+  </div>
+</div>
+<p class="crit"><b>Critères :</b> les ventes de toutes les chansons d'un artiste sont cumulées. En dessous de 500 ventes, aucun disque n'est attribué.</p>
+
+<div class="filter"><h2 style="margin:0;flex:1">Artistes</h2><input type="search" id="q" placeholder="Rechercher un artiste" aria-label="Rechercher un artiste"></div>
+<div class="list" id="list"></div>
+</main>
+<footer class="wrap note" style="padding-top:20px">BASSARI-ZIK · <a href="index.html">Retour à l'accueil</a> · <a href="politique.html">Règles</a></footer>
+
+<script>
+var S={};try{S=JSON.parse(localStorage.getItem("bassarizik1")||"{}")}catch(e){}
+var LEVELS=[{n:500,t:"Or",cls:"c-or",label:"Disque d'or"},{n:1500,t:"Platine",cls:"c-pl",label:"Disque de platine"},{n:10000,t:"Diamant",cls:"c-di",label:"Disque de diamant"}];
+function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function escA(s){return esc(s).replace(/"/g,"&quot;")}
+
+// Tous les artistes connus : ceux des chansons, des albums et des compteurs de ventes
+var names={};
+(S.songs||[]).forEach(function(x){(x.sp?x.sp.map(function(s){return s.n}):[x.a]).forEach(function(n){if(n)names[n]=1})});
+(S.albums||[]).forEach(function(al){if(al.a)names[al.a]=1});
+Object.keys(S.units||{}).forEach(function(n){names[n]=1});
+
+var rows=Object.keys(names).map(function(n){
+  var c=((S.units||{})[n])||0,cur=null,next=null;
+  LEVELS.forEach(function(l){if(c>=l.n)cur=l;});
+  LEVELS.forEach(function(l){if(!next&&c<l.n)next=l;});
+  return {n:n,c:c,cur:cur,next:next};
+}).sort(function(a,b){return b.c-a.c||a.n.localeCompare(b.n,"fr")});
+
+function chip(r){
+  if(!r.cur)return '<span class="chip c-none">Aucun disque</span>';
+  return '<span class="chip '+r.cur.cls+'">'+r.cur.label+'</span>';
+}
+function prog(r){
+  if(!r.next)return '<div class="prog">Diamant atteint</div>';
+  var from=r.cur?r.cur.n:0,pct=Math.min(100,Math.round((r.c-from)/(r.next.n-from)*100));
+  return '<div class="prog">'+r.c+' / '+r.next.n+' ventes → '+r.next.label+'<div class="bar"><i style="width:'+pct+'%"></i></div></div>';
+}
+function draw(q){
+  var list=document.getElementById("list");
+  var f=rows.filter(function(r){return !q||r.n.toLowerCase().indexOf(q.toLowerCase())>-1});
+  if(!rows.length){list.innerHTML='<p class="empty">Aucun artiste pour le moment.</p>';return}
+  if(!f.length){list.innerHTML='<p class="empty">Aucun artiste ne correspond à cette recherche.</p>';return}
+  list.innerHTML=f.map(function(r){
+    return '<div class="row"><div class="nm"><a href="artiste.html?n='+encodeURIComponent(r.n)+'">'+esc(r.n)+'</a><div class="note">'+r.c+' vente(s)</div></div>'+chip(r)+prog(r)+'</div>';
+  }).join("");
+}
+document.getElementById("q").oninput=function(){draw(this.value.trim())};
+draw("");
+</script>
+</body>
+</html>
