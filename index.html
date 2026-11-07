@@ -190,6 +190,7 @@ body.has-player{padding-bottom:190px}
 <div class="row" style="margin:0 0 8px"><button id="cashBtn" class="alt" hidden>Retirer mes gains</button><button id="skipBtn" class="alt" hidden>Test : avancer de 30 jours</button></div>
 <label for="fTitle">Titre</label><input id="fTitle" maxlength="60">
 <label for="fFile">Fichier audio (MP3, WAV, FLAC)</label><input id="fFile" type="file" accept="audio/*">
+<label for="fPrice">Prix de la chanson (de 50 F à 50 000 F)</label><input id="fPrice" type="number" min="50" max="50000" step="50" value="200">
 <label for="fCred">Crédits (ingénieur du son, mixage, mastering…)</label><input id="fCred" maxlength="120" placeholder="Ex. Son : Koffi A. · Mixage : Ama T.">
 <label for="fCover">Cover de la chanson (image, facultatif)</label><input id="fCover" type="file" accept="image/*">
 <label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="fOrig" style="width:auto;margin-top:5px">Je certifie que cette chanson est mon œuvre originale (ou que j'ai tous les droits) et qu'elle ne contient aucun plagiat.</label>
@@ -261,7 +262,7 @@ $("discTxt").textContent=top.s>=GOLD?"Disque d'or : "+top.t:top.s+" / "+GOLD+" v
 $("authBtn").textContent=S.user?S.user.name+" (se déconnecter)":"Créer un compte";
 var g=0,pend=0,lim=Date.now()+(S.skip||0)*864e5-30*864e5;
 var art=S.user&&S.user.role==="artiste";
-if(art)S.songs.forEach(function(x){if(x.own&&x.a===S.user.name)(x.ts||new Array(x.s).fill(x.at)).forEach(function(t){if(t<=lim)g+=150;else pend+=150})});
+if(art)S.songs.forEach(function(x){if(x.own&&x.a===S.user.name)(x.ts||new Array(x.s).fill(x.at)).forEach(function(t){if(t<=lim)g+=Math.round(priceOf(x)*.75);else pend+=Math.round(priceOf(x)*.75)})});
 if(art)S.events.forEach(function(e){if(e.own&&e.a===S.user.name)(e.ts||[]).forEach(function(t){var m=Math.round(e.price*.9);if(t<=lim)g+=m;else pend+=m})});
 window.avail=g-(S.paid||0);
 var eh="";S.events.filter(function(e){return new Date(e.date+"T23:59:59")>=now}).forEach(function(e){var left=e.cap-e.sold;
@@ -279,7 +280,8 @@ drawMusic();drawRails();drawPl()}
 function need(){if(!S.user){toast("Créez d'abord un compte.");$("dAuth").showModal();return false}return true}
 var pending=null;
 function ask(txt,fn){if(!need())return;pending=fn;$("pWhat").textContent=txt;$("dPay").showModal()}
-function sale(id){var x=S.songs.filter(function(s){return s.id===id})[0];if(x&&!S.owned[id]){x.s++;S.owned[id]=1;if(x.own){x.ts=x.ts||[];x.ts.push(Date.now())}S.sales=S.sales||[];S.sales.push({id:id,a:x.a,at:Date.now()})}}
+function priceOf(x){return (x&&x.pr)||200}
+function sale(id){var x=S.songs.filter(function(s){return s.id===id})[0];if(x&&!S.owned[id]){var w=priceOf(x)>=2500?10:1;x.s+=w;S.owned[id]=1;if(x.own){x.ts=x.ts||[];x.ts.push(Date.now())}S.sales=S.sales||[];for(var k=0;k<w;k++)S.sales.push({id:id,a:x.a,at:Date.now()})}}
 var sb=supabase.createClient("https://loqxgegixjnrfiihthjq.supabase.co","sb_publishable_ei0GgZ26l3KJv8qTCWS3Cg_iizOBYgR");
 var authMode="signup";
 function setAuthMode(m){authMode=m;var s=m==="signup";$("aTitle").textContent=s?"Créer un compte":"Se connecter";$("aSignFields").hidden=!s;$("aAccWrap").hidden=!s;$("aOk").textContent=s?"Créer mon compte":"Se connecter";$("aSwitch").textContent=s?"J'ai déjà un compte":"Créer un compte"}
@@ -327,7 +329,7 @@ if(S.rep[k]){toast("Vous avez déjà signalé cette chanson.");return}
 S.rep[k]=1;sx.r=(sx.r||0)+1;save();render();
 toast(sx.r>=3?"Chanson suspendue pour vérification.":"Signalement envoyé. Merci.");return}
 var b=e.target.closest("button");if(!b)return;
-if(b.dataset.buy){var id=b.dataset.buy;ask("Débloquer cette chanson : 200 F",function(){sale(id);toast("Paiement reçu. Merci pour votre soutien !")})}
+if(b.dataset.buy){var id=b.dataset.buy;ask("Débloquer cette chanson : "+F(priceOf(findSong(id))),function(){sale(id);toast("Paiement reçu. Merci pour votre soutien !")})}
 if(b.dataset.play){var id2=b.dataset.play;if(!need())return;recordPlay(id2);
 if(subActive())sale(id2);save();var a=$("player");
 if(urls[id2]){a.src=urls[id2];$("pbar").hidden=false;var sx2=S.songs.filter(function(s){return s.id===id2})[0];$("pnow").textContent=sx2?sx2.t+" · "+sx2.a:"";a.play()}else{toast("Lecture simulée (morceau de démonstration)")}render()}};
@@ -338,12 +340,13 @@ var t=$("fTitle").value.trim(),f=$("fFile").files[0];
 if(S.user.role!=="artiste"){toast("Seuls les comptes artiste peuvent publier.");return}
 if(S.songs.length>=MAX){toast("Capacité maximale atteinte (5 000 chansons).");return}
 if(!t||!f){toast("Ajoutez un titre et un fichier audio.");return}
+var pr=Math.round(+$("fPrice").value);if(!(pr>=50&&pr<=50000)){toast("Le prix doit être entre 50 F et 50 000 F.");return}
 if(!$("fOrig").checked){toast("Certifiez que la chanson est originale.");return}
 if(!hostOk(S.user.name)){toast("Activez d'abord l'hébergement (500 F par mois).");return}
 var cr=$("fCred").value.trim();
 makeCover($("fCover").files[0],function(cv){var id="u"+Date.now();
-S.songs.push({id:id,t:t,a:S.user.name,s:0,at:Date.now(),own:1,cv:cv,cr:cr,lk:0,dl:0,cm:[]});urls[id]=URL.createObjectURL(f);S.owned[id]=1;
-["fTitle","fFile","fCover","fCred"].forEach(function(i){$(i).value=""});$("fOrig").checked=false;save();render();
+S.songs.push({id:id,t:t,a:S.user.name,s:0,at:Date.now(),own:1,cv:cv,cr:cr,pr:pr,lk:0,dl:0,cm:[]});urls[id]=URL.createObjectURL(f);S.owned[id]=1;
+["fTitle","fFile","fCover","fCred"].forEach(function(i){$(i).value=""});$("fPrice").value="200";$("fOrig").checked=false;save();render();
 toast("Chanson publiée. Elle apparaît en premier dans Musiques.");setTimeout(function(){$("catalogue").scrollIntoView()},300)})};
 $("evList").onclick=function(e){var b=e.target.closest("[data-tk]");if(!b)return;
 var ev=S.events.filter(function(x){return x.id===b.dataset.tk})[0];
@@ -389,7 +392,7 @@ h+='<article class="card" id="s-'+x.id+'">'+cover(x)+'<div class="cb"><div class
 '<div class="art">'+esc(x.a)+(mine?' (vous)':'')+'</div>'+(bio?'<p class="bio">'+esc(bio)+'</p>':'')+(x.cr?'<small class="cr">Crédits : '+esc(x.cr)+'</small>':'')+
 '<div class="bar"><i style="width:'+Math.min(100,x.s/GOLD*100)+'%"></i></div><small>'+x.s+' ventes · supprimée dans '+days+' j</small>'+
 '<div class="vote"><button class="alt'+(myv===1?' on':'')+'" data-like="'+x.id+'" aria-label="J\'aime">👍 '+x.lk+'</button><button class="alt'+(myv===-1?' on':'')+'" data-dis="'+x.id+'" aria-label="Je n\'aime pas">👎 '+x.dl+'</button></div>'+
-'<div class="row" style="margin-top:8px">'+(can?'<button data-play="'+x.id+'">Écouter</button>':'<button data-buy="'+x.id+'">Débloquer 200 F</button>'+(subActive()?'<button class="alt" data-play="'+x.id+'">Écouter (abonné)</button>':''))+'</div>'+
+'<div class="row" style="margin-top:8px">'+(can?'<button data-play="'+x.id+'">Écouter</button>':'<button data-buy="'+x.id+'">Débloquer '+F(priceOf(x))+'</button>'+(subActive()?'<button class="alt" data-play="'+x.id+'">Écouter (abonné)</button>':''))+'</div>'+
 '<small><a href="#" data-rep="'+x.id+'">Signaler un plagiat</a>'+(subActive()?' · <a href="#" data-pl="'+x.id+'">+ Playlist</a>':'')+'</small>'+
 '<button class="alt" data-cm="'+x.id+'" style="margin-top:6px">💬 Commentaires ('+x.cm.length+')</button>'+(V.open[x.id]?cmPanel(x):'')+'</div></article>'});
 $("list").innerHTML=h||'<p class="note">Aucune chanson trouvée.</p>'}
@@ -415,7 +418,7 @@ if(!vs.length){$("featured").innerHTML='<p class="note">Aucune chanson pour le m
 var sc={};vs.forEach(function(x){sc[x.id]=weekScore(x)});
 var trend=vs.slice().sort(function(a,b){return (sc[b.id]-sc[a.id])||(b.lk-a.lk)||(b.s-a.s)}).slice(0,10);
 var best=vs.slice().sort(function(a,b){return b.s-a.s}).slice(0,10);
-$("featured").innerHTML=trend.slice(0,4).map(function(x){return '<article class="feat">'+cover(x)+'<h3>'+esc(x.t)+'</h3><div class="ar">'+esc(x.a)+'</div><div class="pr"><span>200 F</span>'+(S.owned[x.id]?'<button class="buy" data-play="'+x.id+'">Écouter</button>':'<button class="buy" data-buy="'+x.id+'">Acheter</button>')+'</div></article>'}).join("");
+$("featured").innerHTML=trend.slice(0,4).map(function(x){return '<article class="feat">'+cover(x)+'<h3>'+esc(x.t)+'</h3><div class="ar">'+esc(x.a)+'</div><div class="pr"><span>'+F(priceOf(x))+'</span>'+(S.owned[x.id]?'<button class="buy" data-play="'+x.id+'">Écouter</button>':'<button class="buy" data-buy="'+x.id+'">Acheter</button>')+'</div></article>'}).join("");
 $("trend").innerHTML=trend.map(function(x){return tile(x)}).join("");
 $("best").innerHTML=best.map(function(x){return tile(x,x.s+' ventes')}).join("")}
 function showView(v){document.querySelectorAll(".view").forEach(function(x){x.hidden=x.id!=="v-"+v});document.querySelectorAll("#bnav button").forEach(function(b){b.classList.toggle("on",b.dataset.view===v)});window.scrollTo(0,0)}
@@ -424,7 +427,7 @@ $("v-decouverte").addEventListener("click",function(e){if(e.target.closest("#lis
 var g=e.target.closest("[data-go]");
 if(g){V.f="all";V.q="";$("q").value="";drawMusic();var el=$("s-"+g.dataset.go);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.style.outline="3px solid var(--orange)";setTimeout(function(){el.style.outline=""},2000)}return}
 var b=e.target.closest("[data-buy],[data-play]");if(!b)return;
-if(b.dataset.buy){var id=b.dataset.buy;ask("Débloquer cette chanson : 200 F",function(){sale(id);toast("Paiement reçu. Merci pour votre soutien !")})}
+if(b.dataset.buy){var id=b.dataset.buy;ask("Débloquer cette chanson : "+F(priceOf(findSong(id))),function(){sale(id);toast("Paiement reçu. Merci pour votre soutien !")})}
 else{var id2=b.dataset.play;if(!need())return;recordPlay(id2);if(subActive())sale(id2);save();var a=$("player");
 if(urls[id2]){a.src=urls[id2];$("pbar").hidden=false;var sx2=findSong(id2);$("pnow").textContent=sx2?sx2.t+" · "+sx2.a:"";a.play()}else{toast("Lecture simulée (morceau de démonstration)")}render()}});
 function recordPlay(id){var x=findSong(id);if(!x)return;S.plays=S.plays||[];var day=new Date().toDateString();var k=S.user.mail+"|"+id;if(S.plays.some(function(p){return p.k===k&&p.d===day}))return;S.plays.push({k:k,id:id,a:x.a,at:Date.now(),d:day});save()}
@@ -433,7 +436,7 @@ function drawPl(){var ok=S.user&&subActive();$("plMake").hidden=!ok;
 $("plInfo").textContent=!S.user?"Connectez-vous pour voir vos playlists.":ok?"Ajoutez des chansons avec le lien « + Playlist » sous chaque chanson.":"Les playlists sont réservées aux abonnés. Prenez un abonnement pour en créer.";
 var h="";plOf().forEach(function(p){h+='<div class="box" style="margin-bottom:10px"><b>'+esc(p.name)+'</b> <small class="note">('+p.ids.length+' titres)</small> · <a href="#" data-delpl="'+p.id+'">Supprimer</a>';
 p.ids.forEach(function(id){var x=S.songs.filter(function(s){return s.id===id&&vis(s)})[0];if(!x)return;var can=S.owned[id]||subActive();
-h+='<div class="song" style="margin:8px 0 0">'+cover(x)+'<div class="t"><b>'+esc(x.t)+'</b><small>'+esc(x.a)+'</small></div>'+(can?'<button data-play="'+x.id+'">Écouter</button>':'<button data-buy="'+x.id+'">Débloquer 200 F</button>')+'<button class="alt" data-rm="'+p.id+'|'+x.id+'">Retirer</button></div>'});
+h+='<div class="song" style="margin:8px 0 0">'+cover(x)+'<div class="t"><b>'+esc(x.t)+'</b><small>'+esc(x.a)+'</small></div>'+(can?'<button data-play="'+x.id+'">Écouter</button>':'<button data-buy="'+x.id+'">Débloquer '+F(priceOf(x))+'</button>')+'<button class="alt" data-rm="'+p.id+'|'+x.id+'">Retirer</button></div>'});
 h+='</div>'});$("plList").innerHTML=h}
 function openPl(id){if(!S.user||!subActive()){toast("Les playlists sont réservées aux abonnés.");return}
 plTarget=id;$("plSel").innerHTML='<option value="">Choisir…</option>'+plOf().map(function(p){return '<option value="'+p.id+'">'+esc(p.name)+'</option>'}).join("");$("plNew").value="";$("dPl").showModal()}
