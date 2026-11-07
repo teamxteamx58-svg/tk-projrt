@@ -373,7 +373,7 @@ var b=e.target.closest("button");if(!b)return;
 if(b.dataset.buy){var id=b.dataset.buy;ask("Débloquer cette chanson : "+F(priceOf(findSong(id))),function(){sale(id);toast("Paiement reçu. Merci pour votre soutien !")})}
 if(b.dataset.play){var id2=b.dataset.play;if(!need())return;recordPlay(id2);
 if(subActive())sale(id2);save();var a=$("player");
-if(urls[id2]){a.src=urls[id2];$("pbar").hidden=false;var sx2=S.songs.filter(function(s){return s.id===id2})[0];$("pnow").textContent=sx2?sx2.t+" · "+sx2.a:"";a.play()}else{toast("Lecture simulée (morceau de démonstration)")}render()}};
+showPlayer(id2,a)}};
 document.querySelectorAll("[data-sub]").forEach(function(b){b.onclick=function(){var m=+b.dataset.sub,pr=m===1?2000:5000;
 ask("Abonnement "+m+" mois : "+F(pr),function(){S.sub=Math.max(S.sub,now)+m*30*864e5;toast("Abonnement activé !")})}});
 $("upBtn").onclick=function(){if(!need())return;
@@ -439,6 +439,9 @@ if(b.dataset.tfree){ed.free=ed.free||{};ed.free[cat]=ed.free[cat]||{};if(ed.free
 ed.free[cat][S.user.mail]=artist;save();drawTrophy();toast("Merci, votre vote gratuit est enregistré.");return}
 ask("Vote payant pour "+artist+" : "+F(ed.price),function(){ed.paid=ed.paid||{};ed.paid[cat]=ed.paid[cat]||{};ed.paid[cat][artist]=(ed.paid[cat][artist]||0)+1;save();drawTrophy();toast("Vote payant enregistré.")})};
 
+function showPlayer(id,a){var sx=(S.songs||[]).filter(function(s){return s.id===id})[0];var has=!!urls[id];
+$("pbar").hidden=false;$("pnow").textContent=(sx?sx.t+" · "+sx.a:"Chanson")+(has?"":" (aperçu indisponible)");
+if(has){a.src=urls[id];a.play()}else{a.removeAttribute("src");a.load();toast("Pas de fichier audio pour cette chanson dans ce navigateur.")}}
 function drawAlbForm(){var box=$("alTracks");if(!box)return;var me=S.user&&S.user.role==="artiste"?S.user.name:"";
 var mine=S.songs.filter(function(x){return x.own&&x.a===me});
 var sig=me+"|"+mine.map(function(x){return x.id}).join();if(sig===drawAlbForm.s)return;drawAlbForm.s=sig;
@@ -538,7 +541,7 @@ var ab=e.target.closest("[data-abuy]");if(ab){buyAlbum(ab.dataset.abuy);return}
 var b=e.target.closest("[data-buy],[data-play]");if(!b)return;
 if(b.dataset.buy){var id=b.dataset.buy;ask("Débloquer cette chanson : "+F(priceOf(findSong(id))),function(){sale(id);toast("Paiement reçu. Merci pour votre soutien !")})}
 else{var id2=b.dataset.play;if(!need())return;recordPlay(id2);if(subActive())sale(id2);save();var a=$("player");
-if(urls[id2]){a.src=urls[id2];$("pbar").hidden=false;var sx2=findSong(id2);$("pnow").textContent=sx2?sx2.t+" · "+sx2.a:"";a.play()}else{toast("Lecture simulée (morceau de démonstration)")}render()}});
+showPlayer(id2,a);render()}});
 function recordPlay(id){var x=findSong(id);if(!x)return;S.plays=S.plays||[];var day=new Date().toDateString();var k=S.user.mail+"|"+id;if(S.plays.some(function(p){return p.k===k&&p.d===day}))return;artistsOf(x).forEach(function(n){S.plays.push({k:k,id:id,a:n,at:Date.now(),d:day})});save()}
 function plOf(){return S.user?S.playlists.filter(function(p){return p.mail===S.user.mail}):[]}
 function drawPl(){var ok=S.user&&subActive();$("plMake").hidden=!ok;
