@@ -123,6 +123,21 @@ button{transition:transform .15s ease}button:active{transform:scale(.97)}
 #bnav button.on{color:var(--orange);background:rgba(255,106,26,.12)}
 #bnav .i{font-size:20px;line-height:1}
 @media (prefers-reduced-motion:reduce){.view{animation:none}}
+
+.banner{display:block;width:100%;height:auto;border-radius:18px;margin:12px 0 4px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+#pbar{position:fixed;left:12px;right:12px;bottom:calc(92px + env(safe-area-inset-bottom,0px));z-index:6;background:#151515;color:#fff;border:1px solid #2a2a2a;border-radius:18px;padding:10px 14px 10px 10px;box-shadow:0 16px 40px rgba(0,0,0,.65);display:grid;grid-template-columns:46px 1fr;gap:4px 12px;align-items:center}
+#pbar[hidden]{display:none}
+#pvBtn{grid-row:1/3;width:46px;height:46px;border-radius:50%;padding:0;background:var(--orange);color:#fff;font-size:15px;display:grid;place-items:center;box-shadow:0 6px 16px rgba(255,106,26,.35)}
+#pvBtn:active{transform:scale(.92)}
+#pnow{grid-column:2;font:700 15px "Bricolage Grotesque",sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-width:0}
+.pv-prog{grid-column:2;min-width:0}
+#pvSeek{width:100%;height:18px;margin:0;padding:0;border:0;background:transparent;accent-color:var(--orange);cursor:pointer}
+.pv-time{display:flex;justify-content:space-between;font-size:12px;color:#9a9a9a;font-variant-numeric:tabular-nums;margin-top:-2px}
+#pbar.playing #pvBtn{animation:pvpulse 1.6s ease-out infinite}
+@keyframes pvpulse{from{box-shadow:0 0 0 0 rgba(255,106,26,.55)}to{box-shadow:0 0 0 14px rgba(255,106,26,0)}}
+#player{display:none}
+body.has-player{padding-bottom:190px}
+#toast{bottom:calc(170px + env(safe-area-inset-bottom,0px))}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -131,6 +146,7 @@ button{transition:transform .15s ease}button:active{transform:scale(.97)}
 
 <main class="wrap app">
 <div class="view" id="v-decouverte">
+<img class="banner" src="banner.jpg" alt="BASSARI-ZIK, la musique de chez nous, pour la jeunesse de chez nous">
 <div class="view-hero"><h1 class="htitle">La musique d'ici, soutenue par ceux d'ici.</h1><p class="note">Écoutez, soutenez et découvrez les artistes de chez nous.</p><div hidden><span id="stSongs"></span><div id="disc"><div id="discTxt"></div></div></div></div>
 <section><div class="sh"><h2>Albums du moment</h2></div><div class="hscroll big" id="featured"></div></section>
 <section><div class="sh"><h2>Tendances de la semaine</h2></div><div class="hscroll" id="trend"></div></section>
@@ -139,7 +155,7 @@ button{transition:transform .15s ease}button:active{transform:scale(.97)}
 <section id="catalogue"><h2>Musiques</h2><p class="note">Parcourez les chansons et leurs covers librement. Le paiement sert uniquement à débloquer l'écoute.</p><div class="toolbar"><input id="q" type="search" placeholder="Rechercher une chanson ou un artiste" aria-label="Rechercher"><button id="qBtn" type="button">Rechercher</button>
 <div class="chips"><button class="chip on" data-f="all">Tout</button><button class="chip" data-f="new">Nouveautés</button><button class="chip" data-f="pop">Populaires</button><button class="chip" data-f="gold">Disques d'or</button><button class="chip" data-f="mine">Mes chansons</button></div></div>
 <div id="list" class="grid"></div>
-<div id="pbar" hidden><span id="pnow"></span><audio id="player" controls></audio></div>
+
 <p class="note">Les morceaux de démonstration n'ont pas de fichier audio : la lecture est simulée. Les morceaux que vous ajoutez se lisent vraiment.</p></section>
 </div>
 <div class="view" id="v-playlist" hidden>
@@ -183,7 +199,7 @@ button{transition:transform .15s ease}button:active{transform:scale(.97)}
 <p class="note"><a href="politique.html">Politique du site</a></p>
 </div>
 </main>
-<div id="pbar" hidden><span id="pnow"></span><audio id="player" controls></audio></div>
+<div id="pbar" hidden><button id="pvBtn" type="button" aria-label="Lecture ou pause">▶</button><span id="pnow"></span><div class="pv-prog"><input type="range" id="pvSeek" min="0" max="100" value="0" step="0.1" aria-label="Position dans la chanson"><div class="pv-time"><span id="pvCur">0:00</span><span id="pvDur">0:00</span></div></div><audio id="player" preload="metadata"></audio></div>
 
 <footer class="wrap note" style="padding-bottom:90px">BASSARI-ZIK · Prototype : les paiements sont simulés et les données restent dans ce navigateur. · <a href="politique.html">Politique du site</a> · <a href="top.html">Top du mois</a></footer>
 
@@ -440,6 +456,17 @@ if(a<1000){toast("Retrait possible à partir de 1 000 F. Disponible : "+F(a));re
 ask("Retrait de "+F(a)+" vers votre TMoney ou votre carte Visa",function(){S.paid=(S.paid||0)+a;toast("Retrait de "+F(a)+" demandé. Il sera versé sur votre compte de paiement.")})};
 var HM={catalogue:"decouverte",billetterie:"actu",artiste:"ma",tarifs:"ma",playlists:"playlist"};
 showView(HM[location.hash.slice(1)]||"decouverte");
+
+var pvAud=$("player"),pvBtn=$("pvBtn"),pvSeek=$("pvSeek");
+function fmtT(s){if(!isFinite(s)||s<0)return "0:00";var m=Math.floor(s/60),r=Math.floor(s%60);return m+":"+(r<10?"0":"")+r}
+pvBtn.onclick=function(){if(pvAud.paused){var p=pvAud.play();if(p&&p.catch)p.catch(function(){toast("Lecture impossible pour le moment.")})}else pvAud.pause()};
+pvAud.onplay=function(){pvBtn.textContent="❚❚";$("pbar").classList.add("playing")};
+pvAud.onpause=function(){pvBtn.textContent="▶";$("pbar").classList.remove("playing")};
+pvAud.onended=function(){pvBtn.textContent="▶";$("pbar").classList.remove("playing");pvSeek.value=0;$("pvCur").textContent="0:00"};
+pvAud.ontimeupdate=function(){if(pvAud.duration){pvSeek.value=pvAud.currentTime/pvAud.duration*100;$("pvCur").textContent=fmtT(pvAud.currentTime)}};
+pvAud.onloadedmetadata=function(){$("pvDur").textContent=fmtT(pvAud.duration)};
+pvSeek.oninput=function(){if(pvAud.duration)pvAud.currentTime=pvSeek.value/100*pvAud.duration};
+new MutationObserver(function(){document.body.classList.toggle("has-player",!$("pbar").hidden)}).observe($("pbar"),{attributes:true,attributeFilter:["hidden"]});
 load();render();initAuth();
 </script>
 </body>
