@@ -189,7 +189,7 @@ var isMe=!!name&&name===me;
 function badgeOf(n){var p=(S.promo||{})[n];return p&&p+7*864e5<=Date.now()?'<span class="vb" title="Artiste certifié" aria-label="Artiste certifié">✔</span>':''}
 function hostOk(n){return ((S.host||{})[n]||0)>now}
 function shareOf(x,n){if(!x.sp)return x.a===n?1:0;var e=x.sp.filter(function(s){return s.n===n})[0];return e?e.p/100:0}
-function inCat(x){if(shareOf(x,name)<=0)return false;if(x.rel&&x.rel>now&&!isMe)return false;if(x.r>=3)return false;if(!x.own)return true;return hostOk(x.a)}
+function inCat(x){if(shareOf(x,name)<=0)return false;if(x.rel&&x.rel>now&&!isMe)return false;if(x.r>=3)return false;if(x.vs&&x.vs!=="ok")return false;return true}
 function cover(x){return x.cv&&x.cv.indexOf("data:image/")===0?'<img class="cv" alt="" src="'+x.cv+'">':'<div class="cv" aria-hidden="true">'+esc(String(x.t||"?").charAt(0).toUpperCase())+'</div>'}
 function rankOf(){var m=new Date().toISOString().slice(0,7),a={};
 (S.sales||[]).forEach(function(q){if(new Date(q.at).toISOString().slice(0,7)!==m)return;a[q.a]=a[q.a]||0;a[q.a]+=10});
@@ -200,7 +200,7 @@ if(!name){document.getElementById("prof").innerHTML='<p class="note">Aucun artis
 var photo=(S.photos||{})[name];
 var bio=(S.bios||{})[name]||"";
 var songs=(S.songs||[]).filter(function(x){return inCat(x)});
-var albums=(S.albums||[]).filter(function(al){return al.a===name&&hostOk(al.a)&&(!al.rel||al.rel<=now||isMe)});
+var albums=(S.albums||[]).filter(function(al){return al.a===name&&(!al.vs||al.vs==="ok")&&(!al.rel||al.rel<=now||isMe)});
 var sales=(S.songs||[]).filter(function(x){return shareOf(x,name)>0}).reduce(function(s,x){return s+(x.s||0)},0);
 var r=rankOf();
 document.title=name+" · BASSARI-ZIK";
