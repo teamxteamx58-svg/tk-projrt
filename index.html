@@ -160,7 +160,7 @@ header .wrap{gap:8px}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<header><div class="wrap"><div class="logo">BASSARI-ZIK</div><button id="navQ" class="iconbtn" aria-label="Rechercher" title="Rechercher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button><button id="installBtn" class="pillbtn" hidden>Télécharger l'app</button><button id="shareSiteBtn" class="iconbtn" aria-label="Partager le site" title="Partager le site"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg></button><button id="authBtn" class="alt">Créer un compte</button></div></header>
+<header><div class="wrap"><div class="logo">BASSARI-ZIK</div><button id="navQ" class="iconbtn" aria-label="Rechercher" title="Rechercher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button><button id="installBtn" class="pillbtn" hidden>Télécharger l'app</button><button id="shareSiteBtn" class="iconbtn" aria-label="Partager le site" title="Partager le site"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg></button><button id="authBtn" class="alt">Créer un compte</button><button id="setBtn" class="iconbtn" aria-label="Paramètres" title="Paramètres"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div></header>
 
 <main class="wrap app">
 <div class="view" id="v-decouverte">
@@ -203,7 +203,7 @@ header .wrap{gap:8px}
 <div class="box">
 <p>Chaque chanson et chaque album sont vérifiés par notre équipe avant publication. La validation se fait sous 48 h.</p>
 <label for="bio">Ma biographie (3 lignes maximum)</label><textarea id="bio" rows="3" maxlength="240"></textarea>
-<div class="row" style="margin:6px 0 12px"><button id="bioBtn" class="alt">Enregistrer ma bio</button></div><div class="box" style="margin:0 0 12px"><h3>Badge artiste certifié <span class="vb" aria-hidden="true">✔</span></h3><p class="note">Votre badge vert est automatique : il arrive 7 jours après la publication de votre première chanson validée.</p><div id="certInfo" style="font-weight:600"></div><div id="disc" style="margin-top:8px"></div></div><label for="phFile">Photo de profil (facultatif)</label><input id="phFile" type="file" accept="image/*"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="phOk" style="width:auto;margin-top:5px">J'accepte que cette photo soit affichée publiquement sur mon profil artiste.</label><div class="row" style="margin:0 0 12px"><button id="phBtn" class="alt">Enregistrer la photo</button></div>
+<div class="row" style="margin:6px 0 12px"><button id="bioBtn" class="alt">Enregistrer ma bio</button></div><div class="box" style="margin:0 0 12px"><h3>Badge artiste certifié <span class="vb" aria-hidden="true">✔</span></h3><p class="note">Votre badge vert est automatique : il arrive 7 jours après la publication de votre première chanson validée.</p><div id="certInfo" style="font-weight:600"></div><div id="discBox" style="margin-top:8px"></div></div><label for="phFile">Photo de profil (facultatif)</label><input id="phFile" type="file" accept="image/*"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="phOk" style="width:auto;margin-top:5px">J'accepte que cette photo soit affichée publiquement sur mon profil artiste.</label><div class="row" style="margin:0 0 12px"><button id="phBtn" class="alt">Enregistrer la photo</button></div>
 <p id="gains" style="font-weight:600"></p>
 <div class="row" style="margin:0 0 8px"><button id="cashBtn" class="alt" hidden>Retirer mes gains</button><button id="skipBtn" class="alt" hidden>Test : avancer de 30 jours</button></div>
 <label for="fTitle">Titre</label><input id="fTitle" maxlength="60">
@@ -223,10 +223,16 @@ header .wrap{gap:8px}
 
 <p class="note"><a href="politique.html">Politique du site</a></p>
 </div>
+<div class="view" id="v-params" hidden>
+<section><h1 style="margin-top:8px">Paramètres</h1></section>
+<section><div class="sh"><h2>Compte</h2></div><div class="box"><div id="accInfo"></div><div class="row" style="margin-top:12px"><button id="outBtn" class="alt" hidden>Se déconnecter</button><button id="inBtn" hidden>Créer un compte ou se connecter</button></div></div></section>
+<section><div class="sh"><h2>Application</h2></div><div class="box"><div class="row"><button id="pInstall" class="alt">Télécharger l'app</button><button id="pShare" class="alt">Partager BASSARI-ZIK</button></div></div></section>
+<section><div class="sh"><h2>Informations</h2></div><div class="box"><ul style="margin:0;padding-left:18px;line-height:2"><li><a href="politique.html">Politique du site</a></li><li><a href="top.html">Top du mois</a></li><li><a href="artistes.html">Guide artiste</a></li><li><a href="abonnements.html">Abonnements</a></li></ul></div></section>
+</div>
 </main>
 <div id="pbar" hidden><button id="pvBtn" type="button" aria-label="Lecture ou pause">▶</button><span id="pnow"></span><div class="pv-prog"><input type="range" id="pvSeek" min="0" max="100" value="0" step="0.1" aria-label="Position dans la chanson"><div class="pv-time"><span id="pvCur">0:00</span><span id="pvDur">0:00</span></div></div><audio id="player" preload="metadata"></audio></div>
 
-<footer class="wrap note" style="padding-bottom:90px">BASSARI-ZIK · Prototype : les paiements sont simulés et les données restent dans ce navigateur. · <a href="politique.html">Politique du site</a> · <a href="top.html">Top du mois</a></footer>
+<footer class="wrap note" style="padding-bottom:90px">BASSARI-ZIK · Prototype : les paiements sont simulés et les données restent dans ce navigateur. · <a href="#params">Paramètres</a></footer>
 
 <dialog id="dAuth"><h3 id="aTitle">Créer un compte</h3>
 <div id="aSignFields"><label for="aName">Nom</label><input id="aName">
@@ -283,7 +289,7 @@ $("stSongs").textContent=S.songs.length+" / "+MAX+" chansons";
 var top=S.songs.reduce(function(m,x){return x.s>m.s?x:m},{s:0,t:"",a:""});
 var p=Math.min(100,top.s/GOLD*100);$("disc").style.setProperty("--p",p+"%");
 $("discTxt").textContent=top.s>=GOLD?"Disque d'or : "+top.t:top.s+" / "+GOLD+" ventes";
-$("authBtn").textContent=S.user?S.user.name+" (se déconnecter)":"Créer un compte";
+$("authBtn").hidden=!!S.user;renderParams();
 var g=0,pend=0,lim=Date.now()+(S.skip||0)*864e5-30*864e5;
 var art=S.user&&S.user.role==="artiste";
 if(art)S.songs.forEach(function(x){if(!x.own)return;var sh=shareOf(x,S.user.name);if(!sh)return;(x.ts||[]).forEach(function(t){var amt=Math.round(priceOf(x)*.75*sh);if(t<=lim)g+=amt;else pend+=amt})});
@@ -311,12 +317,13 @@ function artistsOf(x){return x.sp?x.sp.map(function(s){return s.n}):[x.a]}
 function sale(id){var x=S.songs.filter(function(s){return s.id===id})[0];if(x&&!S.owned[id]){var w=priceOf(x)>=2500?10:1;x.s+=w;S.owned[id]=1;if(x.own){x.ts=x.ts||[];x.ts.push(Date.now())}S.sales=S.sales||[];S.units=S.units||{};artistsOf(x).forEach(function(n){S.units[n]=(S.units[n]||0)+1;for(var k=0;k<w;k++)S.sales.push({id:id,a:n,at:Date.now()})})}}
 var DISQUES=[{n:500,t:"Disque d'or"},{n:1500,t:"Disque de platine"},{n:10000,t:"Disque de diamant"}];
 function discOf(n){var c=((S.units||{})[n])||0,best=null;DISQUES.forEach(function(d){if(c>=d.n)best=d});return best?'<span class="disc" style="display:inline-block;background:#E4B23C;color:#0E3B34;padding:4px 12px;border-radius:999px;font-weight:800;font-size:13px;margin:4px 0">'+best.t+'</span>':""}
-function drawDisc(){var d=$("disc");if(d&&S.user&&S.user.role==="artiste")d.innerHTML=discOf(S.user.name)}
+function drawDisc(){var d=$("discBox");if(d&&S.user&&S.user.role==="artiste")d.innerHTML=discOf(S.user.name)}
 var sb=supabase.createClient("https://loqxgegixjnrfiihthjq.supabase.co","sb_publishable_ei0GgZ26l3KJv8qTCWS3Cg_iizOBYgR");
 var authMode="signup";
 function setAuthMode(m){authMode=m;var s=m==="signup";$("aTitle").textContent=s?"Créer un compte":"Se connecter";$("aSignFields").hidden=!s;$("aAccWrap").hidden=!s;$("aOk").textContent=s?"Créer mon compte":"Se connecter";$("aSwitch").textContent=s?"J'ai déjà un compte":"Créer un compte"}
 $("aSwitch").onclick=function(){setAuthMode(authMode==="signup"?"login":"signup")};
-$("authBtn").onclick=function(){if(S.user){sb.auth.signOut();S.user=null;save();render();toast("Déconnecté")}else{setAuthMode("signup");$("dAuth").showModal()}};
+$("authBtn").onclick=function(){setAuthMode("signup");$("dAuth").showModal()};
+$("setBtn").onclick=function(){location.hash="params";showView("params")};
 async function loadUser(u){
 var pr=await sb.from("profiles").select("*").eq("id",u.id).maybeSingle();
 var prof=pr.data;
@@ -555,7 +562,14 @@ $("skipBtn").onclick=function(){S.skip=(S.skip||0)+30;save();render();toast("Tes
 $("cashBtn").onclick=function(){var a=window.avail||0;
 if(a<1000){toast("Retrait possible à partir de 1 000 F. Disponible : "+F(a));return}
 ask("Retrait de "+F(a)+" vers votre TMoney ou votre carte Visa",function(){S.paid=(S.paid||0)+a;toast("Retrait de "+F(a)+" demandé. Il sera versé sur votre compte de paiement.")})};
-var HM={decouverte:"decouverte",catalogue:"decouverte",playlist:"playlist",playlists:"playlist",actu:"actu",billetterie:"actu",ma:"ma",artiste:"ma",tarifs:"ma"};
+function renderParams(){var box=$("accInfo");if(!box)return;
+if(S.user){box.innerHTML='<b>'+esc(S.user.name)+'</b><div class="note">'+esc(S.user.mail||"")+' · '+(S.user.role==="artiste"?"Compte artiste":"Compte fan")+'</div>';$("outBtn").hidden=false;$("inBtn").hidden=true}
+else{box.innerHTML='<p class="note" style="margin:0">Vous n\'êtes pas connecté.</p>';$("outBtn").hidden=true;$("inBtn").hidden=false}}
+$("outBtn").onclick=function(){if(!S.user)return;if(window.sb&&sb.auth)sb.auth.signOut();S.user=null;save();render();toast("Déconnecté");showView("decouverte")};
+$("inBtn").onclick=function(){setAuthMode("signup");$("dAuth").showModal()};
+$("pInstall").onclick=function(){$("installBtn").click()};
+$("pShare").onclick=function(){$("shareSiteBtn").click()};
+var HM={params:"params",decouverte:"decouverte",catalogue:"decouverte",playlist:"playlist",playlists:"playlist",actu:"actu",billetterie:"actu",ma:"ma",artiste:"ma",tarifs:"ma"};
 showView(HM[location.hash.slice(1)]||"decouverte");
 
 var pvAud=$("player"),pvBtn=$("pvBtn"),pvSeek=$("pvSeek");
