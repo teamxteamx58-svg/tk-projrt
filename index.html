@@ -148,6 +148,7 @@ body.has-player{padding-bottom:190px}
 #bnav button.on svg,#bnav a.on svg{transform:translateY(-1px)}
 #bnav button:focus-visible,#bnav a:focus-visible{outline:2px solid #FF6A1A;outline-offset:2px}
 #bnav .i{display:none}
+.vb{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:#22c55e;color:#fff;font:800 11px/1 system-ui,sans-serif;margin-left:5px;vertical-align:middle;box-shadow:0 0 0 2px rgba(34,197,94,.25)}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
@@ -196,7 +197,7 @@ body.has-player{padding-bottom:190px}
 <p id="hostInfo" style="font-weight:600"></p>
 <div class="row" style="margin:0 0 12px"><button id="hostBtn" class="alt">Activer ou renouveler l'hébergement (500 F)</button></div>
 <label for="bio">Ma biographie (3 lignes maximum)</label><textarea id="bio" rows="3" maxlength="240"></textarea>
-<div class="row" style="margin:6px 0 12px"><button id="bioBtn" class="alt">Enregistrer ma bio</button></div><label for="phFile">Photo de profil (facultatif)</label><input id="phFile" type="file" accept="image/*"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="phOk" style="width:auto;margin-top:5px">J'accepte que cette photo soit affichée publiquement sur mon profil artiste.</label><div class="row" style="margin:0 0 12px"><button id="phBtn" class="alt">Enregistrer la photo</button></div>
+<div class="row" style="margin:6px 0 12px"><button id="bioBtn" class="alt">Enregistrer ma bio</button></div><div class="box" style="margin:0 0 12px"><h3>Badge artiste certifié <span class="vb" aria-hidden="true">✔</span></h3><p class="note">Lancez une publicité de 7 jours sur la plateforme. À la fin, votre profil reçoit le badge vert.</p><div id="certInfo" style="font-weight:600"></div><div class="row" style="margin:6px 0 0"><button id="certBtn" class="alt">Lancer la publicité (5 000 F)</button></div></div><label for="phFile">Photo de profil (facultatif)</label><input id="phFile" type="file" accept="image/*"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="phOk" style="width:auto;margin-top:5px">J'accepte que cette photo soit affichée publiquement sur mon profil artiste.</label><div class="row" style="margin:0 0 12px"><button id="phBtn" class="alt">Enregistrer la photo</button></div>
 <p id="gains" style="font-weight:600"></p>
 <div class="row" style="margin:0 0 8px"><button id="cashBtn" class="alt" hidden>Retirer mes gains</button><button id="skipBtn" class="alt" hidden>Test : avancer de 30 jours</button></div>
 <label for="fTitle">Titre</label><input id="fTitle" maxlength="60">
@@ -255,7 +256,7 @@ if(!S.songs||!S.songs.length){S.songs=[
 {id:"d5",t:"Vieille chanson",a:"Yao Tem",s:970,at:now-400*864e5}];S.owned={}}
 S.songs=S.songs.filter(function(x){return now-x.at<YEAR});
 if(!S.events)S.events=[{id:"e1",t:"Concert Bassar en fête",a:"Kossi Mawuli",place:"Place de l'Indépendance, Bassar",date:"2026-12-20",price:2000,cap:300,sold:120,ts:[]},{id:"e2",t:"Soirée Afro-Zik",a:"DJ Tchaa",place:"Lomé",date:"2026-11-14",price:5000,cap:150,sold:150,ts:[]}];
-S.tickets=S.tickets||[];S.albums=S.albums||[];S.photos=S.photos||{};S.playlists=S.playlists||[];S.host=S.host||{};S.votes=S.votes||{};
+S.tickets=S.tickets||[];S.albums=S.albums||[];S.photos=S.photos||{};S.promo=S.promo||{};S.playlists=S.playlists||[];S.host=S.host||{};S.votes=S.votes||{};
 S.bios=S.bios||{"Kossi Mawuli":"Chanteur originaire de Bassar. Il mêle rythmes traditionnels et sons modernes.","Abla Tchalim":"Auteure-compositrice. Ses textes parlent de sagesse et de mémoire.","DJ Tchaa":"DJ et producteur de Sokodé. Spécialiste des soirées afro."};
 var DM={d1:["Son : Koffi A. · Mixage : Ama T.",34,2],d2:["Enregistrement : Studio Nawdm · Mastering : Yao P.",21,1],d3:["Mixage : DJ Tchaa",12,0],d4:["Son : Efua K.",5,0],d5:["Mixage : Studio Tem",18,3]};
 S.songs.forEach(function(x){if(x.lk==null){var d=DM[x.id];x.lk=d?d[1]:0;x.dl=d?d[2]:0;if(d&&!x.cr)x.cr=d[0]}x.dl=x.dl||0;x.cm=x.cm||[]});
@@ -294,7 +295,7 @@ if(!S.user)$("bio").dataset.u="";
 $("gains").textContent=art?"Disponibles : "+F(window.avail)+" · en attente (30 jours max) : "+F(pend)+" · déjà retirés : "+F(S.paid||0):"";
 $("cashBtn").hidden=!art;$("skipBtn").hidden=!art;
 $("subInfo").textContent=subActive()?"Abonnement actif jusqu'au "+new Date(S.sub).toLocaleDateString("fr-FR"):"";
-drawMusic();drawRails();drawPl();drawAlbForm()}
+drawMusic();drawRails();drawPl();drawAlbForm();drawCert()}
 function need(){if(!S.user){toast("Créez d'abord un compte.");$("dAuth").showModal();return false}return true}
 var pending=null;
 function ask(txt,fn){if(!need())return;pending=fn;$("pWhat").textContent=txt;$("dPay").showModal()}
@@ -390,6 +391,15 @@ var im=$("evImg").files[0];
 if(im&&!$("evRight").checked){toast("Certifiez avoir le droit d'utiliser la photo.");return}
 makeWide(im,function(cv){S.events.push({id:"e"+Date.now(),t:t,a:S.user.name,place:p,date:d,price:pr,cap:c,sold:0,ts:[],own:1,cv:cv});
 ["evT","evP","evD","evPr","evC","evImg"].forEach(function(i){$(i).value=""});$("evRight").checked=false;save();render();toast("Événement publié.")})};
+function badgeOf(n){var p=(S.promo||{})[n];return p&&p+7*864e5<=Date.now()?'<span class="vb" title="Artiste certifié" aria-label="Artiste certifié">✔</span>':''}
+function drawCert(){var box=$("certInfo");if(!box)return;var art=!!(S.user&&S.user.role==="artiste");
+$("certBtn").hidden=!art||!!((S.promo||{})[S.user&&S.user.name]);
+if(!art){box.textContent="";return}
+var st=(S.promo||{})[S.user.name];
+if(!st){box.textContent="Pas encore certifié.";return}
+var end=st+7*864e5;box.textContent=end<=Date.now()?"Vous êtes certifié ✔":"Publicité en cours : badge dans "+Math.ceil((end-Date.now())/864e5)+" j."}
+$("certBtn").onclick=function(){if(!need())return;if(S.user.role!=="artiste"){toast("Réservé aux comptes artiste.");return}
+ask("Publicité de 7 jours : 5 000 F",function(){S.promo[S.user.name]=Date.now();save();render();toast("Publicité lancée. Votre badge vert arrive dans 7 jours.")})};
 function drawAlbForm(){var box=$("alTracks");if(!box)return;var me=S.user&&S.user.role==="artiste"?S.user.name:"";
 var mine=S.songs.filter(function(x){return x.own&&x.a===me});
 var sig=me+"|"+mine.map(function(x){return x.id}).join();if(sig===drawAlbForm.s)return;drawAlbForm.s=sig;
@@ -434,7 +444,7 @@ var ma=shareOf(a,me)>0?1:0,mb=shareOf(b,me)>0?1:0;return mb-ma||b.at-a.at});
 var h="";L.forEach(function(x){var mine=shareOf(x,me)>0,days=Math.max(0,Math.ceil((x.at+YEAR-now)/864e5)),can=S.owned[x.id],
 myv=S.user?(S.votes[S.user.mail+"|"+x.id]||0):0,bio=S.bios[x.a]||"";
 h+='<article class="card" id="s-'+x.id+'">'+cover(x)+'<div class="cb"><div class="ttl"><b>'+esc(x.t)+'</b>'+(x.s>=GOLD?' <span class="gold">Disque d\'or</span>':'')+'</div>'+
-'<div class="art"><a href="artiste.html?n='+encodeURIComponent(x.a)+'">'+esc(x.a)+'</a>'+(x.sp&&x.sp.length>1?' feat. '+esc(x.sp.slice(1).map(function(s){return s.n}).join(', ')):'')+(mine?' (vous)':'')+'</div>'+(bio?'<p class="bio">'+esc(bio)+'</p>':'')+(x.cr?'<small class="cr">Crédits : '+esc(x.cr)+'</small>':'')+
+'<div class="art"><a href="artiste.html?n='+encodeURIComponent(x.a)+'">'+esc(x.a)+'</a>'+badgeOf(x.a)+(x.sp&&x.sp.length>1?' feat. '+esc(x.sp.slice(1).map(function(s){return s.n}).join(', ')):'')+(mine?' (vous)':'')+'</div>'+(bio?'<p class="bio">'+esc(bio)+'</p>':'')+(x.cr?'<small class="cr">Crédits : '+esc(x.cr)+'</small>':'')+
 (x.rel&&x.rel>Date.now()?'<small class="cr">Sortie prévue le '+new Date(x.rel).toLocaleString('fr-FR')+'</small>':'')+'<div class="bar"><i style="width:'+Math.min(100,x.s/GOLD*100)+'%"></i></div><small>'+x.s+' ventes · supprimée dans '+days+' j</small>'+
 '<div class="vote"><button class="alt'+(myv===1?' on':'')+'" data-like="'+x.id+'" aria-label="J\'aime">👍 '+x.lk+'</button><button class="alt'+(myv===-1?' on':'')+'" data-dis="'+x.id+'" aria-label="Je n\'aime pas">👎 '+x.dl+'</button></div>'+
 '<div class="row" style="margin-top:8px">'+(can?'<button data-play="'+x.id+'">Écouter</button>':'<button data-buy="'+x.id+'">Débloquer '+F(priceOf(x))+'</button>'+(subActive()?'<button class="alt" data-play="'+x.id+'">Écouter (abonné)</button>':''))+'</div>'+
@@ -468,7 +478,7 @@ var sc={};vs.forEach(function(x){sc[x.id]=weekScore(x)});
 var trend=vs.slice().sort(function(a,b){return (sc[b.id]-sc[a.id])||(b.lk-a.lk)||(b.s-a.s)}).slice(0,10);
 var best=vs.slice().sort(function(a,b){return b.s-a.s}).slice(0,10);
 var als=(S.albums||[]).filter(function(a){return hostOk(a.a)&&(!a.rel||a.rel<=Date.now())}).sort(function(a,b){return b.at-a.at}).slice(0,2);
-$("featured").innerHTML=als.map(function(al){return '<article class="feat">'+(al.cv&&al.cv.indexOf("data:image/")===0?'<img class="cv" alt="Pochette de '+escA(al.t)+'" src="'+al.cv+'">':'<div class="cv" aria-hidden="true">'+esc(al.t.charAt(0).toUpperCase())+'</div>')+'<h3>'+esc(al.t)+'</h3><div class="ar">Album · <a href="artiste.html?n='+encodeURIComponent(al.a)+'">'+esc(al.a)+'</a>'+' · '+al.tracks.length+' titre(s)</div><div class="pr"><span>'+F(al.pr)+'</span>'+(S.owned["A"+al.id]?'<button class="buy" disabled>Acheté</button>':'<button class="buy" data-abuy="'+al.id+'">Acheter l\'album</button>')+'</div></article>'}).concat(trend.slice(0,Math.max(0,4-als.length)).map(function(x){return '<article class="feat">'+cover(x)+'<h3>'+esc(x.t)+'</h3><div class="ar">'+esc(x.a)+'</div><div class="pr"><span>'+F(priceOf(x))+'</span>'+(S.owned[x.id]?'<button class="buy" data-play="'+x.id+'">Écouter</button>':'<button class="buy" data-buy="'+x.id+'">Acheter</button>')+'</div></article>'})).join("");
+$("featured").innerHTML=als.map(function(al){return '<article class="feat">'+(al.cv&&al.cv.indexOf("data:image/")===0?'<img class="cv" alt="Pochette de '+escA(al.t)+'" src="'+al.cv+'">':'<div class="cv" aria-hidden="true">'+esc(al.t.charAt(0).toUpperCase())+'</div>')+'<h3>'+esc(al.t)+'</h3><div class="ar">Album · <a href="artiste.html?n='+encodeURIComponent(al.a)+'">'+esc(al.a)+'</a>'+badgeOf(al.a)+' · '+al.tracks.length+' titre(s)</div><div class="pr"><span>'+F(al.pr)+'</span>'+(S.owned["A"+al.id]?'<button class="buy" disabled>Acheté</button>':'<button class="buy" data-abuy="'+al.id+'">Acheter l\'album</button>')+'</div></article>'}).concat(trend.slice(0,Math.max(0,4-als.length)).map(function(x){return '<article class="feat">'+cover(x)+'<h3>'+esc(x.t)+'</h3><div class="ar">'+esc(x.a)+'</div><div class="pr"><span>'+F(priceOf(x))+'</span>'+(S.owned[x.id]?'<button class="buy" data-play="'+x.id+'">Écouter</button>':'<button class="buy" data-buy="'+x.id+'">Acheter</button>')+'</div></article>'})).join("");
 $("trend").innerHTML=trend.map(function(x){return tile(x)}).join("");
 $("best").innerHTML=best.map(function(x){return tile(x,x.s+' ventes')}).join("")}
 function showView(v){document.querySelectorAll(".view").forEach(function(x){x.hidden=x.id!=="v-"+v});document.querySelectorAll("#bnav button").forEach(function(b){var on=b.dataset.view===v;b.classList.toggle("on",on);on?b.setAttribute("aria-current","page"):b.removeAttribute("aria-current")});window.scrollTo(0,0)}

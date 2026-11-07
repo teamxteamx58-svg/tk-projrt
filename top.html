@@ -97,6 +97,7 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 #bnav button.on svg,#bnav a.on svg{transform:translateY(-1px)}
 #bnav button:focus-visible,#bnav a:focus-visible{outline:2px solid #FF6A1A;outline-offset:2px}
 #bnav .i{display:none}
+.vb{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:#22c55e;color:#fff;font:800 11px/1 system-ui,sans-serif;margin-left:5px;vertical-align:middle;box-shadow:0 0 0 2px rgba(34,197,94,.25)}
 </style>
 <style>
 .bannerTest{background:var(--card);border:1px dashed var(--gold);border-radius:10px;padding:10px 14px;font-size:14px;color:var(--mute);margin:12px 0}
@@ -123,6 +124,7 @@ button:disabled{opacity:.55}
 <script>
 var S={};try{S=JSON.parse(localStorage.getItem("bassarizik1")||"{}")}catch(e){}
 function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function badgeOf(n){var p=(S.promo||{})[n];return p&&p+7*864e5<=Date.now()?'<span class="vb" title="Artiste certifié">✔</span>':''}
 function mk(t){var d=new Date(t);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")}
 var sales=S.sales||[], plays=S.plays||[];
 var months={};sales.concat(plays).forEach(function(x){months[mk(x.at)]=1});
@@ -137,7 +139,7 @@ plays.forEach(function(x){if(mk(x.at)!==m)return;a[x.a]=a[x.a]||{v:0,p:0};a[x.a]
 var rows=Object.keys(a).map(function(n){return {n:n,v:a[n].v,p:a[n].p,s:a[n].v*10+a[n].p}}).sort(function(x,y){return y.s-x.s}).slice(0,10);
 if(!rows.length){document.getElementById("out").innerHTML='<p class="note">Aucune donnée pour ce mois.</p>';return}
 var h='<table><tr><th></th><th>Artiste</th><th>Ventes</th><th>Écoutes</th><th>Score</th></tr>';
-rows.forEach(function(r,i){h+='<tr><td class="r">'+(i+1)+'</td><td>'+esc(r.n)+'</td><td>'+r.v+'</td><td>'+r.p+'</td><td>'+r.s+'</td></tr>'});
+rows.forEach(function(r,i){h+='<tr><td class="r">'+(i+1)+'</td><td>'+esc(r.n)+badgeOf(r.n)+'</td><td>'+r.v+'</td><td>'+r.p+'</td><td>'+r.s+'</td></tr>'});
 document.getElementById("out").innerHTML=h+'</table>';
 }
 sel.onchange=function(){draw(this.value)};

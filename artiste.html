@@ -164,6 +164,7 @@ a{color:inherit}
 #bnav button.on svg,#bnav a.on svg{transform:translateY(-1px)}
 #bnav button:focus-visible,#bnav a:focus-visible{outline:2px solid #FF6A1A;outline-offset:2px}
 #bnav .i{display:none}
+.vb{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:#22c55e;color:#fff;font:800 11px/1 system-ui,sans-serif;margin-left:5px;vertical-align:middle;box-shadow:0 0 0 2px rgba(34,197,94,.25)}
 </style>
 </head>
 <body>
@@ -185,6 +186,7 @@ function escA(s){return esc(s).replace(/"/g,"&quot;")}
 var name=new URLSearchParams(location.search).get("n")||"";
 var me=S.user&&S.user.role==="artiste"?S.user.name:"";
 var isMe=!!name&&name===me;
+function badgeOf(n){var p=(S.promo||{})[n];return p&&p+7*864e5<=Date.now()?'<span class="vb" title="Artiste certifié" aria-label="Artiste certifié">✔</span>':''}
 function hostOk(n){return ((S.host||{})[n]||0)>now}
 function shareOf(x,n){if(!x.sp)return x.a===n?1:0;var e=x.sp.filter(function(s){return s.n===n})[0];return e?e.p/100:0}
 function inCat(x){if(shareOf(x,name)<=0)return false;if(x.rel&&x.rel>now&&!isMe)return false;if(x.r>=3)return false;if(!x.own)return true;return hostOk(x.a)}
@@ -203,11 +205,11 @@ var sales=(S.songs||[]).filter(function(x){return shareOf(x,name)>0}).reduce(fun
 var r=rankOf();
 document.title=name+" · BASSARI-ZIK";
 document.getElementById("prof").innerHTML=(photo?'<img class="ph" alt="Photo de '+escA(name)+'" src="'+photo+'" style="object-fit:cover">':'<div class="ph" aria-hidden="true">'+esc(name.charAt(0).toUpperCase())+'</div>')
-+'<h1>'+esc(name)+'</h1>'
++'<h1>'+esc(name)+badgeOf(name)+'</h1>'
 +(bio?'<p class="bio2">'+esc(bio)+'</p>':'<p class="note">Cet artiste n\'a pas encore écrit sa biographie.</p>')
 +'<div class="stats2"><div><b>'+songs.length+'</b><small>chansons</small></div><div><b>'+albums.length+'</b><small>albums</small></div><div><b>'+sales+'</b><small>ventes</small></div>'+(r.pos?'<div><b>#'+r.pos+'</b><small>Top du mois</small></div>':'')+'</div>';
 document.getElementById("songs").innerHTML=songs.length?songs.map(function(x){var feat=x.sp&&x.sp.length>1?' · feat. '+x.sp.slice(1).map(function(s){return esc(s.n)}).join(', '):'';
-return '<div class="item">'+cover(x)+'<div class="tx"><b>'+esc(x.t)+'</b><small>'+esc(x.a)+feat+' · '+F(x.pr||200)+'</small></div><a class="tag" href="index.html#catalogue">Écouter</a></div>'}).join(""):'<p class="note">Aucune chanson pour le moment.</p>';
+return '<div class="item">'+cover(x)+'<div class="tx"><b>'+esc(x.t)+'</b><small>'+esc(x.a)+badgeOf(x.a)+feat+' · '+F(x.pr||200)+'</small></div><a class="tag" href="index.html#catalogue">Écouter</a></div>'}).join(""):'<p class="note">Aucune chanson pour le moment.</p>';
 document.getElementById("albums").innerHTML=albums.length?albums.map(function(al){return '<div class="item">'+(al.cv&&al.cv.indexOf("data:image/")===0?'<img class="cv" alt="" src="'+al.cv+'">':'<div class="cv" aria-hidden="true">'+esc(al.t.charAt(0).toUpperCase())+'</div>')+'<div class="tx"><b>'+esc(al.t)+'</b><small>'+al.tracks.length+' titre(s) · '+F(al.pr)+'</small></div><a class="tag" href="index.html#decouverte">Acheter</a></div>'}).join(""):'<p class="note">Aucun album pour le moment.</p>';
 var nx=(S.songs||[]).filter(function(x){return x.own&&x.a===name&&x.rel&&x.rel>now});
 document.getElementById("nextSec").hidden=!(isMe&&nx.length);
