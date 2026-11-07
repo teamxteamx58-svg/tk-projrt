@@ -189,6 +189,7 @@ body.has-player{padding-bottom:190px}
 </div>
 <div class="view" id="v-ma" hidden>
 <section><h2>Ma musique</h2><p class="note">Votre compte, vos gains et vos abonnements.</p></section>
+<section id="tarifs"><h2>Abonnements</h2><p class="note">Écoutez tout le catalogue avec un abonnement. Découvrez les formules sur une page dédiée.</p><div class="row"><button onclick="location.href='abonnements.html'">Voir les abonnements</button></div><p class="note" id="subInfo"></p></section>
 <section id="artiste"><h2>Espace artiste</h2>
 <div class="box">
 <p>Hébergement : 500 F par mois pour publier et garder toutes vos chansons en ligne. Les fichiers sont conservés tels quels, sans compression qui altère le son.</p>
@@ -212,7 +213,7 @@ body.has-player{padding-bottom:190px}
 <div class="box" style="margin-top:14px"><h3>Publier un album</h3><p class="note">Regroupez des chansons que vous avez déjà publiées. Acheter l'album débloque toutes ses chansons.</p><label for="alT">Titre de l'album</label><input id="alT" maxlength="60"><label for="alPr">Prix de l'album (F, de 50 F à 50 000 F)</label><input id="alPr" type="number" min="50" max="50000" step="50" value="1000"><label for="alRel">Date et heure de sortie (facultatif : vide = publication immédiate)</label><input id="alRel" type="datetime-local"><label for="alImg">Pochette de l'album (facultatif)</label><input id="alImg" type="file" accept="image/*"><label>Chansons de l'album (cochez-les)</label><div id="alTracks" class="note"></div><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="alRight" style="width:auto;margin-top:5px">Je certifie avoir le droit de publier ces chansons et cette pochette.</label><div class="row"><button id="alBtn">Publier l'album</button></div></div>
 </div></section>
 
-<section id="tarifs"><h2>Abonnements</h2><p class="note">Écoutez tout le catalogue avec un abonnement. Découvrez les formules sur une page dédiée.</p><div class="row"><button onclick="location.href='abonnements.html'">Voir les abonnements</button></div><p class="note" id="subInfo"></p></section>
+
 <p class="note"><a href="politique.html">Politique du site</a></p>
 </div>
 </main>
