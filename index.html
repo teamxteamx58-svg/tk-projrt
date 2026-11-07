@@ -169,6 +169,7 @@ body.has-player{padding-bottom:190px}
 .iconbtn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
 .pillbtn{padding:8px 14px;border-radius:999px;font-size:14px;background:var(--gold);color:#12201D;flex:none}
 header .wrap{gap:8px}
+[data-sk].on{background:#E4B23C;color:#12201D;border-color:#E4B23C}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
 </head>
@@ -220,6 +221,9 @@ header .wrap{gap:8px}
 <div class="row" style="margin:6px 0 12px"><button id="bioBtn" class="alt">Enregistrer ma bio</button></div><div class="box" style="margin:0 0 12px"><h3>Badge artiste certifié <span class="vb" aria-hidden="true">✔</span></h3><p class="note">Votre badge vert est automatique : il arrive 7 jours après la publication de votre première chanson validée.</p><div id="certInfo" style="font-weight:600"></div><div id="discBox" style="margin-top:8px"></div></div><label for="phFile">Photo de profil (facultatif)</label><input id="phFile" type="file" accept="image/*"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="phOk" style="width:auto;margin-top:5px">J'accepte que cette photo soit affichée publiquement sur mon profil artiste.</label><div class="row" style="margin:0 0 12px"><button id="phBtn" class="alt">Enregistrer la photo</button></div>
 <p id="gains" style="font-weight:600"></p>
 <div class="row" style="margin:0 0 8px"><button id="cashBtn" class="alt" hidden>Retirer mes gains</button><button id="skipBtn" class="alt" hidden>Test : avancer de 30 jours</button></div>
+<div id="statBox" class="box" hidden style="margin:0 0 12px"><h3 style="margin:0 0 8px">Mes statistiques</h3>
+<div class="row" style="margin:0 0 8px"><button class="alt" data-sk="rev">Revenus</button><button class="alt" data-sk="listen">Écoutes</button><button class="alt" data-sk="sales">Ventes</button></div>
+<p id="statTot" class="note" style="margin:0 0 8px"></p><div id="statChart"></div><p class="note" style="margin:6px 0 0">30 derniers jours, jour par jour.</p></div>
 <div id="wBox" class="box" hidden style="margin:0 0 12px"><h3 style="margin:0 0 6px">Portefeuille</h3><p id="wCur" class="note" style="margin:0 0 10px"></p>
 <label for="wType">Opérateur de retrait</label><select id="wType"><option value="tmoney">TMoney</option><option value="moov">Moov Money</option></select>
 <label for="wNum">Numéro de retrait</label><input id="wNum" inputmode="tel" placeholder="90 00 00 00" autocomplete="tel">
@@ -427,12 +431,34 @@ if(im&&!$("evRight").checked){toast("Certifiez avoir le droit d'utiliser la phot
 makeWide(im,function(cv){S.events.push({id:"e"+Date.now(),t:t,a:S.user.name,place:p,date:d,price:pr,cap:c,sold:0,ts:[],own:1,cv:cv});
 ["evT","evP","evD","evPr","evC","evImg"].forEach(function(i){$(i).value=""});$("evRight").checked=false;save();render();toast("Événement publié.")})};
 function badgeOf(n){var a=(S.autoCert||{})[n];return (a&&a+7*864e5<=Date.now())?'<span class="vb" title="Artiste certifié" aria-label="Artiste certifié">✔</span>':''}
+function statsSeries(name,kind){var D=864e5,start=new Date();start.setHours(0,0,0,0);var t0=start.getTime()-29*D,vals=new Array(30).fill(0);
+function add(t,v){var i=Math.floor((t-t0)/D);if(i>=0&&i<30)vals[i]+=v}
+if(kind==="rev"){S.songs.forEach(function(x){if(!x.own)return;var sh=shareOf(x,name);if(!sh)return;(x.ts||[]).forEach(function(t){add(t,Math.round(priceOf(x)*.75*sh))})});
+(S.albums||[]).forEach(function(al){if(al.a!==name)return;(al.ts||[]).forEach(function(t){add(t,Math.round(al.pr*.75))})});
+(S.events||[]).forEach(function(e){if(e.own&&e.a===name)(e.ts||[]).forEach(function(t){add(t,Math.round(e.price*.9))})});
+(S.subLog||[]).forEach(function(e){if(e.a===name)add(e.at,e.amt)})}
+if(kind==="listen"){(S.plays||[]).forEach(function(p){if(p.a===name)add(p.at,1)})}
+if(kind==="sales"){S.songs.forEach(function(x){if(!x.own||!(shareOf(x,name)>0))return;(x.ts||[]).forEach(function(t){add(t,1)})});
+(S.albums||[]).forEach(function(al){if(al.a===name)(al.ts||[]).forEach(function(t){add(t,1)})})}
+return {vals:vals,t0:t0}}
+function drawStats(){var box=$("statBox");if(!box)return;var art=!!(S.user&&S.user.role==="artiste");box.hidden=!art;if(!art)return;
+var kind=window.statKind||"rev",r=statsSeries(S.user.name,kind),v=r.vals,D=864e5;
+var names={rev:"Revenus",listen:"Écoutes",sales:"Ventes"},fmt=function(n){return kind==="rev"?F(n):String(n)};
+var total=v.reduce(function(a,b){return a+b},0);
+box.querySelectorAll("[data-sk]").forEach(function(b){b.classList.toggle("on",b.dataset.sk===kind)});
+$("statTot").textContent=names[kind]+" sur 30 jours : "+fmt(total)+" · aujourd'hui : "+fmt(v[29]);
+var W=320,H=140,max=Math.max(1,Math.max.apply(null,v)),pts=v.map(function(y,i){return [i*(W/29),H-8-(y/max)*(H-24)]});
+var line=pts.map(function(p){return p[0].toFixed(1)+","+p[1].toFixed(1)}).join(" ");
+var area="0,"+H+" "+line+" "+W+","+H;
+var d1=new Date(r.t0).toLocaleDateString("fr-FR",{day:"numeric",month:"short"}),d2=new Date(r.t0+29*D).toLocaleDateString("fr-FR",{day:"numeric",month:"short"});
+$("statChart").innerHTML='<svg viewBox="0 0 '+W+' '+H+'" width="100%" role="img" aria-label="Courbe des '+names[kind].toLowerCase()+' sur 30 jours" style="display:block;overflow:visible"><polygon points="'+area+'" fill="rgba(228,178,60,.16)"/><polyline points="'+line+'" fill="none" stroke="#E4B23C" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/><circle cx="'+pts[29][0].toFixed(1)+'" cy="'+pts[29][1].toFixed(1)+'" r="4" fill="#E4B23C"/></svg><div class="row" style="justify-content:space-between;margin:4px 0 0"><small class="note">'+d1+'</small><small class="note">'+d2+'</small></div>';}
+$("statBox").onclick=function(e){var b=e.target.closest("[data-sk]");if(!b)return;window.statKind=b.dataset.sk;drawStats()};
 function drawWallet(){var w=$("wBox");if(!w)return;var art=!!(S.user&&S.user.role==="artiste");w.hidden=!art;if(!art)return;
 var s=(S.wallet||{})[S.user.name]||{};$("wType").value=s.type||"tmoney";$("wNum").value=s.num||"";
 $("wCur").textContent=s.num?"Numéro enregistré : "+s.type.toUpperCase()+" "+s.num+". Les retraits sont envoyés vers ce numéro.":"Aucun numéro enregistré. Enregistrez-le avant de retirer vos gains."}
 $("wSave").onclick=function(){if(!S.user)return;var n=$("wNum").value.replace(/\D/g,"");if(n.length<8||n.length>15){toast("Numéro invalide : entre 8 et 15 chiffres.");return}
 S.wallet=S.wallet||{};S.wallet[S.user.name]={type:$("wType").value,num:n,at:Date.now()};save();drawWallet();toast("Numéro de retrait enregistré.")};
-function drawCert(){drawDisc();drawWallet();var box=$("certInfo");if(!box)return;var art=!!(S.user&&S.user.role==="artiste");
+function drawCert(){drawDisc();drawWallet();drawStats();var box=$("certInfo");if(!box)return;var art=!!(S.user&&S.user.role==="artiste");
 if(!art){box.textContent="";return}
 var a=(S.autoCert||{})[S.user.name];
 if(!a){box.textContent="Pas encore certifié. Publiez votre première chanson : le badge arrive 7 jours après sa validation.";return}
