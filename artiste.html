@@ -188,7 +188,7 @@ function escA(s){return esc(s).replace(/"/g,"&quot;")}
 var name=new URLSearchParams(location.search).get("n")||"";
 var me=S.user&&S.user.role==="artiste"?S.user.name:"";
 var isMe=!!name&&name===me;
-function badgeOf(n){var p=(S.promo||{})[n];return ((p&&p+7*864e5<=Date.now())||(S.autoCert||{})[n])?'<span class="vb" title="Artiste certifié" aria-label="Artiste certifié">✔</span>':''}
+function badgeOf(n){var a=(S.autoCert||{})[n];return (a&&a+7*864e5<=Date.now())?'<span class="vb" title="Artiste certifié" aria-label="Artiste certifié">✔</span>':''}
 function hostOk(n){return ((S.host||{})[n]||0)>now}
 function shareOf(x,n){if(!x.sp)return x.a===n?1:0;var e=x.sp.filter(function(s){return s.n===n})[0];return e?e.p/100:0}
 function inCat(x){if(shareOf(x,name)<=0)return false;if(x.rel&&x.rel>now&&!isMe)return false;if(x.r>=3)return false;if(x.vs&&x.vs!=="ok")return false;return true}

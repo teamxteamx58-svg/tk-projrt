@@ -124,7 +124,7 @@ button:disabled{opacity:.55}
 <script>
 var S={};try{S=JSON.parse(localStorage.getItem("bassarizik1")||"{}")}catch(e){}
 function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
-function badgeOf(n){var p=(S.promo||{})[n];return ((p&&p+7*864e5<=Date.now())||(S.autoCert||{})[n])?'<span class="vb" title="Artiste certifié">✔</span>':''}
+function badgeOf(n){var a=(S.autoCert||{})[n];return (a&&a+7*864e5<=Date.now())?'<span class="vb" title="Artiste certifié">✔</span>':''}
 function mk(t){var d=new Date(t);return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")}
 var sales=S.sales||[], plays=S.plays||[];
 var months={};sales.concat(plays).forEach(function(x){months[mk(x.at)]=1});
