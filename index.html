@@ -153,7 +153,7 @@ body.has-player{padding-bottom:190px}
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<header><div class="wrap"><div class="logo">BASSARI-ZIK</div><button id="navQ" class="alt" aria-label="Rechercher" style="padding:8px 12px">🔎</button><button id="installBtn" hidden style="padding:8px 12px">Télécharger l'app</button><button id="authBtn" class="alt">Créer un compte</button></div></header>
+<header><div class="wrap"><div class="logo">BASSARI-ZIK</div><button id="navQ" class="alt" aria-label="Rechercher" style="padding:8px 12px">🔎</button><button id="installBtn" hidden style="padding:8px 12px">Télécharger l'app</button><button id="shareSiteBtn" class="alt" style="padding:8px 12px">Partager</button><button id="authBtn" class="alt">Créer un compte</button></div></header>
 
 <main class="wrap app">
 <div class="view" id="v-decouverte">
@@ -486,6 +486,8 @@ $("installBtn").onclick=function(){
  if(deferredPrompt){deferredPrompt.prompt();deferredPrompt.userChoice.then(function(){deferredPrompt=null;$("installBtn").hidden=true});return}
  if(isIOS){toast("Sur iPhone : touchez le bouton Partager, puis « Sur l'écran d'accueil ».");return}
  toast("Ouvrez le menu de votre navigateur et choisissez « Installer l'application ».")};
+(function(){var url=location.href.split("#")[0].replace(/[^/]*$/,"")+"index.html";var txt="BASSARI-ZIK : la musique d'ici, soutenue par ceux d'ici.";
+$("shareSiteBtn").onclick=function(){if(navigator.share){navigator.share({title:"BASSARI-ZIK",text:txt,url:url}).catch(function(){})}else if(navigator.clipboard){navigator.clipboard.writeText(url).then(function(){toast("Lien du site copié.")},function(){toast(url)})}else{toast(url)}}})();
 if("serviceWorker" in navigator){window.addEventListener("load",function(){navigator.serviceWorker.register("sw.js").catch(function(){})})}
 document.querySelectorAll("[data-f]").forEach(function(b){b.onclick=function(){V.f=b.dataset.f;drawMusic()}});
 $("list").oninput=function(e){var i=e.target.closest("[data-ci]");if(i)drafts[i.dataset.ci]=i.value};

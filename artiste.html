@@ -174,6 +174,7 @@ a{color:inherit}
 <section><h2>Chansons</h2><div id="songs"></div></section>
 <section><h2>Albums</h2><div id="albums"></div></section>
 <section id="evSec"><h2>Billetterie</h2><div id="evs"></div></section>
+<section id="partageSec"><h2>Partager</h2><div id="partage"></div></section>
 <section id="soutienSec"><h2>Soutenir l'artiste</h2><div id="soutien"></div></section>
 <section id="avisSec"><h2>Avis des fans</h2><div id="avgBox"></div><div id="avisList"></div><div id="avisForm"></div></section>
 <section id="nextSec" hidden><h2>Prochaines sorties (visibles par vous seul)</h2><div id="next"></div></section>
@@ -184,6 +185,7 @@ a{color:inherit}
 var KEY="bassarizik1";var S={};try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
 var now=Date.now();
 function esc(s){var d=document.createElement("div");d.textContent=String(s==null?"":s);return d.innerHTML}
+function toast(m){var d=document.getElementById("bzToast");if(!d){d=document.createElement("div");d.id="bzToast";d.setAttribute("role","status");d.style.cssText="position:fixed;left:50%;transform:translateX(-50%);bottom:90px;background:#0E3B34;color:#fff;padding:10px 16px;border-radius:10px;z-index:20;font-size:15px;max-width:90%";document.body.appendChild(d)}d.textContent=m;d.style.display="block";clearTimeout(toast.h);toast.h=setTimeout(function(){d.style.display="none"},2600)}
 function F(n){return (n||0).toLocaleString("fr-FR")+" F"}
 function escA(s){return esc(s).replace(/"/g,"&quot;")}
 var name=new URLSearchParams(location.search).get("n")||"";
@@ -209,6 +211,13 @@ var albums=(S.albums||[]).filter(function(al){return al.a===name&&(!al.vs||al.vs
 var sales=(S.songs||[]).filter(function(x){return shareOf(x,name)>0}).reduce(function(s,x){return s+(x.s||0)},0);
 var r=rankOf();
 document.title=name+" · BASSARI-ZIK";
+var pbox=document.getElementById("partage");
+if(pbox){var pageUrl=location.href.split("#")[0];var shareTxt="Écoutez "+name+" sur BASSARI-ZIK";
+pbox.innerHTML='<div class="box"><div style="display:flex;gap:8px;flex-wrap:wrap"><button id="shBtn">Partager le profil</button><a class="alt" style="padding:10px 14px;border-radius:8px;border:1.5px solid currentColor;text-decoration:none" href="https://wa.me/?text='+encodeURIComponent(shareTxt+" "+pageUrl)+'" target="_blank" rel="noopener">WhatsApp</a><button id="cpBtn" class="alt">Copier le lien</button></div><label for="embedCode" style="margin-top:14px">Intégrer ce profil sur votre site ou blog</label><textarea id="embedCode" rows="3" readonly style="width:100%;font:13px monospace">'+escA('<iframe src="'+pageUrl+'" width="100%" height="700" style="border:0;border-radius:12px" title="'+shareTxt+'"></iframe>')+'</textarea><button id="cpEmbed" class="alt" style="margin-top:6px">Copier le code</button></div>';
+var copy=function(txt,msg){if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(txt).then(function(){toast(msg)},function(){toast("Copiez le lien dans la barre d'adresse.")})}else{var ta=document.getElementById("embedCode");ta.select();document.execCommand("copy");toast(msg)}};
+document.getElementById("shBtn").onclick=function(){if(navigator.share){navigator.share({title:name,text:shareTxt,url:pageUrl}).catch(function(){})}else{copy(pageUrl,"Lien copié.")}};
+document.getElementById("cpBtn").onclick=function(){copy(pageUrl,"Lien copié.")};
+document.getElementById("cpEmbed").onclick=function(){copy(document.getElementById("embedCode").value,"Code copié.")};}
 var sbox=document.getElementById("soutien");
 if(sbox)sbox.innerHTML='<div class="box"><b>Faire un don à '+esc(name)+'</b><p class="note" style="margin:6px 0 12px">Les fans peuvent aider leur artiste avec un don. Le don est destiné à l\'artiste.</p><div style="display:flex;gap:8px;flex-wrap:wrap">'+[500,1000,2000].map(function(m){return '<button disabled style="padding:10px 14px;border-radius:8px;border:1px solid var(--line);background:transparent;color:inherit;opacity:.6;cursor:not-allowed">'+F(m)+'</button>'}).join("")+'</div><p class="note" style="margin-top:12px">Dons bientôt disponibles : le paiement en ligne n\'est pas encore branché.</p></div>';
 document.getElementById("prof").innerHTML=(photo?'<img class="ph" alt="Photo de '+escA(name)+'" src="'+photo+'" style="object-fit:cover">':'<div class="ph" aria-hidden="true">'+esc(name.charAt(0).toUpperCase())+'</div>')
