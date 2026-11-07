@@ -191,6 +191,7 @@ body.has-player{padding-bottom:190px}
 <label for="fTitle">Titre</label><input id="fTitle" maxlength="60">
 <label for="fFile">Fichier audio (MP3, WAV, FLAC)</label><input id="fFile" type="file" accept="audio/*">
 <label for="fPrice">Prix de la chanson (de 50 F à 50 000 F)</label><input id="fPrice" type="number" min="50" max="50000" step="50" value="200">
+<label for="fRel">Date et heure de sortie (facultatif : vide = publication immédiate)</label><input id="fRel" type="datetime-local">
 <label for="fFeat">Artistes en featuring (facultatif, séparés par une virgule)</label><input id="fFeat" maxlength="160" placeholder="Ex. Ama T., Koffi A.">
 <label for="fPct">Part de chaque artiste en % (facultatif : sinon partage égal). Artiste principal en premier.</label><input id="fPct" maxlength="120" placeholder="Ex. 60, 40">
 <label for="fCred">Crédits (ingénieur du son, mixage, mastering…)</label><input id="fCred" maxlength="120" placeholder="Ex. Son : Koffi A. · Mixage : Ama T.">
@@ -351,6 +352,8 @@ var pr=Math.round(+$("fPrice").value);if(!(pr>=50&&pr<=50000)){toast("Le prix do
 if(!$("fOrig").checked){toast("Certifiez que la chanson est originale.");return}
 if(!hostOk(S.user.name)){toast("Activez d'abord l'hébergement (500 F par mois).");return}
 var cr=$("fCred").value.trim();
+var rel=$("fRel").value?new Date($("fRel").value).getTime():0;
+if(rel&&rel<Date.now()){toast("La date de sortie doit être dans le futur.");return}
 var sp=[{n:S.user.name,p:100}];var fe=$("fFeat").value.split(",").map(function(s){return s.trim()}).filter(Boolean);
 if(fe.length){var ps=$("fPct").value.split(",").map(function(s){return Math.round(+s.trim())});
 if(ps.length&&ps.some(function(p){return !(p>=0)})){ps=[]}
@@ -358,8 +361,8 @@ if(!ps.length){var eq=Math.floor(100/(fe.length+1));ps=[];for(var i=0;i<=fe.leng
 if(ps.length!==fe.length+1||ps.reduce(function(a,b){return a+b},0)!==100){toast("Les parts doivent correspondre aux artistes (principal en premier) et faire 100 %.");return}
 sp=[{n:S.user.name,p:ps[0]}].concat(fe.map(function(n,k){return {n:n,p:ps[k+1]}}))}
 makeCover($("fCover").files[0],function(cv){var id="u"+Date.now();
-S.songs.push({id:id,t:t,a:S.user.name,s:0,at:Date.now(),own:1,cv:cv,cr:cr,pr:pr,sp:sp,lk:0,dl:0,cm:[]});urls[id]=URL.createObjectURL(f);S.owned[id]=1;
-["fTitle","fFile","fCover","fCred","fFeat","fPct"].forEach(function(i){$(i).value=""});$("fPrice").value="200";$("fOrig").checked=false;save();render();
+S.songs.push({id:id,t:t,a:S.user.name,s:0,at:rel||Date.now(),own:1,cv:cv,cr:cr,pr:pr,sp:sp,rel:rel,lk:0,dl:0,cm:[]});urls[id]=URL.createObjectURL(f);S.owned[id]=1;
+["fTitle","fFile","fCover","fCred","fFeat","fPct","fRel"].forEach(function(i){$(i).value=""});$("fPrice").value="200";$("fOrig").checked=false;save();render();
 toast("Chanson publiée. Elle apparaît en premier dans Musiques.");setTimeout(function(){$("catalogue").scrollIntoView()},300)})};
 $("evList").onclick=function(e){var b=e.target.closest("[data-tk]");if(!b)return;
 var ev=S.events.filter(function(x){return x.id===b.dataset.tk})[0];
@@ -391,7 +394,7 @@ makeCover($("alImg").files[0],function(cv){S.albums.push({id:"al"+Date.now(),t:t
 function buyAlbum(id){var al=(S.albums||[]).filter(function(a){return a.id===id})[0];if(!al)return;
 ask("Album « "+al.t+" » : "+F(al.pr),function(){al.sold++;al.ts.push(Date.now());al.tracks.forEach(function(c){S.owned[c]=1});S.owned["A"+al.id]=1;save();render();toast("Album acheté. Toutes ses chansons sont débloquées.")})}
 function hostOk(n){return (S.host[n]||0)>Date.now()}
-function vis(x){return (x.r||0)<3&&(!x.own||hostOk(x.a))}
+function vis(x){if(x.rel&&x.rel>Date.now()&&!(S.user&&shareOf(x,S.user.name)>0))return false;return (x.r||0)<3&&(!x.own||hostOk(x.a))}
 var V={f:"all",q:"",open:{}},drafts={};
 function findSong(id){return S.songs.filter(function(s){return s.id===id})[0]}
 function vote(id,v){if(!need())return;var x=findSong(id);if(!x)return;
@@ -418,7 +421,7 @@ var h="";L.forEach(function(x){var mine=shareOf(x,me)>0,days=Math.max(0,Math.cei
 myv=S.user?(S.votes[S.user.mail+"|"+x.id]||0):0,bio=S.bios[x.a]||"";
 h+='<article class="card" id="s-'+x.id+'">'+cover(x)+'<div class="cb"><div class="ttl"><b>'+esc(x.t)+'</b>'+(x.s>=GOLD?' <span class="gold">Disque d\'or</span>':'')+'</div>'+
 '<div class="art">'+esc(x.a)+(x.sp&&x.sp.length>1?' feat. '+esc(x.sp.slice(1).map(function(s){return s.n}).join(', ')):'')+(mine?' (vous)':'')+'</div>'+(bio?'<p class="bio">'+esc(bio)+'</p>':'')+(x.cr?'<small class="cr">Crédits : '+esc(x.cr)+'</small>':'')+
-'<div class="bar"><i style="width:'+Math.min(100,x.s/GOLD*100)+'%"></i></div><small>'+x.s+' ventes · supprimée dans '+days+' j</small>'+
+(x.rel&&x.rel>Date.now()?'<small class="cr">Sortie prévue le '+new Date(x.rel).toLocaleString('fr-FR')+'</small>':'')+'<div class="bar"><i style="width:'+Math.min(100,x.s/GOLD*100)+'%"></i></div><small>'+x.s+' ventes · supprimée dans '+days+' j</small>'+
 '<div class="vote"><button class="alt'+(myv===1?' on':'')+'" data-like="'+x.id+'" aria-label="J\'aime">👍 '+x.lk+'</button><button class="alt'+(myv===-1?' on':'')+'" data-dis="'+x.id+'" aria-label="Je n\'aime pas">👎 '+x.dl+'</button></div>'+
 '<div class="row" style="margin-top:8px">'+(can?'<button data-play="'+x.id+'">Écouter</button>':'<button data-buy="'+x.id+'">Débloquer '+F(priceOf(x))+'</button>'+(subActive()?'<button class="alt" data-play="'+x.id+'">Écouter (abonné)</button>':''))+'</div>'+
 '<small><a href="#" data-rep="'+x.id+'">Signaler un plagiat</a>'+(subActive()?' · <a href="#" data-pl="'+x.id+'">+ Playlist</a>':'')+'</small>'+
