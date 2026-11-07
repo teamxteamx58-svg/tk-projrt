@@ -6,6 +6,8 @@
 <title>BASSARI-ZIK</title>
 <meta name="description" content="La musique d'ici, soutenue par ceux d'ici.">
 <meta name="theme-color" content="#0E3B34">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: blob:; media-src 'self' blob: data:; connect-src 'self' https://*.supabase.co; object-src 'none'; base-uri 'self'; form-action 'self'">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="BASSARI">
@@ -157,7 +159,7 @@ body.has-player{padding-bottom:190px}
 .pillbtn{padding:8px 14px;border-radius:999px;font-size:14px;background:var(--gold);color:#12201D;flex:none}
 header .wrap{gap:8px}
 </style>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
 </head>
 <body>
 <header><div class="wrap"><div class="logo">BASSARI-ZIK</div><button id="navQ" class="iconbtn" aria-label="Rechercher" title="Rechercher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button><button id="installBtn" class="pillbtn" hidden>Télécharger l'app</button><button id="shareSiteBtn" class="iconbtn" aria-label="Partager le site" title="Partager le site"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg></button><button id="authBtn" class="alt">Créer un compte</button><button id="setBtn" class="iconbtn" aria-label="Paramètres" title="Paramètres"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/></svg></button></div></header>
@@ -238,7 +240,7 @@ header .wrap{gap:8px}
 <div id="aSignFields"><label for="aName">Nom</label><input id="aName">
 <label for="aMail">Email</label><input id="aMail" type="email">
 <label for="aRole">Je suis</label><select id="aRole"><option value="fan">Fan</option><option value="artiste">Artiste</option></select></div>
-<label for="aPass">Mot de passe (6 caractères minimum)</label><input id="aPass" type="password" minlength="6" autocomplete="current-password">
+<label for="aPass">Mot de passe (8 caractères minimum, lettres et chiffres)</label><input id="aPass" type="password" minlength="8" autocomplete="current-password">
 <div id="aAccWrap"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="aAcc" style="width:auto;margin-top:5px">J'ai lu et j'accepte la politique du site, y compris l'interdiction du plagiat et de la réutilisation des contenus.</label></div>
 <div class="row"><button id="aOk">Créer mon compte</button><button class="alt" id="aSwitch" type="button">J'ai déjà un compte</button><button class="alt" data-close>Annuler</button></div></dialog>
 
@@ -334,7 +336,9 @@ async function initAuth(){var r=await sb.auth.getSession();
 if(r.data.session){await loadUser(r.data.session.user)}else{S.user=null;save();render()}}
 $("aOk").onclick=async function(){
 var m=$("aMail").value.trim(),p=$("aPass").value;
-if(m.indexOf("@")<1||p.length<6){toast("Email valide et mot de passe de 6 caractères minimum.");return}
+if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(m)){toast("Adresse e-mail invalide.");return}
+if(authMode==="signup"&&(p.length<8||!/[A-Za-z]/.test(p)||!/\d/.test(p))){toast("Mot de passe : 8 caractères minimum, avec une lettre et un chiffre.");return}
+if(!p){toast("Saisissez votre mot de passe.");return}
 if(authMode==="login"){var l=await sb.auth.signInWithPassword({email:m,password:p});
 if(l.error){toast("Connexion impossible : "+l.error.message);return}
 await loadUser(l.data.user);$("dAuth").close();toast("Connecté");return}
