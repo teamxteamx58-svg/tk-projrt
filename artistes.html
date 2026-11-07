@@ -87,7 +87,17 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 @media(prefers-reduced-motion:reduce){.rail{overflow-x:auto}.track{animation:none}}
 @media(max-width:640px){.hero .wrap{grid-template-columns:1fr}.disc{width:150px;height:150px}.disc div{width:112px;height:112px;font-size:12px}}
 @media(prefers-reduced-motion:no-preference){.bar i{transition:width .5s}}
-#bnav{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--forest);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));border-top:2px solid var(--gold)}#bnav a{color:#fff;text-decoration:none;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:52px;text-align:center}#bnav .i{font-size:22px;line-height:1}body{padding-bottom:70px}</style>
+#bnav{position:fixed;left:0;right:0;bottom:0;z-index:7;background:var(--forest);display:flex;justify-content:space-around;padding:6px 4px calc(6px + env(safe-area-inset-bottom,0px));border-top:2px solid var(--gold)}#bnav a{color:#fff;text-decoration:none;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:2px;min-width:52px;text-align:center}#bnav .i{font-size:22px;line-height:1}body{padding-bottom:70px}
+#bnav{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(14px + env(safe-area-inset-bottom,0px));width:min(calc(100% - 24px),380px);z-index:7;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;padding:6px;background:rgba(18,18,18,.82);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,.08);border-radius:26px;box-shadow:0 18px 40px rgba(0,0,0,.6);margin:0}
+#bnav button,#bnav a{position:relative;background:none;color:#8a8a8a;border:0;border-radius:20px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 2px 7px;font:600 11px/1.1 "Source Sans 3",system-ui,sans-serif;letter-spacing:.2px;min-width:0;text-decoration:none;cursor:pointer;transition:color .25s ease,background .25s ease,transform .15s ease}
+#bnav button:active,#bnav a:active{transform:scale(.94)}
+#bnav button svg,#bnav a svg{width:22px;height:22px;flex:none;transition:transform .25s ease}
+#bnav button:hover,#bnav a:hover{color:#dddddd}
+#bnav button.on,#bnav a.on{color:#FF6A1A;background:rgba(255,106,26,.13)}
+#bnav button.on svg,#bnav a.on svg{transform:translateY(-1px)}
+#bnav button:focus-visible,#bnav a:focus-visible{outline:2px solid #FF6A1A;outline-offset:2px}
+#bnav .i{display:none}
+</style>
 </head>
 <body>
 <header><div class="wrap"><a class="logo" href="index.html" style="text-decoration:none">BASSARI-ZIK</a></div></header>
@@ -110,6 +120,6 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 <p style="margin-top:20px"><a class="btn" href="index.html">Créer mon compte artiste</a></p>
 </section>
 </main>
-<nav id="bnav" aria-label="Menu principal"><a href="index.html"><span class="i" aria-hidden="true">🏠</span>Accueil</a><a href="index.html#catalogue"><span class="i" aria-hidden="true">🔎</span>Recherche</a><a href="index.html#catalogue"><span class="i" aria-hidden="true">🎵</span>Musiques</a><a href="billetterie.html"><span class="i" aria-hidden="true">🎟️</span>Billets</a><a href="artistes.html"><span class="i" aria-hidden="true">🎤</span>Artiste</a><a href="abonnements.html"><span class="i" aria-hidden="true">💳</span>Abonnements</a></nav><footer class="wrap note" style="padding-bottom:40px">BASSARI-ZIK · <a href="index.html">Retour à l'accueil</a> · <a href="politique.html">Politique du site</a></footer>
+<nav id="bnav" aria-label="Menu principal"><a href="index.html#decouverte"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/></svg>Découverte</a><a href="index.html#playlist"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 6h10M4 12h10M4 18h6"/><path d="M17 17.5V8l4-1.5v9"/><circle cx="15" cy="17.5" r="2"/></svg>Playlist</a><a href="index.html#actu"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M18 8a6 6 0 0 0-12 0c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.7 21a2 2 0 0 1-3.4 0"/></svg>Actualités</a><a href="index.html#ma" class="on" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c0-4 3.6-6 8-6s8 2 8 6"/></svg>Ma musique</a></nav><footer class="wrap note" style="padding-bottom:40px">BASSARI-ZIK · <a href="index.html">Retour à l'accueil</a> · <a href="politique.html">Politique du site</a></footer>
 </body>
 </html>
