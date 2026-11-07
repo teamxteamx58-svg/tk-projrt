@@ -197,6 +197,8 @@ body.has-player{padding-bottom:190px}
 <label for="fCover">Cover de la chanson (image, facultatif)</label><input id="fCover" type="file" accept="image/*">
 <label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="fOrig" style="width:auto;margin-top:5px">Je certifie que cette chanson est mon œuvre originale (ou que j'ai tous les droits) et qu'elle ne contient aucun plagiat.</label>
 <div class="row"><button id="upBtn">Publier la chanson</button></div>
+</div>
+<div class="box" style="margin-top:14px"><h3>Publier un album</h3><p class="note">Regroupez des chansons que vous avez déjà publiées. Acheter l'album débloque toutes ses chansons.</p><label for="alT">Titre de l'album</label><input id="alT" maxlength="60"><label for="alPr">Prix de l'album (F, de 50 F à 50 000 F)</label><input id="alPr" type="number" min="50" max="50000" step="50" value="1000"><label for="alImg">Pochette de l'album (facultatif)</label><input id="alImg" type="file" accept="image/*"><label>Chansons de l'album (cochez-les)</label><div id="alTracks" class="note"></div><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="alRight" style="width:auto;margin-top:5px">Je certifie avoir le droit de publier ces chansons et cette pochette.</label><div class="row"><button id="alBtn">Publier l'album</button></div></div>
 </div></section>
 <section id="tarifs"><h2>Abonnements</h2><p class="note">Écoutez tout le catalogue avec un abonnement. Découvrez les formules sur une page dédiée.</p><div class="row"><button onclick="location.href='abonnements.html'">Voir les abonnements</button></div><p class="note" id="subInfo"></p></section>
 <p class="note"><a href="politique.html">Politique du site</a></p>
@@ -240,7 +242,7 @@ if(!S.songs||!S.songs.length){S.songs=[
 {id:"d5",t:"Vieille chanson",a:"Yao Tem",s:970,at:now-400*864e5}];S.owned={}}
 S.songs=S.songs.filter(function(x){return now-x.at<YEAR});
 if(!S.events)S.events=[{id:"e1",t:"Concert Bassar en fête",a:"Kossi Mawuli",place:"Place de l'Indépendance, Bassar",date:"2026-12-20",price:2000,cap:300,sold:120,ts:[]},{id:"e2",t:"Soirée Afro-Zik",a:"DJ Tchaa",place:"Lomé",date:"2026-11-14",price:5000,cap:150,sold:150,ts:[]}];
-S.tickets=S.tickets||[];S.playlists=S.playlists||[];S.host=S.host||{};S.votes=S.votes||{};
+S.tickets=S.tickets||[];S.albums=S.albums||[];S.playlists=S.playlists||[];S.host=S.host||{};S.votes=S.votes||{};
 S.bios=S.bios||{"Kossi Mawuli":"Chanteur originaire de Bassar. Il mêle rythmes traditionnels et sons modernes.","Abla Tchalim":"Auteure-compositrice. Ses textes parlent de sagesse et de mémoire.","DJ Tchaa":"DJ et producteur de Sokodé. Spécialiste des soirées afro."};
 var DM={d1:["Son : Koffi A. · Mixage : Ama T.",34,2],d2:["Enregistrement : Studio Nawdm · Mastering : Yao P.",21,1],d3:["Mixage : DJ Tchaa",12,0],d4:["Son : Efua K.",5,0],d5:["Mixage : Studio Tem",18,3]};
 S.songs.forEach(function(x){if(x.lk==null){var d=DM[x.id];x.lk=d?d[1]:0;x.dl=d?d[2]:0;if(d&&!x.cr)x.cr=d[0]}x.dl=x.dl||0;x.cm=x.cm||[]});
@@ -266,6 +268,7 @@ var g=0,pend=0,lim=Date.now()+(S.skip||0)*864e5-30*864e5;
 var art=S.user&&S.user.role==="artiste";
 if(art)S.songs.forEach(function(x){if(!x.own)return;var sh=shareOf(x,S.user.name);if(!sh)return;(x.ts||[]).forEach(function(t){var amt=Math.round(priceOf(x)*.75*sh);if(t<=lim)g+=amt;else pend+=amt})});
 if(art)S.events.forEach(function(e){if(e.own&&e.a===S.user.name)(e.ts||[]).forEach(function(t){var m=Math.round(e.price*.9);if(t<=lim)g+=m;else pend+=m})});
+if(art)(S.albums||[]).forEach(function(al){if(al.a!==S.user.name)return;al.ts.forEach(function(t){var amt=Math.round(al.pr*.75);if(t<=lim)g+=amt;else pend+=amt})});
 window.avail=g-(S.paid||0);
 var eh="";S.events.filter(function(e){return new Date(e.date+"T23:59:59")>=now}).forEach(function(e){var left=e.cap-e.sold;
 eh+='<div class="song">'+cover(e)+'<div class="t"><b>'+esc(e.t)+'</b><small>'+esc(e.a)+' · '+esc(e.place)+' · '+new Date(e.date).toLocaleDateString("fr-FR")+'</small><small>'+F(e.price)+' · '+(left>0?left+' places restantes':'Complet')+'</small></div>'+(left>0?'<button data-tk="'+e.id+'">Acheter un billet</button>':'')+'</div>'});
@@ -278,7 +281,7 @@ if(!S.user)$("bio").dataset.u="";
 $("gains").textContent=art?"Disponibles : "+F(window.avail)+" · en attente (30 jours max) : "+F(pend)+" · déjà retirés : "+F(S.paid||0):"";
 $("cashBtn").hidden=!art;$("skipBtn").hidden=!art;
 $("subInfo").textContent=subActive()?"Abonnement actif jusqu'au "+new Date(S.sub).toLocaleDateString("fr-FR"):"";
-drawMusic();drawRails();drawPl()}
+drawMusic();drawRails();drawPl();drawAlbForm()}
 function need(){if(!S.user){toast("Créez d'abord un compte.");$("dAuth").showModal();return false}return true}
 var pending=null;
 function ask(txt,fn){if(!need())return;pending=fn;$("pWhat").textContent=txt;$("dPay").showModal()}
@@ -372,6 +375,21 @@ var im=$("evImg").files[0];
 if(im&&!$("evRight").checked){toast("Certifiez avoir le droit d'utiliser la photo.");return}
 makeWide(im,function(cv){S.events.push({id:"e"+Date.now(),t:t,a:S.user.name,place:p,date:d,price:pr,cap:c,sold:0,ts:[],own:1,cv:cv});
 ["evT","evP","evD","evPr","evC","evImg"].forEach(function(i){$(i).value=""});$("evRight").checked=false;save();render();toast("Événement publié.")})};
+function drawAlbForm(){var box=$("alTracks");if(!box)return;var me=S.user&&S.user.role==="artiste"?S.user.name:"";
+var mine=S.songs.filter(function(x){return x.own&&x.a===me});
+var sig=me+"|"+mine.map(function(x){return x.id}).join();if(sig===drawAlbForm.s)return;drawAlbForm.s=sig;
+box.innerHTML=mine.length?mine.map(function(x){return '<label style="display:flex;gap:8px;align-items:center;font-weight:400;color:var(--ink)"><input type="checkbox" value="'+x.id+'" style="width:auto">'+esc(x.t)+'</label>'}).join(""):"Publiez d'abord vos chansons : elles apparaîtront ici."}
+$("alBtn").onclick=function(){if(!need())return;if(S.user.role!=="artiste"){toast("Réservé aux comptes artiste.");return}
+if(!hostOk(S.user.name)){toast("Activez d'abord l'hébergement (500 F par mois).");return}
+var t=$("alT").value.trim(),pr=Math.round(+$("alPr").value);
+var ids=[].slice.call(document.querySelectorAll("#alTracks input:checked")).map(function(i){return i.value});
+if(!t||!ids.length){toast("Donnez un titre et choisissez au moins une chanson.");return}
+if(!(pr>=50&&pr<=50000)){toast("Le prix doit être entre 50 F et 50 000 F.");return}
+if(!$("alRight").checked){toast("Certifiez avoir le droit de publier cet album.");return}
+makeCover($("alImg").files[0],function(cv){S.albums.push({id:"al"+Date.now(),t:t,a:S.user.name,pr:pr,cv:cv,tracks:ids,own:1,sold:0,ts:[],at:Date.now()});
+["alT","alImg"].forEach(function(i){$(i).value=""});$("alPr").value="1000";$("alRight").checked=false;save();render();toast("Album publié.")})};
+function buyAlbum(id){var al=(S.albums||[]).filter(function(a){return a.id===id})[0];if(!al)return;
+ask("Album « "+al.t+" » : "+F(al.pr),function(){al.sold++;al.ts.push(Date.now());al.tracks.forEach(function(c){S.owned[c]=1});S.owned["A"+al.id]=1;save();render();toast("Album acheté. Toutes ses chansons sont débloquées.")})}
 function hostOk(n){return (S.host[n]||0)>Date.now()}
 function vis(x){return (x.r||0)<3&&(!x.own||hostOk(x.a))}
 var V={f:"all",q:"",open:{}},drafts={};
@@ -428,7 +446,8 @@ if(!vs.length){$("featured").innerHTML='<p class="note">Aucune chanson pour le m
 var sc={};vs.forEach(function(x){sc[x.id]=weekScore(x)});
 var trend=vs.slice().sort(function(a,b){return (sc[b.id]-sc[a.id])||(b.lk-a.lk)||(b.s-a.s)}).slice(0,10);
 var best=vs.slice().sort(function(a,b){return b.s-a.s}).slice(0,10);
-$("featured").innerHTML=trend.slice(0,4).map(function(x){return '<article class="feat">'+cover(x)+'<h3>'+esc(x.t)+'</h3><div class="ar">'+esc(x.a)+'</div><div class="pr"><span>'+F(priceOf(x))+'</span>'+(S.owned[x.id]?'<button class="buy" data-play="'+x.id+'">Écouter</button>':'<button class="buy" data-buy="'+x.id+'">Acheter</button>')+'</div></article>'}).join("");
+var als=(S.albums||[]).filter(function(a){return hostOk(a.a)}).sort(function(a,b){return b.at-a.at}).slice(0,2);
+$("featured").innerHTML=als.map(function(al){return '<article class="feat">'+(al.cv&&al.cv.indexOf("data:image/")===0?'<img class="cv" alt="Pochette de '+escA(al.t)+'" src="'+al.cv+'">':'<div class="cv" aria-hidden="true">'+esc(al.t.charAt(0).toUpperCase())+'</div>')+'<h3>'+esc(al.t)+'</h3><div class="ar">Album · '+esc(al.a)+' · '+al.tracks.length+' titre(s)</div><div class="pr"><span>'+F(al.pr)+'</span>'+(S.owned["A"+al.id]?'<button class="buy" disabled>Acheté</button>':'<button class="buy" data-abuy="'+al.id+'">Acheter l\'album</button>')+'</div></article>'}).concat(trend.slice(0,Math.max(0,4-als.length)).map(function(x){return '<article class="feat">'+cover(x)+'<h3>'+esc(x.t)+'</h3><div class="ar">'+esc(x.a)+'</div><div class="pr"><span>'+F(priceOf(x))+'</span>'+(S.owned[x.id]?'<button class="buy" data-play="'+x.id+'">Écouter</button>':'<button class="buy" data-buy="'+x.id+'">Acheter</button>')+'</div></article>'})).join("");
 $("trend").innerHTML=trend.map(function(x){return tile(x)}).join("");
 $("best").innerHTML=best.map(function(x){return tile(x,x.s+' ventes')}).join("")}
 function showView(v){document.querySelectorAll(".view").forEach(function(x){x.hidden=x.id!=="v-"+v});document.querySelectorAll("#bnav button").forEach(function(b){b.classList.toggle("on",b.dataset.view===v)});window.scrollTo(0,0)}
@@ -436,6 +455,7 @@ document.querySelectorAll("#bnav button").forEach(function(b){b.onclick=function
 $("v-decouverte").addEventListener("click",function(e){if(e.target.closest("#list"))return;
 var g=e.target.closest("[data-go]");
 if(g){V.f="all";V.q="";$("q").value="";drawMusic();var el=$("s-"+g.dataset.go);if(el){el.scrollIntoView({behavior:"smooth",block:"center"});el.style.outline="3px solid var(--orange)";setTimeout(function(){el.style.outline=""},2000)}return}
+var ab=e.target.closest("[data-abuy]");if(ab){buyAlbum(ab.dataset.abuy);return}
 var b=e.target.closest("[data-buy],[data-play]");if(!b)return;
 if(b.dataset.buy){var id=b.dataset.buy;ask("Débloquer cette chanson : "+F(priceOf(findSong(id))),function(){sale(id);toast("Paiement reçu. Merci pour votre soutien !")})}
 else{var id2=b.dataset.play;if(!need())return;recordPlay(id2);if(subActive())sale(id2);save();var a=$("player");
