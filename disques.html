@@ -51,23 +51,23 @@ input[type=search]{flex:1;min-width:200px;padding:10px 12px;border-radius:10px;b
 <header><div class="wrap"><a class="logo" href="index.html">BASSARI-ZIK</a></div></header>
 <main class="wrap" style="padding-top:24px">
 <h1>Disques d'or, de platine et de diamant</h1>
-<p class="note">Ces disques récompensent les artistes qui vendent beaucoup de chansons sur BASSARI-ZIK.</p>
+<p class="note">Ces disques récompensent les écoutes offertes par les fans qui achètent leurs chansons sur BASSARI-ZIK.</p>
 
 <div class="levels">
   <div class="lv">
     <svg viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="gO" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#FFE9A0"/><stop offset=".55" stop-color="#E4B23C"/><stop offset="1" stop-color="#9A6E12"/></radialGradient></defs><circle cx="100" cy="100" r="96" fill="url(#gO)"/><g fill="none" stroke="#7a5a10" stroke-opacity=".35" stroke-width="1"><circle cx="100" cy="100" r="78"/><circle cx="100" cy="100" r="62"/><circle cx="100" cy="100" r="46"/></g><circle cx="100" cy="100" r="22" fill="#0E3B34"/><circle cx="100" cy="100" r="5" fill="#E4B23C"/></svg>
-    <b>Disque d'or</b><span>500 ventes de chansons</span>
+    <b>Disque d'or</b><span>5 000 écoutes</span>
   </div>
   <div class="lv">
     <svg viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="gP" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#C7CED4"/><stop offset="1" stop-color="#6E7A82"/></radialGradient></defs><circle cx="100" cy="100" r="96" fill="url(#gP)"/><g fill="none" stroke="#3d474e" stroke-opacity=".35" stroke-width="1"><circle cx="100" cy="100" r="78"/><circle cx="100" cy="100" r="62"/><circle cx="100" cy="100" r="46"/></g><circle cx="100" cy="100" r="22" fill="#0E3B34"/><circle cx="100" cy="100" r="5" fill="#D9DEE3"/></svg>
-    <b>Disque de platine</b><span>1 500 ventes de chansons</span>
+    <b>Disque de platine</b><span>1 5 000 écoutes</span>
   </div>
   <div class="lv">
     <svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="gD" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E9FBFF"/><stop offset=".35" stop-color="#9FD8F0"/><stop offset=".7" stop-color="#CFF4FF"/><stop offset="1" stop-color="#5BA9CC"/></linearGradient></defs><circle cx="100" cy="100" r="96" fill="url(#gD)"/><g fill="none" stroke="#0c2c3a" stroke-opacity=".3" stroke-width="1"><circle cx="100" cy="100" r="78"/><circle cx="100" cy="100" r="62"/><circle cx="100" cy="100" r="46"/></g><circle cx="100" cy="100" r="22" fill="#0E3B34"/><circle cx="100" cy="100" r="5" fill="#CFF4FF"/></svg>
-    <b>Disque de diamant</b><span>10 000 ventes de chansons</span>
+    <b>Disque de diamant</b><span>100 000 écoutes</span>
   </div>
 </div>
-<p class="crit"><b>Critères :</b> les ventes de toutes les chansons d'un artiste sont cumulées. En dessous de 500 ventes, aucun disque n'est attribué.</p>
+<p class="crit"><b>Critères :</b> chaque achat d'une chanson offre 10 écoutes à l'artiste, et seules ces écoutes sont comptées. En dessous de 5 000 écoutes, aucun disque n'est attribué.</p>
 
 <div class="filter"><h2 style="margin:0;flex:1">Artistes</h2><input type="search" id="q" placeholder="Rechercher un artiste" aria-label="Rechercher un artiste"></div>
 <div class="list" id="list"></div>
@@ -76,7 +76,7 @@ input[type=search]{flex:1;min-width:200px;padding:10px 12px;border-radius:10px;b
 
 <script>
 var S={};try{S=JSON.parse(localStorage.getItem("bassarizik1")||"{}")}catch(e){}
-var LEVELS=[{n:500,t:"Or",cls:"c-or",label:"Disque d'or"},{n:1500,t:"Platine",cls:"c-pl",label:"Disque de platine"},{n:10000,t:"Diamant",cls:"c-di",label:"Disque de diamant"}];
+var LEVELS=[{n:5000,t:"Or",cls:"c-or",label:"Disque d'or"},{n:15000,t:"Platine",cls:"c-pl",label:"Disque de platine"},{n:100000,t:"Diamant",cls:"c-di",label:"Disque de diamant"}];
 function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
 function escA(s){return esc(s).replace(/"/g,"&quot;")}
 
@@ -84,10 +84,10 @@ function escA(s){return esc(s).replace(/"/g,"&quot;")}
 var names={};
 (S.songs||[]).forEach(function(x){(x.sp?x.sp.map(function(s){return s.n}):[x.a]).forEach(function(n){if(n)names[n]=1})});
 (S.albums||[]).forEach(function(al){if(al.a)names[al.a]=1});
-Object.keys(S.units||{}).forEach(function(n){names[n]=1});
+Object.keys(S.listens||{}).forEach(function(n){names[n]=1});
 
 var rows=Object.keys(names).map(function(n){
-  var c=((S.units||{})[n])||0,cur=null,next=null;
+  var c=((S.listens||{})[n])||0,cur=null,next=null;
   LEVELS.forEach(function(l){if(c>=l.n)cur=l;});
   LEVELS.forEach(function(l){if(!next&&c<l.n)next=l;});
   return {n:n,c:c,cur:cur,next:next};
@@ -100,7 +100,7 @@ function chip(r){
 function prog(r){
   if(!r.next)return '<div class="prog">Diamant atteint</div>';
   var from=r.cur?r.cur.n:0,pct=Math.min(100,Math.round((r.c-from)/(r.next.n-from)*100));
-  return '<div class="prog">'+r.c+' / '+r.next.n+' ventes → '+r.next.label+'<div class="bar"><i style="width:'+pct+'%"></i></div></div>';
+  return '<div class="prog">'+r.c+' / '+r.next.n+' écoutes → '+r.next.label+'<div class="bar"><i style="width:'+pct+'%"></i></div></div>';
 }
 function draw(q){
   var list=document.getElementById("list");
@@ -108,7 +108,7 @@ function draw(q){
   if(!rows.length){list.innerHTML='<p class="empty">Aucun artiste pour le moment.</p>';return}
   if(!f.length){list.innerHTML='<p class="empty">Aucun artiste ne correspond à cette recherche.</p>';return}
   list.innerHTML=f.map(function(r){
-    return '<div class="row"><div class="nm"><a href="artiste.html?n='+encodeURIComponent(r.n)+'">'+esc(r.n)+'</a><div class="note">'+r.c+' vente(s)</div></div>'+chip(r)+prog(r)+'</div>';
+    return '<div class="row"><div class="nm"><a href="artiste.html?n='+encodeURIComponent(r.n)+'">'+esc(r.n)+'</a><div class="note">'+r.c+' écoute(s) créditée(s)</div></div>'+chip(r)+prog(r)+'</div>';
   }).join("");
 }
 document.getElementById("q").oninput=function(){draw(this.value.trim())};
