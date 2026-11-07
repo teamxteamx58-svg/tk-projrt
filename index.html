@@ -149,11 +149,18 @@ body.has-player{padding-bottom:190px}
 #bnav button:focus-visible,#bnav a:focus-visible{outline:2px solid #FF6A1A;outline-offset:2px}
 #bnav .i{display:none}
 .vb{display:inline-grid;place-items:center;width:17px;height:17px;border-radius:50%;background:#22c55e;color:#fff;font:800 11px/1 system-ui,sans-serif;margin-left:5px;vertical-align:middle;box-shadow:0 0 0 2px rgba(34,197,94,.25)}
+.iconbtn{width:40px;height:40px;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center;background:rgba(255,255,255,.08);color:#fff;border:1px solid rgba(255,255,255,.18);flex:none;transition:background .2s,color .2s,transform .15s}
+.iconbtn svg{width:19px;height:19px}
+.iconbtn:hover{background:rgba(228,178,60,.18);color:var(--gold)}
+.iconbtn:active{transform:scale(.94)}
+.iconbtn:focus-visible{outline:2px solid var(--gold);outline-offset:2px}
+.pillbtn{padding:8px 14px;border-radius:999px;font-size:14px;background:var(--gold);color:#12201D;flex:none}
+header .wrap{gap:8px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body>
-<header><div class="wrap"><div class="logo">BASSARI-ZIK</div><button id="navQ" class="alt" aria-label="Rechercher" style="padding:8px 12px">🔎</button><button id="installBtn" hidden style="padding:8px 12px">Télécharger l'app</button><button id="shareSiteBtn" class="alt" style="padding:8px 12px">Partager</button><button id="authBtn" class="alt">Créer un compte</button></div></header>
+<header><div class="wrap"><div class="logo">BASSARI-ZIK</div><button id="navQ" class="iconbtn" aria-label="Rechercher" title="Rechercher"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg></button><button id="installBtn" class="pillbtn" hidden>Télécharger l'app</button><button id="shareSiteBtn" class="iconbtn" aria-label="Partager le site" title="Partager le site"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="2.5"/><circle cx="6" cy="12" r="2.5"/><circle cx="18" cy="19" r="2.5"/><path d="M8.2 10.8l7.6-4.4M8.2 13.2l7.6 4.4"/></svg></button><button id="authBtn" class="alt">Créer un compte</button></div></header>
 
 <main class="wrap app">
 <div class="view" id="v-decouverte">
