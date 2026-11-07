@@ -187,6 +187,7 @@ header .wrap{gap:8px}
 <section class="quick"><button class="pill" onclick="location.href='billetterie.html'">🎟️ Billetterie</button><button class="pill" onclick="location.href='abonnements.html'">💳 Abonnements</button><button class="pill" onclick="location.href='top.html'">🏆 Top du mois</button></section>
 <section id="catalogue"><h2>Musiques</h2><p class="note">Parcourez les chansons et leurs covers librement. Le paiement sert uniquement à débloquer l'écoute.</p><div class="toolbar"><input id="q" type="search" placeholder="Rechercher une chanson ou un artiste" aria-label="Rechercher"><button id="qBtn" type="button">Rechercher</button>
 <div class="chips"><button class="chip on" data-f="all">Tout</button><button class="chip" data-f="new">Nouveautés</button><button class="chip" data-f="pop">Populaires</button><button class="chip" data-f="gold">Disques d'or</button><button class="chip" data-f="mine">Mes chansons</button></div></div>
+<div id="artRes"></div>
 <div id="list" class="grid"></div>
 
 <p class="note">Les morceaux de démonstration n'ont pas de fichier audio : la lecture est simulée. Les morceaux que vous ajoutez se lisent vraiment.</p></section>
@@ -461,7 +462,7 @@ var s=(S.wallet||{})[S.user.name]||{};$("wType").value=s.type||"tmoney";$("wNum"
 $("wCur").textContent=s.num?"Numéro enregistré : "+s.type.toUpperCase()+" "+s.num+". Les retraits sont envoyés vers ce numéro.":"Aucun numéro enregistré. Enregistrez-le avant de retirer vos gains."}
 $("wSave").onclick=function(){if(!S.user)return;var n=$("wNum").value.replace(/\D/g,"");if(n.length<8||n.length>15){toast("Numéro invalide : entre 8 et 15 chiffres.");return}
 S.wallet=S.wallet||{};S.wallet[S.user.name]={type:$("wType").value,num:n,at:Date.now()};save();drawWallet();toast("Numéro de retrait enregistré.")};
-function drawCert(){drawDisc();drawWallet();drawStats();var box=$("certInfo");if(!box)return;var art=!!(S.user&&S.user.role==="artiste");
+function drawCert(){drawDisc();drawWallet();drawStats();if(S.user&&S.user.role==="artiste"){S.artistReg=S.artistReg||{};S.artistReg[S.user.name]=1}var box=$("certInfo");if(!box)return;var art=!!(S.user&&S.user.role==="artiste");
 if(!art){box.textContent="";return}
 var a=(S.autoCert||{})[S.user.name];
 if(!a){box.textContent="Pas encore certifié. Publiez votre première chanson : le badge arrive 7 jours après sa validation.";return}
@@ -525,7 +526,15 @@ arr.forEach(function(c){h+='<div class="cmi"><b>'+esc(c.n)+'</b> <small class="n
 if(!arr.length)h+='<p class="note">Aucun commentaire. Soyez le premier !</p>';
 h+=S.user?'<div class="row" style="margin-top:0"><input id="ci-'+x.id+'" data-ci="'+x.id+'" maxlength="300" placeholder="Votre commentaire" aria-label="Votre commentaire" value="'+escA(drafts[x.id]||"")+'" style="flex:1 1 140px;width:auto"><button data-send="'+x.id+'">Envoyer</button></div>':'<p class="note">Connectez-vous (compte gratuit, sans abonnement) pour commenter.</p>';
 return h+'</div>'}
-function drawMusic(){var me=S.user?S.user.name:"",q=V.q.toLowerCase();
+function allArtists(){var s={};function a(n){if(n)s[n]=1}(S.songs||[]).forEach(function(x){a(x.a);(x.sp||[]).forEach(function(p){a(p.n)})});(S.albums||[]).forEach(function(al){a(al.a)});(S.events||[]).forEach(function(e){a(e.a)});Object.keys(S.bios||{}).forEach(a);Object.keys(S.artistReg||{}).forEach(a);return Object.keys(s).sort(function(x,y){return x.localeCompare(y,"fr")})}
+function isFollowing(n){var l=(S.follows||{})[S.user?S.user.mail:""]||[];return l.indexOf(n)>=0}
+function toggleFollow(n){if(!need())return;S.follows=S.follows||{};var l=S.follows[S.user.mail]||[],i=l.indexOf(n);if(i>=0){l.splice(i,1);toast("Vous ne suivez plus "+n)}else{l.push(n);toast("Vous suivez "+n+" !")}S.follows[S.user.mail]=l;save();drawArtists();}
+function drawArtists(){var box=$("artRes");if(!box)return;var q=(V.q||"").trim().toLowerCase();if(!q){box.innerHTML="";return}
+var list=allArtists().filter(function(n){return n.toLowerCase().indexOf(q)>=0}).slice(0,12);
+if(!list.length){box.innerHTML='<p class="note">Aucun artiste trouvé.</p>';return}
+box.innerHTML='<h3 style="margin:10px 0 6px">Artistes</h3>'+list.map(function(n){var f=isFollowing(n);return '<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><div style="flex:1;min-width:150px"><a href="artiste.html?n='+encodeURIComponent(n)+'" style="font-weight:600;text-decoration:none">'+esc(n)+'</a>'+badgeOf(n)+'</div><button class="'+(f?'alt':'')+'" data-follow="'+escA(n)+'">'+(f?'Suivi ✔':'Suivre')+'</button></div>'}).join("")}
+$("artRes").onclick=function(e){var b=e.target.closest("[data-follow]");if(b)toggleFollow(b.dataset.follow)};
+function drawMusic(){drawArtists();var me=S.user?S.user.name:"",q=V.q.toLowerCase();
 document.querySelectorAll("[data-f]").forEach(function(b){b.classList.toggle("on",b.dataset.f===V.f)});
 var L=S.songs.filter(vis).filter(function(x){return !q||(x.t+" "+x.a).toLowerCase().indexOf(q)>=0});
 if(V.f==="new")L=L.filter(function(x){return now-x.at<30*864e5});
