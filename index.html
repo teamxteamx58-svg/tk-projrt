@@ -317,7 +317,7 @@ function priceOf(x){return (x&&x.pr)||200}
 function shareOf(x,name){if(!x.sp)return x.a===name?1:0;var e=x.sp.filter(function(s){return s.n===name})[0];return e?e.p/100:0}
 function artistsOf(x){return x.sp?x.sp.map(function(s){return s.n}):[x.a]}
 function sale(id){var x=S.songs.filter(function(s){return s.id===id})[0];if(x&&!S.owned[id]){x.s+=1;S.owned[id]=1;if(x.own){x.ts=x.ts||[];x.ts.push(Date.now())}S.units=S.units||{};artistsOf(x).forEach(function(n){S.units[n]=(S.units[n]||0)+1});if(S.user){S.credits=S.credits||{};S.credits[S.user.mail+"|"+id]=10}}}
-var DISQUES=[{n:5000,t:"Disque d'or"},{n:15000,t:"Disque de platine"},{n:100000,t:"Disque de diamant"}];
+var DISQUES=[{n:4500,t:"Disque d'or"},{n:15000,t:"Disque de platine"},{n:100000,t:"Disque de diamant"}];
 function discOf(n){var c=((S.listens||{})[n])||0,best=null;DISQUES.forEach(function(d){if(c>=d.n)best=d});return best?'<span class="disc" style="display:inline-block;background:#E4B23C;color:#0E3B34;padding:4px 12px;border-radius:999px;font-weight:800;font-size:13px;margin:4px 0">'+best.t+'</span>':""}
 function drawDisc(){var d=$("discBox");if(d&&S.user&&S.user.role==="artiste")d.innerHTML=discOf(S.user.name)}
 var sb=supabase.createClient("https://loqxgegixjnrfiihthjq.supabase.co","sb_publishable_ei0GgZ26l3KJv8qTCWS3Cg_iizOBYgR");

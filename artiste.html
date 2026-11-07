@@ -200,7 +200,7 @@ function rankOf(){var m=new Date().toISOString().slice(0,7),a={};
 (S.sales||[]).forEach(function(q){if(new Date(q.at).toISOString().slice(0,7)!==m)return;a[q.a]=a[q.a]||0;a[q.a]+=10});
 (S.plays||[]).forEach(function(q){if(new Date(q.at).toISOString().slice(0,7)!==m)return;a[q.a]=a[q.a]||0;a[q.a]+=1});
 var arr=Object.keys(a).sort(function(x,y){return a[y]-a[x]});var i=arr.indexOf(name);return {pos:i<0?0:i+1,score:a[name]||0}}
-var DISQUES=[{n:5000,t:"Disque d'or"},{n:15000,t:"Disque de platine"},{n:100000,t:"Disque de diamant"}];
+var DISQUES=[{n:4500,t:"Disque d'or"},{n:15000,t:"Disque de platine"},{n:100000,t:"Disque de diamant"}];
 function discOf(n){var c=((S.listens||{})[n])||0,best=null;DISQUES.forEach(function(d){if(c>=d.n)best=d});return best?'<span class="disc" style="display:inline-block;background:#E4B23C;color:#0E3B34;padding:4px 12px;border-radius:999px;font-weight:800;font-size:13px;margin:4px 0">'+best.t+'</span>':""}
 function render(){
 if(!name){document.getElementById("prof").innerHTML='<p class="note">Aucun artiste sélectionné.</p>';return}

@@ -56,18 +56,18 @@ input[type=search]{flex:1;min-width:200px;padding:10px 12px;border-radius:10px;b
 <div class="levels">
   <div class="lv">
     <svg viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="gO" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#FFE9A0"/><stop offset=".55" stop-color="#E4B23C"/><stop offset="1" stop-color="#9A6E12"/></radialGradient></defs><circle cx="100" cy="100" r="96" fill="url(#gO)"/><g fill="none" stroke="#7a5a10" stroke-opacity=".35" stroke-width="1"><circle cx="100" cy="100" r="78"/><circle cx="100" cy="100" r="62"/><circle cx="100" cy="100" r="46"/></g><circle cx="100" cy="100" r="22" fill="#0E3B34"/><circle cx="100" cy="100" r="5" fill="#E4B23C"/></svg>
-    <b>Disque d'or</b><span>5 000 écoutes</span>
+    <b>Disque d'or</b><span>4 500 écoutes</span>
   </div>
   <div class="lv">
     <svg viewBox="0 0 200 200" aria-hidden="true"><defs><radialGradient id="gP" cx="40%" cy="35%" r="70%"><stop offset="0" stop-color="#FFFFFF"/><stop offset=".55" stop-color="#C7CED4"/><stop offset="1" stop-color="#6E7A82"/></radialGradient></defs><circle cx="100" cy="100" r="96" fill="url(#gP)"/><g fill="none" stroke="#3d474e" stroke-opacity=".35" stroke-width="1"><circle cx="100" cy="100" r="78"/><circle cx="100" cy="100" r="62"/><circle cx="100" cy="100" r="46"/></g><circle cx="100" cy="100" r="22" fill="#0E3B34"/><circle cx="100" cy="100" r="5" fill="#D9DEE3"/></svg>
-    <b>Disque de platine</b><span>1 5 000 écoutes</span>
+    <b>Disque de platine</b><span>15 000 écoutes</span>
   </div>
   <div class="lv">
     <svg viewBox="0 0 200 200" aria-hidden="true"><defs><linearGradient id="gD" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#E9FBFF"/><stop offset=".35" stop-color="#9FD8F0"/><stop offset=".7" stop-color="#CFF4FF"/><stop offset="1" stop-color="#5BA9CC"/></linearGradient></defs><circle cx="100" cy="100" r="96" fill="url(#gD)"/><g fill="none" stroke="#0c2c3a" stroke-opacity=".3" stroke-width="1"><circle cx="100" cy="100" r="78"/><circle cx="100" cy="100" r="62"/><circle cx="100" cy="100" r="46"/></g><circle cx="100" cy="100" r="22" fill="#0E3B34"/><circle cx="100" cy="100" r="5" fill="#CFF4FF"/></svg>
     <b>Disque de diamant</b><span>100 000 écoutes</span>
   </div>
 </div>
-<p class="crit"><b>Critères :</b> chaque achat d'une chanson offre 10 écoutes à l'artiste, et seules ces écoutes sont comptées. En dessous de 5 000 écoutes, aucun disque n'est attribué.</p>
+<p class="crit"><b>Critères :</b> chaque achat d'une chanson offre 10 écoutes à l'artiste, et seules ces écoutes sont comptées. En dessous de 4 500 écoutes, aucun disque n'est attribué.</p>
 
 <div class="filter"><h2 style="margin:0;flex:1">Artistes</h2><input type="search" id="q" placeholder="Rechercher un artiste" aria-label="Rechercher un artiste"></div>
 <div class="list" id="list"></div>
@@ -76,7 +76,7 @@ input[type=search]{flex:1;min-width:200px;padding:10px 12px;border-radius:10px;b
 
 <script>
 var S={};try{S=JSON.parse(localStorage.getItem("bassarizik1")||"{}")}catch(e){}
-var LEVELS=[{n:5000,t:"Or",cls:"c-or",label:"Disque d'or"},{n:15000,t:"Platine",cls:"c-pl",label:"Disque de platine"},{n:100000,t:"Diamant",cls:"c-di",label:"Disque de diamant"}];
+var LEVELS=[{n:4500,t:"Or",cls:"c-or",label:"Disque d'or"},{n:15000,t:"Platine",cls:"c-pl",label:"Disque de platine"},{n:100000,t:"Diamant",cls:"c-di",label:"Disque de diamant"}];
 function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
 function escA(s){return esc(s).replace(/"/g,"&quot;")}
 
