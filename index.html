@@ -220,6 +220,10 @@ header .wrap{gap:8px}
 <div class="row" style="margin:6px 0 12px"><button id="bioBtn" class="alt">Enregistrer ma bio</button></div><div class="box" style="margin:0 0 12px"><h3>Badge artiste certifié <span class="vb" aria-hidden="true">✔</span></h3><p class="note">Votre badge vert est automatique : il arrive 7 jours après la publication de votre première chanson validée.</p><div id="certInfo" style="font-weight:600"></div><div id="discBox" style="margin-top:8px"></div></div><label for="phFile">Photo de profil (facultatif)</label><input id="phFile" type="file" accept="image/*"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="phOk" style="width:auto;margin-top:5px">J'accepte que cette photo soit affichée publiquement sur mon profil artiste.</label><div class="row" style="margin:0 0 12px"><button id="phBtn" class="alt">Enregistrer la photo</button></div>
 <p id="gains" style="font-weight:600"></p>
 <div class="row" style="margin:0 0 8px"><button id="cashBtn" class="alt" hidden>Retirer mes gains</button><button id="skipBtn" class="alt" hidden>Test : avancer de 30 jours</button></div>
+<div id="wBox" class="box" hidden style="margin:0 0 12px"><h3 style="margin:0 0 6px">Portefeuille</h3><p id="wCur" class="note" style="margin:0 0 10px"></p>
+<label for="wType">Opérateur de retrait</label><select id="wType"><option value="tmoney">TMoney</option><option value="moov">Moov Money</option></select>
+<label for="wNum">Numéro de retrait</label><input id="wNum" inputmode="tel" placeholder="90 00 00 00" autocomplete="tel">
+<div class="row"><button id="wSave">Enregistrer le numéro</button></div></div>
 <label for="fTitle">Titre</label><input id="fTitle" maxlength="60">
 <label for="fFile">Fichier audio (MP3, WAV, FLAC)</label><input id="fFile" type="file" accept="audio/*">
 <label for="fPrice">Prix de la chanson (de 50 F à 50 000 F)</label><input id="fPrice" type="number" min="50" max="50000" step="50" value="200">
@@ -422,7 +426,12 @@ if(im&&!$("evRight").checked){toast("Certifiez avoir le droit d'utiliser la phot
 makeWide(im,function(cv){S.events.push({id:"e"+Date.now(),t:t,a:S.user.name,place:p,date:d,price:pr,cap:c,sold:0,ts:[],own:1,cv:cv});
 ["evT","evP","evD","evPr","evC","evImg"].forEach(function(i){$(i).value=""});$("evRight").checked=false;save();render();toast("Événement publié.")})};
 function badgeOf(n){var a=(S.autoCert||{})[n];return (a&&a+7*864e5<=Date.now())?'<span class="vb" title="Artiste certifié" aria-label="Artiste certifié">✔</span>':''}
-function drawCert(){drawDisc();var box=$("certInfo");if(!box)return;var art=!!(S.user&&S.user.role==="artiste");
+function drawWallet(){var w=$("wBox");if(!w)return;var art=!!(S.user&&S.user.role==="artiste");w.hidden=!art;if(!art)return;
+var s=(S.wallet||{})[S.user.name]||{};$("wType").value=s.type||"tmoney";$("wNum").value=s.num||"";
+$("wCur").textContent=s.num?"Numéro enregistré : "+s.type.toUpperCase()+" "+s.num+". Les retraits sont envoyés vers ce numéro.":"Aucun numéro enregistré. Enregistrez-le avant de retirer vos gains."}
+$("wSave").onclick=function(){if(!S.user)return;var n=$("wNum").value.replace(/\D/g,"");if(n.length<8||n.length>15){toast("Numéro invalide : entre 8 et 15 chiffres.");return}
+S.wallet=S.wallet||{};S.wallet[S.user.name]={type:$("wType").value,num:n,at:Date.now()};save();drawWallet();toast("Numéro de retrait enregistré.")};
+function drawCert(){drawDisc();drawWallet();var box=$("certInfo");if(!box)return;var art=!!(S.user&&S.user.role==="artiste");
 if(!art){box.textContent="";return}
 var a=(S.autoCert||{})[S.user.name];
 if(!a){box.textContent="Pas encore certifié. Publiez votre première chanson : le badge arrive 7 jours après sa validation.";return}
@@ -580,7 +589,8 @@ $("list").onclick(e)};
 $("skipBtn").onclick=function(){S.skip=(S.skip||0)+30;save();render();toast("Test : 30 jours écoulés.")};
 $("cashBtn").onclick=function(){var a=window.avail||0;
 if(a<1000){toast("Retrait possible à partir de 1 000 F. Disponible : "+F(a));return}
-ask("Retrait de "+F(a)+" vers votre TMoney ou votre carte Visa",function(){S.paid=(S.paid||0)+a;toast("Retrait de "+F(a)+" demandé. Il sera versé sur votre compte de paiement.")})};
+var w=(S.wallet||{})[S.user.name];if(!w){toast("Enregistrez d'abord votre numéro de retrait dans le portefeuille.");return}
+ask("Retrait de "+F(a)+" vers "+w.type.toUpperCase()+" "+w.num,function(){S.paid=(S.paid||0)+a;S.withdrawals=S.withdrawals||[];S.withdrawals.push({a:S.user.name,amt:a,type:w.type,num:w.num,at:Date.now()});save();render();toast("Retrait de "+F(a)+" demandé vers "+w.type.toUpperCase()+" "+w.num+".")})};
 function renderParams(){var box=$("accInfo");if(!box)return;
 if(S.user){box.innerHTML='<b>'+esc(S.user.name)+'</b><div class="note">'+esc(S.user.mail||"")+' · '+(S.user.role==="artiste"?"Compte artiste":"Compte fan")+'</div>';$("outBtn").hidden=false;$("inBtn").hidden=true}
 else{box.innerHTML='<p class="note" style="margin:0">Vous n\'êtes pas connecté.</p>';$("outBtn").hidden=true;$("inBtn").hidden=false}}
