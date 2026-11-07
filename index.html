@@ -193,7 +193,9 @@ header .wrap{gap:8px}
 <p class="note">Les morceaux de démonstration n'ont pas de fichier audio : la lecture est simulée. Les morceaux que vous ajoutez se lisent vraiment.</p></section>
 </div>
 <div class="view" id="v-playlist" hidden>
-<section><div class="sh"><h2>Mes musiques du téléphone</h2></div><div class="box"><p class="note" style="margin:0 0 10px">Ajoutez ici des fichiers audio déjà présents sur votre téléphone. Ils restent dans cet appareil et se lisent sans abonnement. Ces écoutes ne sont comptées pour aucun artiste.</p><input type="file" id="locFile" accept="audio/*" multiple style="width:100%;margin-bottom:10px"><div id="locList"></div></div></section>
+<section><div class="sh"><h2>Mes musiques du téléphone</h2></div><p class="note">Créez des playlists avec vos fichiers audio. Ils restent dans cet appareil et se lisent sans abonnement. Ces écoutes ne sont comptées pour aucun artiste.</p>
+<div class="row" style="margin:0 0 12px"><input id="locPlName" placeholder="Nom de la playlist" maxlength="40" style="flex:1 1 200px;width:auto"><button id="locPlBtn">Créer</button></div>
+<div id="locPlList"></div></section>
 <section id="playlists"><h2>Mes playlists</h2><p class="note" id="plInfo"></p>
 <div id="plMake" hidden><div class="row" style="margin:0 0 12px"><input id="plName" placeholder="Nom de la playlist" maxlength="40" style="flex:1 1 200px;width:auto"><button id="plBtn">Créer</button></div></div>
 <div id="plList"></div></section>
@@ -538,16 +540,25 @@ $("artRes").onclick=function(e){var b=e.target.closest("[data-follow]");if(b)tog
 function openLocal(){return new Promise(function(res,rej){var r=indexedDB.open("bzlocal",1);r.onupgradeneeded=function(){r.result.createObjectStore("files",{keyPath:"id"})};r.onsuccess=function(){res(r.result)};r.onerror=function(){rej(r.error)}})}
 function locAll(){return openLocal().then(function(db){return new Promise(function(res){var q=db.transaction("files").objectStore("files").getAll();q.onsuccess=function(){res(q.result||[])};q.onerror=function(){res([])}})}).catch(function(){return []})}
 function locWrite(fn){return openLocal().then(function(db){return new Promise(function(res,rej){var tx=db.transaction("files","readwrite");fn(tx.objectStore("files"));tx.oncomplete=res;tx.onerror=function(){rej(tx.error)}})})}
-function drawLocal(){locAll().then(function(list){var box=$("locList");if(!box)return;box.innerHTML=list.length?list.map(function(f){return '<div class="row" style="padding:8px 0;border-bottom:1px solid var(--line)"><button data-lp="'+escA(f.id)+'" aria-label="Lire">▶</button><span style="flex:1;min-width:120px;word-break:break-word">'+esc(f.name)+'</span><button class="alt" data-ld="'+escA(f.id)+'">Supprimer</button></div>'}).join(""):'<p class="note">Aucun fichier ajouté pour le moment.</p>'})}
-$("locFile").onchange=function(){var files=Array.prototype.slice.call(this.files||[]);if(!files.length)return;var n=0;
-files.forEach(function(f){if(!/^audio\//.test(f.type)&&!/\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(f.name))return;n++;locWrite(function(s){s.put({id:"l"+Date.now()+Math.random().toString(36).slice(2,8),name:f.name.replace(/\.[^.]+$/,""),blob:f})})});
-this.value="";setTimeout(function(){drawLocal();toast(n?n+" fichier(s) ajouté(s) à votre téléphone.":"Format non pris en charge.")},300)};
-$("locList").onclick=function(e){var p=e.target.closest("[data-lp]"),d=e.target.closest("[data-ld]");
-if(d){locWrite(function(s){s.delete(d.dataset.ld)}).then(drawLocal);return}
+function locIds(){var s={};(S.locPl||[]).forEach(function(p){p.ids.forEach(function(i){s[i]=1})});return s}
+function drawLocPl(){var box=$("locPlList");if(!box)return;var pls=(S.locPl||[]).filter(function(p){return !S.user||p.mail===S.user.mail});
+locAll().then(function(files){var by={};files.forEach(function(f){by[f.id]=f});
+box.innerHTML=pls.length?pls.map(function(p){var ok=p.ids.filter(function(i){return by[i]});
+return '<div class="box" style="margin-bottom:10px"><b>'+esc(p.name)+'</b> <small class="note">('+ok.length+' titres)</small>'+ok.map(function(i){var f=by[i];return '<div class="song" style="margin:8px 0 0">'+cover({t:f.name,a:"Fichier du téléphone"})+'<div class="t"><b>'+esc(f.name)+'</b><small>Fichier du téléphone</small></div><button data-lp="'+escA(i)+'">Écouter</button><button class="alt" data-lrm="'+escA(p.id+"|"+i)+'">Retirer</button></div>'}).join("")+'<div class="row" style="margin-top:10px"><label class="alt" style="padding:8px 12px;border:1px solid var(--line);border-radius:8px;cursor:pointer">+ Ajouter des fichiers<input type="file" accept="audio/*" multiple data-lpadd="'+escA(p.id)+'" style="display:none"></label><a href="#" data-lpdel="'+escA(p.id)+'">Supprimer la playlist</a></div></div>'}).join(""):'<p class="note">Aucune playlist pour le moment.</p>'})}
+$("locPlBtn").onclick=function(){if(!S.user){toast("Connectez-vous pour créer une playlist.");return}var n=$("locPlName").value.trim();if(!n){toast("Donnez un nom à la playlist.");return}
+S.locPl=S.locPl||[];S.locPl.push({id:"lp"+Date.now(),mail:S.user.mail,name:n,ids:[]});save();$("locPlName").value="";drawLocPl();toast("Playlist créée.")};
+$("locPlList").onchange=function(e){var inp=e.target.closest&&e.target.closest("[data-lpadd]");if(!inp)return;var pl=(S.locPl||[]).filter(function(p){return p.id===inp.dataset.lpadd})[0];if(!pl)return;
+var files=Array.prototype.slice.call(inp.files||[]).filter(function(f){return /^audio\//.test(f.type)||/\.(mp3|m4a|wav|ogg|aac|flac)$/i.test(f.name)});
+inp.value="";if(!files.length){toast("Format non pris en charge.");return}
+var recs=files.map(function(f){return {id:"l"+Date.now()+Math.random().toString(36).slice(2,8),name:f.name.replace(/\.[^.]+$/,""),blob:f}});
+locWrite(function(s){recs.forEach(function(r){s.put(r)})}).then(function(){recs.forEach(function(r){pl.ids.push(r.id)});save();drawLocPl();toast(recs.length+" fichier(s) ajouté(s) à la playlist.")})};
+$("locPlList").onclick=function(e){var p=e.target.closest("[data-lp]"),r=e.target.closest("[data-lrm]"),d=e.target.closest("[data-lpdel]");
+if(r){var parts=r.dataset.lrm.split("|"),pl=(S.locPl||[]).filter(function(x){return x.id===parts[0]})[0];if(pl){pl.ids=pl.ids.filter(function(i){return i!==parts[1]});save();drawLocPl()}return}
+if(d){e.preventDefault();S.locPl=(S.locPl||[]).filter(function(x){return x.id!==d.dataset.lpdel});save();var used=locIds();locAll().then(function(files){var orphan=files.filter(function(f){return !used[f.id]}).map(function(f){return f.id});if(orphan.length)return locWrite(function(s){orphan.forEach(function(i){s.delete(i)})})}).then(drawLocPl);return}
 if(p){locAll().then(function(list){var f=list.filter(function(x){return x.id===p.dataset.lp})[0];if(!f)return;
 var a=$("player");if(window._locUrl)URL.revokeObjectURL(window._locUrl);window._locUrl=URL.createObjectURL(f.blob);a.src=window._locUrl;
-$("pbar").hidden=false;$("pcov").textContent="♪";$("pnow").textContent=f.name+" (fichier du téléphone)";a.play().catch(function(){toast("Lecture impossible pour ce fichier.")})})}};
-drawLocal();
+$("pbar").hidden=false;$("pcov").textContent=f.name.charAt(0).toUpperCase();$("pnow").textContent=f.name+" (fichier du téléphone)";a.play().catch(function(){toast("Lecture impossible pour ce fichier.")})})}};
+drawLocPl();
 function previewSong(id){var sx=findSong(id),u=urls[id];if(!u){toast("Extrait indisponible pour cette chanson dans ce navigateur.");return}
 window.previewUrl=u;var a=$("player");a.src=u;a.currentTime=0;$("pbar").hidden=false;$("pcov").textContent=sx?sx.t.charAt(0).toUpperCase():"♪";$("pnow").textContent=(sx?sx.t+" · "+sx.a:"Chanson")+" (extrait 10 s)";a.play().catch(function(){toast("Lecture impossible pour cet extrait.")})}
 $("player").addEventListener("timeupdate",function(){if(window.previewUrl&&this.src===window.previewUrl&&this.currentTime>=10){this.pause();this.currentTime=0;window.previewUrl=null;toast("Extrait terminé. Débloquez la chanson pour l'écouter en entier.")}});
