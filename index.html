@@ -76,6 +76,7 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 .cmp{border-top:1px solid var(--line);margin-top:6px;padding-top:8px}
 .cmi p{margin:2px 0 8px}
 #pbar{position:fixed;left:0;right:0;bottom:64px;z-index:6;background:var(--forest);color:#fff;padding:8px 14px calc(8px + env(safe-area-inset-bottom,0px));display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.pcov{width:46px;height:46px;flex:none;border-radius:10px;overflow:hidden;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#1C6B5C,#0E3B34);color:#E4B23C;font:800 18px "Bricolage Grotesque",sans-serif;box-shadow:0 4px 12px rgba(0,0,0,.4)}.pcov img{width:100%;height:100%;object-fit:cover;display:block}
 #pbar[hidden]{display:none}#pbar audio{flex:1 1 220px;min-width:0;height:36px}#pnow{font-weight:600;font-size:14px}
 .railbox{background:var(--forest);color:#fff;padding:6px 0 26px}
 .railbox h2{font-size:20px;color:var(--gold)}
@@ -243,7 +244,7 @@ header .wrap{gap:8px}
 <section><div class="sh"><h2>Informations</h2></div><div class="box"><ul style="margin:0;padding-left:18px;line-height:2"><li><a href="politique.html">Politique du site</a></li><li><a href="top.html">Top du mois</a></li><li><a href="artistes.html">Guide artiste</a></li><li><a href="abonnements.html">Abonnements</a></li></ul></div></section>
 </div>
 </main>
-<div id="pbar" hidden><button id="pvBtn" type="button" aria-label="Lecture ou pause">▶</button><span id="pnow"></span><div class="pv-prog"><input type="range" id="pvSeek" min="0" max="100" value="0" step="0.1" aria-label="Position dans la chanson"><div class="pv-time"><span id="pvCur">0:00</span><span id="pvDur">0:00</span></div></div><audio id="player" preload="metadata"></audio></div>
+<div id="pbar" hidden><div id="pcov" class="pcov" aria-hidden="true"></div><button id="pvBtn" type="button" aria-label="Lecture ou pause">▶</button><span id="pnow"></span><div class="pv-prog"><input type="range" id="pvSeek" min="0" max="100" value="0" step="0.1" aria-label="Position dans la chanson"><div class="pv-time"><span id="pvCur">0:00</span><span id="pvDur">0:00</span></div></div><audio id="player" preload="metadata"></audio></div>
 
 <footer class="wrap note" style="padding-bottom:90px">BASSARI-ZIK · Prototype : les paiements sont simulés et les données restent dans ce navigateur. · <a href="#params">Paramètres</a></footer>
 
@@ -450,6 +451,7 @@ ed.free[cat][S.user.mail]=artist;save();drawTrophy();toast("Merci, votre vote gr
 ask("Vote payant pour "+artist+" : "+F(ed.price),function(){ed.paid=ed.paid||{};ed.paid[cat]=ed.paid[cat]||{};ed.paid[cat][artist]=(ed.paid[cat][artist]||0)+1;save();drawTrophy();toast("Vote payant enregistré.")})};
 
 function showPlayer(id,a){var sx=(S.songs||[]).filter(function(s){return s.id===id})[0];var has=!!urls[id];
+$("pcov").innerHTML=sx&&sx.cv&&sx.cv.indexOf("data:image/")===0?'<img alt="" src="'+sx.cv+'">':esc(sx?sx.t.charAt(0).toUpperCase():"♪");
 $("pbar").hidden=false;$("pnow").textContent=(sx?sx.t+" · "+sx.a:"Chanson")+(has?"":" (aperçu indisponible)");
 if(has){a.src=urls[id];a.play()}else{a.removeAttribute("src");a.load();toast("Pas de fichier audio pour cette chanson dans ce navigateur.")}}
 function drawAlbForm(){var box=$("alTracks");if(!box)return;var me=S.user&&S.user.role==="artiste"?S.user.name:"";
