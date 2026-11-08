@@ -175,6 +175,35 @@ header .wrap{gap:8px}
 .espace-top p{margin:0;color:#D7E3DE;font-size:15px}
 .espace-sec{margin-top:20px}
 .espace-sec>h2{border-left:4px solid #E4B23C;padding-left:10px}
+#np{position:fixed;inset:0;z-index:50;background:#0b0b0b;color:#fff;display:flex;flex-direction:column;align-items:center;padding:12px 22px calc(18px + env(safe-area-inset-bottom,0px));overflow:hidden}
+#np[hidden]{display:none}
+body.np-open>*:not(#np){visibility:hidden}
+#npBg{position:absolute;inset:-40px;background:center/cover no-repeat #1d2a2a;filter:blur(28px) brightness(.45);transform:scale(1.1);z-index:0}
+#np>*:not(#npBg){position:relative;z-index:1}
+.np-grip{width:46px;height:5px;border-radius:9px;background:rgba(255,255,255,.75);margin:0 auto}
+.np-top{width:100%;display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.np-pill{background:rgba(255,255,255,.2);border:0;color:#fff;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:600}
+.np-title{font:600 17px "Source Sans 3",system-ui,sans-serif;margin:0}
+#npCov{width:min(72vw,330px);aspect-ratio:1;border-radius:18px;overflow:hidden;margin:24px 0 22px;box-shadow:0 20px 50px rgba(0,0,0,.5);background:linear-gradient(135deg,#1C6B5C,#0E3B34);display:flex;align-items:center;justify-content:center;color:#E4B23C;font:800 90px "Bricolage Grotesque",sans-serif}
+#npCov img{width:100%;height:100%;object-fit:cover;display:block}
+.np-info{width:100%;display:flex;align-items:center;gap:10px}
+.np-info>div{flex:1;min-width:0}
+#npT{font:800 22px "Bricolage Grotesque",sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}
+#npA{color:rgba(255,255,255,.75);font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.np-round{width:44px;height:44px;border-radius:50%;border:0;background:rgba(255,255,255,.2);color:#fff;font-size:18px;display:grid;place-items:center;flex:none;padding:0}
+.np-round.on{color:#ff4d4d}
+.np-round.acc{background:#ff6a1a}
+.np-times{width:100%;display:flex;justify-content:space-between;font-size:13px;color:rgba(255,255,255,.85);margin-top:2px}
+#npSeek,#npVol{width:100%;accent-color:#fff;margin:0}
+.np-seek{width:100%;margin-top:14px}
+.np-ctrl{width:100%;display:flex;justify-content:space-between;align-items:center;margin-top:14px}
+.np-ctrl button{background:none;border:0;color:#fff;font-size:22px;width:56px;height:56px;display:grid;place-items:center;padding:0}
+.np-ctrl button.on{color:#ff6a1a}
+#npPlay{width:76px!important;height:76px!important;border-radius:50%!important;background:#fff!important;color:#111!important;font-size:28px!important}
+.np-vol{width:100%;display:flex;align-items:center;gap:10px;margin-top:20px;font-size:16px}
+.np-vol input{flex:1}
+.np-bot{width:100%;display:flex;justify-content:space-around;margin-top:auto;padding-top:18px}
+.np-bot button{background:rgba(255,255,255,.15);border:0;color:#fff;width:46px;height:46px;border-radius:14px;font-size:18px;display:grid;place-items:center;padding:0}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
 </head>
@@ -271,6 +300,17 @@ header .wrap{gap:8px}
 </main>
 <div id="pbar" hidden><div id="pcov" class="pcov" aria-hidden="true"></div><button id="pvBtn" type="button" aria-label="Lecture ou pause">▶</button><span id="pnow"></span><div class="pv-prog"><input type="range" id="pvSeek" min="0" max="100" value="0" step="0.1" aria-label="Position dans la chanson"><div class="pv-time"><span id="pvCur">0:00</span><span id="pvDur">0:00</span></div></div><audio id="player" preload="metadata"></audio></div>
 
+<div id="np" hidden role="dialog" aria-modal="true" aria-label="Lecture en cours">
+<div id="npBg" aria-hidden="true"></div>
+<div class="np-grip" aria-hidden="true"></div>
+<div class="np-top"><button class="np-pill" id="npClose" type="button" aria-label="Fermer le lecteur">⌄ Fermer</button><p class="np-title">En lecture</p><span class="np-pill" aria-hidden="true" style="visibility:hidden">·</span></div>
+<div id="npCov" aria-hidden="true"></div>
+<div class="np-info"><div><p id="npT"></p><p id="npA"></p></div><button class="np-round" id="npShare" type="button" aria-label="Partager cette chanson">↗</button><button class="np-round" id="npFav" type="button" aria-label="Ajouter aux favoris">♡</button></div>
+<div class="np-seek"><input type="range" id="npSeek" min="0" max="100" value="0" step="0.1" aria-label="Position dans la chanson"><div class="np-times"><span id="npCur">0:00</span><span id="npDur">0:00</span></div></div>
+<div class="np-ctrl"><button id="npRep" type="button" aria-label="Répéter" title="Répéter">⟲</button><button id="npBack" type="button" aria-label="Reculer de 10 secondes">⏪</button><button id="npPlay" type="button" aria-label="Lecture ou pause">▶</button><button id="npFwd" type="button" aria-label="Avancer de 10 secondes">⏩</button><button id="npFavB" type="button" aria-label="Favori">♡</button></div>
+<div class="np-vol"><span aria-hidden="true">🔈</span><input type="range" id="npVol" min="0" max="100" value="100" aria-label="Volume"><span aria-hidden="true">🔊</span></div>
+<div class="np-bot"><button id="npQueue" type="button" aria-label="Voir mes playlists" title="Playlists">☰</button><button id="npShare2" type="button" aria-label="Partager" title="Partager">⤴</button><button id="npDown" type="button" aria-label="Fermer" title="Fermer">⌄</button></div>
+</div>
 <footer class="wrap note" style="padding-bottom:90px">BASSARI-ZIK · Prototype : les paiements sont simulés et les données restent dans ce navigateur. · <a href="#params">Paramètres</a></footer>
 
 <dialog id="dAuth"><h3 id="aTitle">Créer un compte</h3>
@@ -751,6 +791,43 @@ pvAud.onloadedmetadata=function(){$("pvDur").textContent=fmtT(pvAud.duration)};
 pvSeek.oninput=function(){if(pvAud.duration)pvAud.currentTime=pvSeek.value/100*pvAud.duration};
 new MutationObserver(function(){document.body.classList.toggle("has-player",!$("pbar").hidden)}).observe($("pbar"),{attributes:true,attributeFilter:["hidden"]});
 load();render();initAuth();
+/* Lecteur plein écran : même lecture que la barre du bas */
+(function(){
+var aud=$("player");
+function npTitle(){var raw=$("pnow").textContent||"",k=raw.indexOf(" · ");return k>-1?{t:raw.slice(0,k),a:raw.slice(k+3).replace(/\s*\(.*\)$/,"")}:{t:raw.replace(/\s*\(.*\)$/,"")||"Chanson",a:"BASSARI-ZIK"}}
+function favKey(){return $("pnow").textContent||""}
+function favOn(){return !!((S.favs||{})[favKey()])}
+function npSync(){var n=npTitle(),img=$("pcov").querySelector("img");
+ $("npCov").innerHTML=$("pcov").innerHTML||"";
+ $("npBg").style.backgroundImage=img?'url("'+img.getAttribute("src")+'")':"none";
+ $("npT").textContent=n.t;$("npA").textContent=n.a;
+ $("npPlay").textContent=aud.paused?"▶":"❚❚";
+ $("npRep").classList.toggle("on",aud.loop);
+ var f=favOn();$("npFav").textContent=f?"♥":"♡";$("npFavB").textContent=f?"♥":"♡";$("npFavB").classList.toggle("on",f);$("npFav").classList.toggle("on",f);
+ npTime()}
+function npTime(){var d=aud.duration;$("npSeek").value=d?aud.currentTime/d*100:0;$("npCur").textContent=fmtT(aud.currentTime||0);$("npDur").textContent=d&&isFinite(d)?fmtT(d):"0:00"}
+function npOpen(){npSync();$("np").hidden=false;document.body.classList.add("np-open")}
+function npClose(){$("np").hidden=true;document.body.classList.remove("np-open")}
+function togglePlay(){if(aud.paused){var p=aud.play();if(p&&p.catch)p.catch(function(){toast("Lecture impossible pour le moment.")})}else aud.pause()}
+function toggleFav(){var k=favKey();if(!k)return;S.favs=S.favs||{};if(S.favs[k])delete S.favs[k];else S.favs[k]=1;save();npSync()}
+$("pbar").addEventListener("click",function(e){if(e.target.closest("#pvBtn,#pvSeek,.pv-prog,audio"))return;if($("pnow").textContent)npOpen()});
+$("npClose").onclick=npClose;$("npDown").onclick=npClose;
+$("npPlay").onclick=togglePlay;
+$("npBack").onclick=function(){aud.currentTime=Math.max(0,aud.currentTime-10)};
+$("npFwd").onclick=function(){aud.currentTime=Math.min(aud.duration||0,aud.currentTime+10)};
+$("npRep").onclick=function(){aud.loop=!aud.loop;npSync()};
+$("npFav").onclick=toggleFav;$("npFavB").onclick=toggleFav;
+$("npSeek").oninput=function(){if(aud.duration)aud.currentTime=this.value/100*aud.duration};
+$("npVol").oninput=function(){aud.volume=this.value/100};
+$("npQueue").onclick=function(){npClose();showView("playlist")};
+function share(){var u=location.href.split("#")[0],n=npTitle();var d={title:n.t,text:n.t+" · "+n.a,url:u};
+ if(navigator.share){navigator.share(d).catch(function(){})}else if(navigator.clipboard){navigator.clipboard.writeText(u).then(function(){toast("Lien copié")},function(){toast("Copie impossible")})}}
+$("npShare").onclick=share;$("npShare2").onclick=share;
+["play","pause","ended","timeupdate","loadedmetadata","durationchange"].forEach(function(ev){aud.addEventListener(ev,function(){if(!$("np").hidden)npSync()})});
+new MutationObserver(function(){if(!$("np").hidden)npSync()}).observe($("pnow"),{childList:true,characterData:true,subtree:true});
+document.addEventListener("keydown",function(e){if(e.key==="Escape"&&!$("np").hidden)npClose()});
+})();
 </script>
+</div>
 </body>
 </html>
