@@ -248,6 +248,7 @@ header .wrap{gap:8px}
 <section class="espace-sec"><h2>Ma discographie</h2><div class="box"><h3>Mes albums, EP et mixtapes</h3><div id="myAlb"></div></div>
 <div class="box" style="margin-top:14px"><h3>Publier un album, EP ou mixtape</h3><p class="note">Regroupez des chansons que vous avez déjà publiées. Acheter l'album débloque toutes ses chansons.</p><label for="alT">Titre de l'album</label><input id="alT" maxlength="60"><label for="alTy">Type de sortie</label><select id="alTy"><option value="Album">Album</option><option value="EP">EP</option><option value="Mixtape">Mixtape</option></select><label for="alPr">Prix de l'album (F, de 50 F à 50 000 F)</label><input id="alPr" type="number" min="50" max="50000" step="50" value="1000"><label for="alRel">Date et heure de sortie (facultatif : vide = publication immédiate)</label><input id="alRel" type="datetime-local"><label for="alImg">Pochette de l'album (facultatif)</label><input id="alImg" type="file" accept="image/*"><label>Chansons de l'album (cochez-les)</label><div id="alTracks" class="note"></div><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="alRight" style="width:auto;margin-top:5px">Je certifie avoir le droit de publier ces chansons et cette pochette.</label><div class="row"><button id="alBtn">Publier l'album</button></div></div>
 </section>
+<section class="espace-sec" id="tkSec"><h2>Billets vendus et codes d'achat</h2><div class="box"><label for="tkEv">Événement</label><select id="tkEv"></select><label for="tkQ">Chercher un code</label><input id="tkQ" placeholder="BZ-XXXXXX" autocomplete="off"><div id="tkList" style="margin-top:10px"></div><p class="note">Les codes sont donnés à l'acheteur. Pour protéger la vie privée des fans, le site n'affiche pas leur adresse.</p></div></section>
 <section class="espace-sec" id="upSec"><h2>Mettre en ligne un son</h2><div class="box"><label for="fTitle">Titre</label><input id="fTitle" maxlength="60">
 <label for="fFile">Fichier audio (MP3, WAV, FLAC)</label><input id="fFile" type="file" accept="audio/*">
 <label for="fPrice">Prix de la chanson (de 50 F à 50 000 F)</label><input id="fPrice" type="number" min="50" max="50000" step="50" value="200">
@@ -343,7 +344,7 @@ window.avail=g-(S.paid||0);
 var eh="";S.events.filter(function(e){return new Date(e.date+"T23:59:59")>=now}).forEach(function(e){
 eh+='<div class="song">'+cover(e)+'<div class="t"><b>'+esc(e.t)+'</b><small>'+esc(e.a)+' · '+esc(e.place)+' · '+new Date(e.date).toLocaleDateString("fr-FR")+' · <a href="'+escA(evMapUrl(e))+'" target="_blank" rel="noopener">Voir sur la carte</a></small><small>'+e.cats.map(function(c){var l=Math.max(0,c.cap-c.sold);return esc(c.n)+' '+F(c.price)+' · '+(l>0?l+' restantes':'Complet')}).join('<br>')+'</small></div>'+e.cats.map(function(c,i){return c.cap-c.sold>0?'<button data-tk="'+e.id+'" data-cat="'+i+'">Acheter '+esc(c.n)+'</button>':''}).join('')+'</div>'});
 $("evList").innerHTML=eh||'<p class="note">Aucun événement pour le moment.</p>';
-var th="";if(S.user)S.tickets.filter(function(t){return t.mail===S.user.mail}).forEach(function(t){th+='<div class="song"><div class="t"><b>'+esc(t.title)+'</b><small>'+new Date(t.date).toLocaleDateString("fr-FR")+'</small></div><span class="gold">'+t.code+'</span></div>'});
+var th="";if(S.user)S.tickets.filter(function(t){return t.mail===S.user.mail}).forEach(function(t){var ev=(S.events||[]).filter(function(x){return x.id===t.eid})[0];th+='<div class="song">'+(ev?cover(ev):'')+'<div class="t"><b>'+esc(t.title)+'</b><small>'+(ev?esc(ev.place)+' · ':'')+new Date(t.date).toLocaleDateString("fr-FR")+'</small></div><span class="gold">'+t.code+'</span></div>'});
 $("myTk").innerHTML=S.user?(th||"Vous n'avez pas encore de billet."):"Connectez-vous pour voir vos billets.";
 
 if(S.user&&$("nName").dataset.u!==S.user.name){$("nName").value=S.user.name;$("nName").dataset.u=S.user.name}
@@ -353,7 +354,7 @@ if(!S.user)$("bio").dataset.u="";
 $("gains").textContent=art?"Disponibles : "+F(window.avail)+" · en attente (se débloquent après 24 h) : "+F(pend)+" · déjà retirés : "+F(S.paid||0):"";
 $("cashBtn").hidden=!art;$("skipBtn").hidden=!art;
 $("subInfo").textContent=subActive()?"Abonnement actif jusqu'au "+new Date(S.sub).toLocaleDateString("fr-FR"):"";
-drawMusic();drawRails();drawPl();drawAlbForm();drawMyAlb();drawCert();drawTrophy()}
+drawMusic();drawRails();drawPl();drawAlbForm();drawMyAlb();drawTickets();drawCert();drawTrophy()}
 function need(){if(!S.user){toast("Créez d'abord un compte.");$("dAuth").showModal();return false}return true}
 var pending=null;
 function ask(txt,fn){if(!need())return;pending=fn;$("pWhat").textContent=txt;$("dPay").showModal()}
@@ -444,7 +445,7 @@ $("evList").onclick=function(e){var b=e.target.closest("[data-tk]");if(!b)return
 var ev=S.events.filter(function(x){return x.id===b.dataset.tk})[0],c=ev&&ev.cats[+b.dataset.cat];if(!c)return;
 ask("Billet « "+ev.t+" » · "+c.n+" : "+F(c.price),function(){if(c.cap-c.sold<=0){toast("Complet.");return}
 var code="BZ-"+Math.random().toString(36).slice(2,8).toUpperCase();c.sold++;c.ts=c.ts||[];c.ts.push(Date.now());
-S.tickets.push({eid:ev.id,cat:c.n,mail:S.user.mail,code:code,title:ev.t+" · "+c.n,date:ev.date});toast("Billet "+c.n+" acheté. Code : "+code)})};
+S.tickets.push({eid:ev.id,cat:c.n,mail:S.user.mail,code:code,title:ev.t+" · "+c.n,date:ev.date,at:Date.now()});toast("Billet "+c.n+" acheté. Code : "+code)})};
 function readCats(){return Array.prototype.map.call($("evCats").children,function(row){return {n:row.querySelector("[data-cn]").value.trim(),p:+row.querySelector("[data-cp]").value,c:+row.querySelector("[data-cc]").value}})}
 function drawCats(rows){$("evCats").innerHTML=rows.map(function(r,i){return '<div class="row" style="margin:6px 0"><input data-cn maxlength="30" placeholder="Nom (ex. VIP)" value="'+escA(r.n)+'" style="flex:2;min-width:120px"><input data-cp type="number" min="100" step="100" placeholder="Prix (F)" value="'+(r.p||"")+'" style="flex:1;min-width:90px"><input data-cc type="number" min="1" placeholder="Places" value="'+(r.c||"")+'" style="flex:1;min-width:80px">'+(i?'<button type="button" class="alt" data-crm="'+i+'">Retirer</button>':'')+'</div>'}).join("")}
 drawCats([{n:"Standard",p:"",c:""}]);
@@ -524,6 +525,14 @@ $("pbar").hidden=false;$("pnow").textContent=(sx?sx.t+" · "+sx.a:"Chanson")+(ha
 if(has){a.src=urls[id];a.play()}else{a.removeAttribute("src");a.load();toast("Pas de fichier audio pour cette chanson dans ce navigateur.")}}
 function drawMyAlb(){var b=$("myAlb");if(!b)return;var me=S.user&&S.user.role==="artiste"?S.user.name:"";var L=(S.albums||[]).filter(function(al){return al.a===me});
 b.innerHTML=L.length?L.map(function(al){return '<div class="song" style="margin:6px 0 0"><div class="t"><b>'+esc(al.t)+'</b><small>'+esc(al.type||"Album")+' · '+F(al.pr)+' · '+al.tracks.length+' titre(s) · '+(al.vs==="ok"?"publié":"en validation")+'</small></div></div>'}).join(""):'<p class="note">Aucun album, EP ou mixtape pour le moment.</p>'}
+function drawTickets(){var sel=$("tkEv");if(!sel)return;var me=S.user&&S.user.role==="artiste"?S.user.name:"";
+var evs=(S.events||[]).filter(function(e){return e.a===me});var cur=sel.value;
+sel.innerHTML=evs.map(function(e){return '<option value="'+escA(e.id)+'">'+esc(e.t)+' · '+new Date(e.date).toLocaleDateString("fr-FR")+'</option>'}).join("");
+if(cur&&evs.some(function(e){return e.id===cur}))sel.value=cur;
+var id=sel.value,q=($("tkQ").value||"").trim().toUpperCase();
+var L=(S.tickets||[]).filter(function(t){return t.eid===id&&(!q||t.code.indexOf(q)>-1)});
+$("tkList").innerHTML=!evs.length?'<p class="note">Publiez un événement pour voir les billets vendus.</p>':L.length?'<p class="note">'+L.length+' billet(s)</p>'+L.map(function(t){return '<div class="song" style="margin:6px 0 0"><div class="t"><b>'+esc(t.code)+'</b><small>'+esc(t.cat||"Standard")+(t.at?' · acheté le '+new Date(t.at).toLocaleString("fr-FR"):'')+'</small></div></div>'}).join(""):'<p class="note">Aucun billet vendu'+(q?' avec ce code':' pour le moment')+'.</p>'}
+$("tkEv").onchange=drawTickets;$("tkQ").oninput=drawTickets;
 function drawAlbForm(){var box=$("alTracks");if(!box)return;var me=S.user&&S.user.role==="artiste"?S.user.name:"";
 var mine=S.songs.filter(function(x){return x.own&&x.a===me});
 var sig=me+"|"+mine.map(function(x){return x.id}).join();if(sig===drawAlbForm.s)return;drawAlbForm.s=sig;
