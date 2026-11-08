@@ -170,6 +170,11 @@ body.has-player{padding-bottom:190px}
 .pillbtn{padding:8px 14px;border-radius:999px;font-size:14px;background:var(--gold);color:#12201D;flex:none}
 header .wrap{gap:8px}
 [data-sk].on{background:#E4B23C;color:#12201D;border-color:#E4B23C}
+.espace-top{background:var(--forest);color:#F6F1E4;border-radius:18px;padding:18px;margin:12px 0 18px}
+.espace-top h1{color:#E4B23C;margin:10px 0 6px}
+.espace-top p{margin:0;color:#D7E3DE;font-size:15px}
+.espace-sec{margin-top:20px}
+.espace-sec>h2{border-left:4px solid #E4B23C;padding-left:10px}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
 </head>
@@ -219,13 +224,18 @@ header .wrap{gap:8px}
 <div class="view" id="v-ma" hidden>
 <section><h2>Ma musique</h2><p class="note">Votre compte, vos gains et vos abonnements.</p></section>
 <section id="tarifs"><h2>Abonnements</h2><p class="note">Écoutez tout le catalogue avec un abonnement. Découvrez les formules sur une page dédiée.</p><div class="row"><button onclick="location.href='abonnements.html'">Voir les abonnements</button></div><p class="note" id="subInfo"></p></section>
-<section id="artiste"><h2>Espace artiste</h2>
-<div class="box">
-<p>Chaque chanson et chaque album sont vérifiés par notre équipe avant publication. La validation se fait sous 48 h.</p>
-<label for="nName">Mon nom de scène (2 à 30 caractères)</label><div class="row" style="margin:0 0 10px"><input id="nName" maxlength="30" autocomplete="nickname" placeholder="Votre nom de scène"><button id="nameBtn" class="alt">Enregistrer le nom</button></div>
+<section id="artiste"><h2>Espace artiste</h2><p class="note">Votre espace artiste est séparé de l'application : profil, gains, discographie et mise en ligne de vos sons.</p><div class="row"><button id="espBtn">Ouvrir mon espace artiste</button></div></section>
+
+
+<p class="note"><a href="politique.html">Politique du site</a></p>
+</div>
+<div class="view" id="v-espace" hidden>
+<div class="espace-top"><button class="alt" type="button" onclick="showView('ma')">← Retour à l'application</button><h1>Espace artiste</h1><p>Votre profil, vos gains, votre discographie et la mise en ligne de vos sons. Chaque chanson et chaque album est vérifié par notre équipe avant publication (validation sous 48 h).</p></div>
+<section class="espace-sec"><h2>Mon profil</h2><div class="box"><label for="nName">Mon nom de scène (2 à 30 caractères)</label><div class="row" style="margin:0 0 10px"><input id="nName" maxlength="30" autocomplete="nickname" placeholder="Votre nom de scène"><button id="nameBtn" class="alt">Enregistrer le nom</button></div>
 <label for="bio">Ma biographie (3 lignes maximum)</label><textarea id="bio" rows="3" maxlength="240"></textarea>
 <div class="row" style="margin:6px 0 12px"><button id="bioBtn" class="alt">Enregistrer ma bio</button></div><div class="box" style="margin:0 0 12px"><h3>Badge artiste certifié <span class="vb" aria-hidden="true">✔</span></h3><p class="note">Votre badge vert est automatique : il arrive 7 jours après la publication de votre première chanson validée.</p><div id="certInfo" style="font-weight:600"></div><div id="discBox" style="margin-top:8px"></div></div><label for="phFile">Photo de profil (facultatif)</label><input id="phFile" type="file" accept="image/*"><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="phOk" style="width:auto;margin-top:5px">J'accepte que cette photo soit affichée publiquement sur mon profil artiste.</label><div class="row" style="margin:0 0 12px"><button id="phBtn" class="alt">Enregistrer la photo</button></div>
-<p id="gains" style="font-weight:600"></p>
+</div></section>
+<section class="espace-sec"><h2>Gains et statistiques</h2><div class="box"><p id="gains" style="font-weight:600"></p>
 <div class="row" style="margin:0 0 8px"><button id="cashBtn" class="alt" hidden>Retirer mes gains</button><button id="skipBtn" class="alt" hidden>Test : avancer de 30 jours</button></div>
 <div id="statBox" class="box" hidden style="margin:0 0 12px"><h3 style="margin:0 0 8px">Mes statistiques</h3>
 <div class="row" style="margin:0 0 8px"><button class="alt" data-sk="rev">Revenus</button><button class="alt" data-sk="listen">Écoutes</button><button class="alt" data-sk="sales">Ventes</button></div>
@@ -234,7 +244,11 @@ header .wrap{gap:8px}
 <label for="wType">Opérateur de retrait</label><select id="wType"><option value="tmoney">TMoney</option><option value="moov">Moov Money</option></select>
 <label for="wNum">Numéro de retrait</label><input id="wNum" inputmode="tel" placeholder="90 00 00 00" autocomplete="tel">
 <div class="row"><button id="wSave">Enregistrer le numéro</button></div></div>
-<label for="fTitle">Titre</label><input id="fTitle" maxlength="60">
+</div></section>
+<section class="espace-sec"><h2>Ma discographie</h2><div class="box"><h3>Mes albums, EP et mixtapes</h3><div id="myAlb"></div></div>
+<div class="box" style="margin-top:14px"><h3>Publier un album, EP ou mixtape</h3><p class="note">Regroupez des chansons que vous avez déjà publiées. Acheter l'album débloque toutes ses chansons.</p><label for="alT">Titre de l'album</label><input id="alT" maxlength="60"><label for="alTy">Type de sortie</label><select id="alTy"><option value="Album">Album</option><option value="EP">EP</option><option value="Mixtape">Mixtape</option></select><label for="alPr">Prix de l'album (F, de 50 F à 50 000 F)</label><input id="alPr" type="number" min="50" max="50000" step="50" value="1000"><label for="alRel">Date et heure de sortie (facultatif : vide = publication immédiate)</label><input id="alRel" type="datetime-local"><label for="alImg">Pochette de l'album (facultatif)</label><input id="alImg" type="file" accept="image/*"><label>Chansons de l'album (cochez-les)</label><div id="alTracks" class="note"></div><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="alRight" style="width:auto;margin-top:5px">Je certifie avoir le droit de publier ces chansons et cette pochette.</label><div class="row"><button id="alBtn">Publier l'album</button></div></div>
+</section>
+<section class="espace-sec" id="upSec"><h2>Mettre en ligne un son</h2><div class="box"><label for="fTitle">Titre</label><input id="fTitle" maxlength="60">
 <label for="fFile">Fichier audio (MP3, WAV, FLAC)</label><input id="fFile" type="file" accept="audio/*">
 <label for="fPrice">Prix de la chanson (de 50 F à 50 000 F)</label><input id="fPrice" type="number" min="50" max="50000" step="50" value="200">
 <label for="fRel">Date et heure de sortie (facultatif : vide = publication immédiate)</label><input id="fRel" type="datetime-local">
@@ -243,13 +257,9 @@ header .wrap{gap:8px}
 <label for="fCred">Crédits (ingénieur du son, mixage, mastering…)</label><input id="fCred" maxlength="120" placeholder="Ex. Son : Koffi A. · Mixage : Ama T.">
 <label for="fCover">Cover de la chanson (image, facultatif)</label><input id="fCover" type="file" accept="image/*">
 <label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="fOrig" style="width:auto;margin-top:5px">Je certifie que cette chanson est mon œuvre originale (ou que j'ai tous les droits) et qu'elle ne contient aucun plagiat.</label>
-<div class="row"><button id="upBtn">Publier la chanson</button></div>
+<div class="row"><button id="upBtn">Mettre en ligne le son</button></div>
 </div>
-<div class="box" style="margin-top:14px"><h3>Publier un album</h3><p class="note">Regroupez des chansons que vous avez déjà publiées. Acheter l'album débloque toutes ses chansons.</p><label for="alT">Titre de l'album</label><input id="alT" maxlength="60"><label for="alPr">Prix de l'album (F, de 50 F à 50 000 F)</label><input id="alPr" type="number" min="50" max="50000" step="50" value="1000"><label for="alRel">Date et heure de sortie (facultatif : vide = publication immédiate)</label><input id="alRel" type="datetime-local"><label for="alImg">Pochette de l'album (facultatif)</label><input id="alImg" type="file" accept="image/*"><label>Chansons de l'album (cochez-les)</label><div id="alTracks" class="note"></div><label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="alRight" style="width:auto;margin-top:5px">Je certifie avoir le droit de publier ces chansons et cette pochette.</label><div class="row"><button id="alBtn">Publier l'album</button></div></div>
-</div></section>
-
-
-<p class="note"><a href="politique.html">Politique du site</a></p>
+</section>
 </div>
 <div class="view" id="v-params" hidden>
 <section><h1 style="margin-top:8px">Paramètres</h1></section>
@@ -343,7 +353,7 @@ if(!S.user)$("bio").dataset.u="";
 $("gains").textContent=art?"Disponibles : "+F(window.avail)+" · en attente (se débloquent après 24 h) : "+F(pend)+" · déjà retirés : "+F(S.paid||0):"";
 $("cashBtn").hidden=!art;$("skipBtn").hidden=!art;
 $("subInfo").textContent=subActive()?"Abonnement actif jusqu'au "+new Date(S.sub).toLocaleDateString("fr-FR"):"";
-drawMusic();drawRails();drawPl();drawAlbForm();drawCert();drawTrophy()}
+drawMusic();drawRails();drawPl();drawAlbForm();drawMyAlb();drawCert();drawTrophy()}
 function need(){if(!S.user){toast("Créez d'abord un compte.");$("dAuth").showModal();return false}return true}
 var pending=null;
 function ask(txt,fn){if(!need())return;pending=fn;$("pWhat").textContent=txt;$("dPay").showModal()}
@@ -360,6 +370,7 @@ function setAuthMode(m){authMode=m;var s=m==="signup";$("aTitle").textContent=s?
 $("aSwitch").onclick=function(){setAuthMode(authMode==="signup"?"login":"signup")};
 $("authBtn").onclick=function(){setAuthMode("signup");$("dAuth").showModal()};
 $("setBtn").onclick=function(){location.hash="params";showView("params")};
+$("espBtn").onclick=function(){showView("espace")};
 async function loadUser(u){
 var pr=await sb.from("profiles").select("*").eq("id",u.id).maybeSingle();
 var prof=pr.data;
@@ -511,6 +522,8 @@ function showPlayer(id,a){var sx=(S.songs||[]).filter(function(s){return s.id===
 $("pcov").innerHTML=sx&&sx.cv&&sx.cv.indexOf("data:image/")===0?'<img alt="" src="'+sx.cv+'">':esc(sx?sx.t.charAt(0).toUpperCase():"♪");
 $("pbar").hidden=false;$("pnow").textContent=(sx?sx.t+" · "+sx.a:"Chanson")+(has?"":" (aperçu indisponible)");
 if(has){a.src=urls[id];a.play()}else{a.removeAttribute("src");a.load();toast("Pas de fichier audio pour cette chanson dans ce navigateur.")}}
+function drawMyAlb(){var b=$("myAlb");if(!b)return;var me=S.user&&S.user.role==="artiste"?S.user.name:"";var L=(S.albums||[]).filter(function(al){return al.a===me});
+b.innerHTML=L.length?L.map(function(al){return '<div class="song" style="margin:6px 0 0"><div class="t"><b>'+esc(al.t)+'</b><small>'+esc(al.type||"Album")+' · '+F(al.pr)+' · '+al.tracks.length+' titre(s) · '+(al.vs==="ok"?"publié":"en validation")+'</small></div></div>'}).join(""):'<p class="note">Aucun album, EP ou mixtape pour le moment.</p>'}
 function drawAlbForm(){var box=$("alTracks");if(!box)return;var me=S.user&&S.user.role==="artiste"?S.user.name:"";
 var mine=S.songs.filter(function(x){return x.own&&x.a===me});
 var sig=me+"|"+mine.map(function(x){return x.id}).join();if(sig===drawAlbForm.s)return;drawAlbForm.s=sig;
@@ -523,8 +536,8 @@ if(!(pr>=50&&pr<=50000)){toast("Le prix doit être entre 50 F et 50 000 F.");ret
 if(!$("alRight").checked){toast("Certifiez avoir le droit de publier cet album.");return}
 var arel=$("alRel").value?new Date($("alRel").value).getTime():0;
 if(arel&&arel<Date.now()){toast("La date de sortie doit être dans le futur.");return}
-makeCover($("alImg").files[0],function(cv){S.albums.push({id:"al"+Date.now(),t:t,a:S.user.name,pr:pr,cv:cv,tracks:ids,own:1,sold:0,ts:[],at:arel||Date.now(),rel:arel,vs:"pending",sub:Date.now()});
-["alT","alImg","alRel"].forEach(function(i){$(i).value=""});$("alPr").value="1000";$("alRight").checked=false;save();render();toast("Album envoyé. Validation sous 48 h.")})};
+makeCover($("alImg").files[0],function(cv){S.albums.push({id:"al"+Date.now(),t:t,a:S.user.name,type:$("alTy").value,pr:pr,cv:cv,tracks:ids,own:1,sold:0,ts:[],at:arel||Date.now(),rel:arel,vs:"pending",sub:Date.now()});
+["alT","alImg","alRel"].forEach(function(i){$(i).value=""});$("alTy").value="Album";$("alPr").value="1000";$("alRight").checked=false;save();render();toast("Album envoyé. Validation sous 48 h.")})};
 function buyAlbum(id){var al=(S.albums||[]).filter(function(a){return a.id===id})[0];if(!al)return;
 ask("Album « "+al.t+" » : "+F(al.pr),function(){al.sold++;al.ts.push(Date.now());al.tracks.forEach(function(c){S.owned[c]=1});S.owned["A"+al.id]=1;save();render();toast("Album acheté. Toutes ses chansons sont débloquées.")})}
 function hostOk(n){return (S.host[n]||0)>Date.now()}
@@ -662,7 +675,7 @@ var als=(S.albums||[]).filter(function(a){return (!a.vs||a.vs==="ok")&&(!a.rel||
 $("featured").innerHTML=als.map(function(al){return '<article class="feat">'+(al.cv&&al.cv.indexOf("data:image/")===0?'<img class="cv" alt="Pochette de '+escA(al.t)+'" src="'+al.cv+'">':'<div class="cv" aria-hidden="true">'+esc(al.t.charAt(0).toUpperCase())+'</div>')+'<h3>'+esc(al.t)+'</h3><div class="ar">Album · <a href="artiste.html?n='+encodeURIComponent(al.a)+'">'+esc(al.a)+'</a>'+badgeOf(al.a)+' · '+al.tracks.length+' titre(s)</div><div class="pr"><span>'+F(al.pr)+'</span>'+(S.owned["A"+al.id]?'<button class="buy" disabled>Acheté</button>':'<button class="buy" data-abuy="'+al.id+'">Acheter l\'album</button>')+'</div></article>'}).concat(trend.slice(0,Math.max(0,4-als.length)).map(function(x){return '<article class="feat">'+cover(x)+'<h3>'+esc(x.t)+'</h3><div class="ar">'+esc(x.a)+'</div><div class="pr"><span>'+F(priceOf(x))+'</span>'+(S.owned[x.id]?'<button class="buy" data-play="'+x.id+'">Écouter</button>':'<button class="buy" data-buy="'+x.id+'">Acheter</button>')+'</div></article>'})).join("");
 $("trend").innerHTML=trend.map(function(x){return tile(x)}).join("");
 $("best").innerHTML=best.map(function(x){return tile(x,x.s+' ventes')}).join("")}
-function showView(v){document.querySelectorAll(".view").forEach(function(x){x.hidden=x.id!=="v-"+v});document.querySelectorAll("#bnav button").forEach(function(b){var on=b.dataset.view===v;b.classList.toggle("on",on);on?b.setAttribute("aria-current","page"):b.removeAttribute("aria-current")});window.scrollTo(0,0)}
+function showView(v){if(v==="espace"&&!(S.user&&S.user.role==="artiste")){toast("Réservé aux comptes artiste.");v="ma"}document.querySelectorAll(".view").forEach(function(x){x.hidden=x.id!=="v-"+v});var bn=document.getElementById("bnav");if(bn)bn.hidden=v==="espace";document.querySelectorAll("#bnav button").forEach(function(b){var on=b.dataset.view===v;b.classList.toggle("on",on);on?b.setAttribute("aria-current","page"):b.removeAttribute("aria-current")});window.scrollTo(0,0)}
 document.querySelectorAll("#bnav button").forEach(function(b){b.onclick=function(){showView(b.dataset.view)}});
 $("v-decouverte").addEventListener("click",function(e){if(e.target.closest("#list"))return;
 var g=e.target.closest("[data-go]");
@@ -715,7 +728,7 @@ $("inBtn").onclick=function(){setAuthMode("signup");$("dAuth").showModal()};
 $("pInstall").onclick=function(){$("installBtn").click()};
 $("pShare").onclick=function(){$("shareSiteBtn").click()};
 document.getElementById("homeLogo").onclick=function(e){e.preventDefault();showView("decouverte");window.scrollTo(0,0)};
-var HM={params:"params",decouverte:"decouverte",catalogue:"decouverte",playlist:"playlist",playlists:"playlist",actu:"actu",billetterie:"actu",ma:"ma",artiste:"ma",tarifs:"ma"};
+var HM={espace:"espace",params:"params",decouverte:"decouverte",catalogue:"decouverte",playlist:"playlist",playlists:"playlist",actu:"actu",billetterie:"actu",ma:"ma",artiste:"ma",tarifs:"ma"};
 showView(HM[location.hash.slice(1)]||"decouverte");
 
 var pvAud=$("player"),pvBtn=$("pvBtn"),pvSeek=$("pvSeek");
