@@ -120,12 +120,13 @@ textarea{width:100%;padding:10px;border:1.5px solid var(--line);border-radius:8p
 var KEY="bassarizik1";
 var S={};try{S=JSON.parse(localStorage.getItem(KEY)||"{}")}catch(e){}
 function esc(s){var d=document.createElement("div");d.textContent=s;return d.innerHTML}
+function escA(s){return esc(s).replace(/"/g,"&quot;")}
 function F(n){return n.toLocaleString("fr-FR")+" F"}
 var evs=(S.events||[]).filter(function(e){return new Date(e.date+"T23:59:59")>=new Date()});
 var h="";
 evs.forEach(function(e){var cats=e.cats||[{n:"Standard",price:e.price,cap:e.cap,sold:e.sold}];var left=cats.reduce(function(s,c){return s+Math.max(0,c.cap-c.sold)},0);
 h+='<article class="ev">'+(e.cv&&e.cv.indexOf("data:image/")===0?'<img src="'+e.cv+'" alt="Photo de '+esc(e.t)+'">':'<div class="noimg">'+esc(e.t.charAt(0).toUpperCase())+'</div>')+
-'<div class="evb"><h2>'+esc(e.t)+'</h2><p>'+esc(e.a)+' · '+esc(e.place)+'</p><p>'+new Date(e.date).toLocaleDateString("fr-FR")+'</p>'+
+'<div class="evb"><h2>'+esc(e.t)+'</h2><p>'+esc(e.a)+' · '+esc(e.place)+' · <a href="'+escA(e.map||"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(e.place))+'" target="_blank" rel="noopener">Voir sur la carte</a></p><p>'+new Date(e.date).toLocaleDateString("fr-FR")+'</p>'+
 cats.map(function(c){var l=Math.max(0,c.cap-c.sold);return '<p>'+esc(c.n)+' · '+F(c.price)+' · '+(l>0?l+' places restantes':'Complet')+'</p>'}).join('')+
 '<a class="btn" href="index.html#billetterie">'+(left>0?'Acheter un billet':'Voir la billetterie')+'</a></div></article>'});
 document.getElementById("list").innerHTML=h||'<p class="note">Aucun événement pour le moment.</p>';
