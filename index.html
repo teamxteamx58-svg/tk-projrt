@@ -210,8 +210,7 @@ header .wrap{gap:8px}
 <label for="evT">Nom de l'événement</label><input id="evT" maxlength="60">
 <label for="evP">Lieu</label><input id="evP" maxlength="80">
 <label for="evD">Date</label><input id="evD" type="date">
-<label for="evPr">Prix du billet (F)</label><input id="evPr" type="number" min="100" step="100">
-<label for="evC">Nombre de places</label><input id="evC" type="number" min="1">
+<label>Catégories de billets (Standard, VIP, etc.)</label><div id="evCats"></div><button type="button" class="alt" id="evAddCat">+ Ajouter une catégorie</button>
 <label for="evImg">Photo de la salle ou du spectacle (facultatif)</label><input id="evImg" type="file" accept="image/*">
 <label style="display:flex;gap:8px;align-items:flex-start;font-weight:400"><input type="checkbox" id="evRight" style="width:auto;margin-top:5px">Je certifie avoir le droit d'utiliser cette photo.</label>
 <div class="row"><button id="evBtn">Publier l'événement</button></div></div></section>
@@ -297,10 +296,13 @@ if(!S.songs||!S.songs.length){S.songs=[
 S.songs=S.songs.filter(function(x){return now-x.at<YEAR});
 if(!S.events)S.events=[{id:"e1",t:"Concert Bassar en fête",a:"Kossi Mawuli",place:"Place de l'Indépendance, Bassar",date:"2026-12-20",price:2000,cap:300,sold:120,ts:[]},{id:"e2",t:"Soirée Afro-Zik",a:"DJ Tchaa",place:"Lomé",date:"2026-11-14",price:5000,cap:150,sold:150,ts:[]}];
 S.tickets=S.tickets||[];S.albums=S.albums||[];S.photos=S.photos||{};S.promo=S.promo||{};S.autoCert=S.autoCert||{};S.reviews=S.reviews||{};S.eds=S.eds||[];S.playlists=S.playlists||[];S.host=S.host||{};S.votes=S.votes||{};
+(S.events||[]).forEach(function(e){if(!e.cats){e.cats=[{n:"Standard",price:e.price||0,cap:e.cap||0,sold:e.sold||0,ts:e.ts||[]}];delete e.price;delete e.cap;delete e.sold;delete e.ts;delete e.own}});
 S.bios=S.bios||{"Kossi Mawuli":"Chanteur originaire de Bassar. Il mêle rythmes traditionnels et sons modernes.","Abla Tchalim":"Auteure-compositrice. Ses textes parlent de sagesse et de mémoire.","DJ Tchaa":"DJ et producteur de Sokodé. Spécialiste des soirées afro."};
 var DM={d1:["Son : Koffi A. · Mixage : Ama T.",34,2],d2:["Enregistrement : Studio Nawdm · Mastering : Yao P.",21,1],d3:["Mixage : DJ Tchaa",12,0],d4:["Son : Efua K.",5,0],d5:["Mixage : Studio Tem",18,3]};
 S.songs.forEach(function(x){if(x.lk==null){var d=DM[x.id];x.lk=d?d[1]:0;x.dl=d?d[2]:0;if(d&&!x.cr)x.cr=d[0]}x.dl=x.dl||0;x.cm=x.cm||[]});
 var d1=S.songs.filter(function(x){return x.id==="d1"})[0];if(d1&&!d1.cm.length&&!d1.seeded){d1.cm.push({n:"Esso",t:"Ça donne envie de danser !",at:now-3*864e5});d1.seeded=1}}
+function evLeft(e){return e.cats.reduce(function(s,c){return s+Math.max(0,c.cap-c.sold)},0)}
+function evNet(e,fn){e.cats.forEach(function(c){(c.ts||[]).forEach(function(t){fn(t,Math.round(c.price*.9),c)})})}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
 var urls={};
 function $(i){return document.getElementById(i)}
@@ -321,12 +323,12 @@ $("authBtn").hidden=!!S.user;renderParams();
 var g=0,pend=0,lim=Date.now()+(S.skip||0)*864e5-864e5;
 var art=S.user&&S.user.role==="artiste";
 if(art)S.songs.forEach(function(x){if(!x.own)return;var sh=shareOf(x,S.user.name);if(!sh)return;(x.ts||[]).forEach(function(t){var amt=Math.round(priceOf(x)*.75*sh);if(t<=lim)g+=amt;else pend+=amt})});
-if(art)S.events.forEach(function(e){if(e.own&&e.a===S.user.name)(e.ts||[]).forEach(function(t){var m=Math.round(e.price*.9);if(t<=lim)g+=m;else pend+=m})});
+if(art)S.events.forEach(function(e){if(e.a===S.user.name)evNet(e,function(t,m){if(t<=lim)g+=m;else pend+=m})});
 if(art)(S.albums||[]).forEach(function(al){if(al.a!==S.user.name)return;al.ts.forEach(function(t){var amt=Math.round(al.pr*.75);if(t<=lim)g+=amt;else pend+=amt})});
 if(art)(S.subLog||[]).forEach(function(e){if(e.a!==S.user.name)return;if(e.at<=lim)g+=e.amt;else pend+=e.amt});
 window.avail=g-(S.paid||0);
-var eh="";S.events.filter(function(e){return new Date(e.date+"T23:59:59")>=now}).forEach(function(e){var left=e.cap-e.sold;
-eh+='<div class="song">'+cover(e)+'<div class="t"><b>'+esc(e.t)+'</b><small>'+esc(e.a)+' · '+esc(e.place)+' · '+new Date(e.date).toLocaleDateString("fr-FR")+'</small><small>'+F(e.price)+' · '+(left>0?left+' places restantes':'Complet')+'</small></div>'+(left>0?'<button data-tk="'+e.id+'">Acheter un billet</button>':'')+'</div>'});
+var eh="";S.events.filter(function(e){return new Date(e.date+"T23:59:59")>=now}).forEach(function(e){
+eh+='<div class="song">'+cover(e)+'<div class="t"><b>'+esc(e.t)+'</b><small>'+esc(e.a)+' · '+esc(e.place)+' · '+new Date(e.date).toLocaleDateString("fr-FR")+'</small><small>'+e.cats.map(function(c){var l=Math.max(0,c.cap-c.sold);return esc(c.n)+' '+F(c.price)+' · '+(l>0?l+' restantes':'Complet')}).join('<br>')+'</small></div>'+e.cats.map(function(c,i){return c.cap-c.sold>0?'<button data-tk="'+e.id+'" data-cat="'+i+'">Acheter '+esc(c.n)+'</button>':''}).join('')+'</div>'});
 $("evList").innerHTML=eh||'<p class="note">Aucun événement pour le moment.</p>';
 var th="";if(S.user)S.tickets.filter(function(t){return t.mail===S.user.mail}).forEach(function(t){th+='<div class="song"><div class="t"><b>'+esc(t.title)+'</b><small>'+new Date(t.date).toLocaleDateString("fr-FR")+'</small></div><span class="gold">'+t.code+'</span></div>'});
 $("myTk").innerHTML=S.user?(th||"Vous n'avez pas encore de billet."):"Connectez-vous pour voir vos billets.";
@@ -425,25 +427,32 @@ S.songs.push({id:id,t:t,a:S.user.name,s:0,at:rel||Date.now(),own:1,cv:cv,cr:cr,p
 ["fTitle","fFile","fCover","fCred","fFeat","fPct","fRel"].forEach(function(i){$(i).value=""});$("fPrice").value="200";$("fOrig").checked=false;save();render();
 toast("Chanson envoyée. Validation sous 48 h.");setTimeout(function(){$("catalogue").scrollIntoView()},300)})};
 $("evList").onclick=function(e){var b=e.target.closest("[data-tk]");if(!b)return;
-var ev=S.events.filter(function(x){return x.id===b.dataset.tk})[0];
-ask("Billet « "+ev.t+" » : "+F(ev.price),function(){if(ev.cap-ev.sold<=0){toast("Complet.");return}
-var code="BZ-"+Math.random().toString(36).slice(2,8).toUpperCase();ev.sold++;ev.ts=ev.ts||[];ev.ts.push(Date.now());
-S.tickets.push({eid:ev.id,mail:S.user.mail,code:code,title:ev.t,date:ev.date});toast("Billet acheté. Code : "+code)})};
+var ev=S.events.filter(function(x){return x.id===b.dataset.tk})[0],c=ev&&ev.cats[+b.dataset.cat];if(!c)return;
+ask("Billet « "+ev.t+" » · "+c.n+" : "+F(c.price),function(){if(c.cap-c.sold<=0){toast("Complet.");return}
+var code="BZ-"+Math.random().toString(36).slice(2,8).toUpperCase();c.sold++;c.ts=c.ts||[];c.ts.push(Date.now());
+S.tickets.push({eid:ev.id,cat:c.n,mail:S.user.mail,code:code,title:ev.t+" · "+c.n,date:ev.date});toast("Billet "+c.n+" acheté. Code : "+code)})};
+function readCats(){return Array.prototype.map.call($("evCats").children,function(row){return {n:row.querySelector("[data-cn]").value.trim(),p:+row.querySelector("[data-cp]").value,c:+row.querySelector("[data-cc]").value}})}
+function drawCats(rows){$("evCats").innerHTML=rows.map(function(r,i){return '<div class="row" style="margin:6px 0"><input data-cn maxlength="30" placeholder="Nom (ex. VIP)" value="'+escA(r.n)+'" style="flex:2;min-width:120px"><input data-cp type="number" min="100" step="100" placeholder="Prix (F)" value="'+(r.p||"")+'" style="flex:1;min-width:90px"><input data-cc type="number" min="1" placeholder="Places" value="'+(r.c||"")+'" style="flex:1;min-width:80px">'+(i?'<button type="button" class="alt" data-crm="'+i+'">Retirer</button>':'')+'</div>'}).join("")}
+drawCats([{n:"Standard",p:"",c:""}]);
+$("evAddCat").onclick=function(){var rs=readCats();rs.push({n:"",p:"",c:""});drawCats(rs)};
+$("evCats").onclick=function(e){var b=e.target.closest("[data-crm]");if(!b)return;var rs=readCats();rs.splice(+b.dataset.crm,1);drawCats(rs)};
 $("evBtn").onclick=function(){if(!need())return;
 if(S.user.role!=="artiste"){toast("Seuls les comptes artiste peuvent publier un événement.");return}
-var t=$("evT").value.trim(),p=$("evP").value.trim(),d=$("evD").value,pr=+$("evPr").value,c=+$("evC").value;
-if(!t||!p||!d||pr<100||c<1){toast("Remplissez tous les champs (prix minimum 100 F).");return}
+var t=$("evT").value.trim(),p=$("evP").value.trim(),d=$("evD").value,cats=readCats();
+if(!t||!p||!d){toast("Remplissez le nom, le lieu et la date.");return}
+if(!cats.length||cats.some(function(c){return !c.n||c.p<100||c.c<1})){toast("Chaque catégorie doit avoir un nom, un prix (minimum 100 F) et au moins 1 place.");return}
+if(new Set(cats.map(function(c){return c.n.toLowerCase()})).size!==cats.length){toast("Les noms des catégories doivent être différents.");return}
 if(new Date(d+"T23:59:59")<Date.now()){toast("La date doit être dans le futur.");return}
 var im=$("evImg").files[0];
 if(im&&!$("evRight").checked){toast("Certifiez avoir le droit d'utiliser la photo.");return}
-makeWide(im,function(cv){S.events.push({id:"e"+Date.now(),t:t,a:S.user.name,place:p,date:d,price:pr,cap:c,sold:0,ts:[],own:1,cv:cv});
-["evT","evP","evD","evPr","evC","evImg"].forEach(function(i){$(i).value=""});$("evRight").checked=false;save();render();toast("Événement publié.")})};
+makeWide(im,function(cv){S.events.push({id:"e"+Date.now(),t:t,a:S.user.name,place:p,date:d,cats:cats.map(function(c){return {n:c.n,price:c.p,cap:c.c,sold:0,ts:[]}}),cv:cv});
+["evT","evP","evD","evImg"].forEach(function(i){$(i).value=""});drawCats([{n:"Standard",p:"",c:""}]);$("evRight").checked=false;save();render();toast("Événement publié.")})};
 function badgeOf(n){var a=(S.autoCert||{})[n];return (a&&a+7*864e5<=Date.now())?'<span class="vb" title="Artiste certifié" aria-label="Artiste certifié">✔</span>':''}
 function statsSeries(name,kind){var D=864e5,start=new Date();start.setHours(0,0,0,0);var t0=start.getTime()-29*D,vals=new Array(30).fill(0);
 function add(t,v){var i=Math.floor((t-t0)/D);if(i>=0&&i<30)vals[i]+=v}
 if(kind==="rev"){S.songs.forEach(function(x){if(!x.own)return;var sh=shareOf(x,name);if(!sh)return;(x.ts||[]).forEach(function(t){add(t,Math.round(priceOf(x)*.75*sh))})});
 (S.albums||[]).forEach(function(al){if(al.a!==name)return;(al.ts||[]).forEach(function(t){add(t,Math.round(al.pr*.75))})});
-(S.events||[]).forEach(function(e){if(e.own&&e.a===name)(e.ts||[]).forEach(function(t){add(t,Math.round(e.price*.9))})});
+(S.events||[]).forEach(function(e){if(e.a===name)evNet(e,function(t,m){add(t,m)})});
 (S.subLog||[]).forEach(function(e){if(e.a===name)add(e.at,e.amt)})}
 if(kind==="listen"){(S.plays||[]).forEach(function(p){if(p.a===name)add(p.at,1)})}
 if(kind==="sales"){S.songs.forEach(function(x){if(!x.own||!(shareOf(x,name)>0))return;(x.ts||[]).forEach(function(t){add(t,1)})});
