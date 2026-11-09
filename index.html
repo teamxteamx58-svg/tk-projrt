@@ -204,6 +204,51 @@ body.np-open>*:not(#np){visibility:hidden}
 .np-vol input{flex:1}
 .np-bot{width:100%;display:flex;justify-content:space-around;margin-top:auto;padding-top:18px}
 .np-bot button{background:rgba(255,255,255,.15);border:0;color:#fff;width:46px;height:46px;border-radius:14px;font-size:18px;display:grid;place-items:center;padding:0}
+
+/* ===== Mise en page façon Spotify (couleurs et logo BASSARI-ZIK conservés) ===== */
+body{background:linear-gradient(#1f1f1f 0,#121212 340px,#121212 100%)!important;color:#fff!important}
+header{background:rgba(18,18,18,.92)!important;border-bottom:0!important;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px)}
+main.app{padding-bottom:170px}
+.sh h2,section>h2,.view>section>h2{font:700 22px "Bricolage Grotesque",system-ui,sans-serif;color:#fff}
+.quick{display:flex;gap:8px;overflow-x:auto;padding:4px 0 10px;scrollbar-width:none}
+.quick::-webkit-scrollbar{display:none}
+.quick .pill{background:#2a2a2a!important;color:#fff!important;border:0!important;border-radius:999px!important;padding:8px 14px!important;white-space:nowrap;font-weight:600}
+.chips{display:flex;gap:8px;overflow-x:auto;margin:10px 0 4px;scrollbar-width:none}
+.chip{background:#2a2a2a!important;color:#fff!important;border:0!important;border-radius:999px!important;padding:7px 14px!important;white-space:nowrap}
+.chip.on{background:#fff!important;color:#000!important}
+#q{background:#242424!important;border:0!important;border-radius:500px!important;color:#fff!important;padding:12px 16px!important}
+.hscroll{gap:12px;padding:4px 0 14px}
+.hscroll>.feat,.hscroll>.card,.hscroll>.tile,.hscroll>.tile2{width:172px;background:#181818!important;border:0!important;border-radius:8px!important;padding:12px!important;transition:background .2s}
+.hscroll>.feat:hover,.hscroll>.card:hover,.hscroll>.tile:hover,.hscroll>.tile2:hover{background:#282828!important}
+.feat .cv,.card .cv,.tile .cv,.tile2 .cv{width:100%!important;height:auto!important;aspect-ratio:1;border-radius:6px!important;box-shadow:0 8px 24px rgba(0,0,0,.45)}
+.feat h3,.card h3,.tile h3,.tile2 h3{font:700 15px "Source Sans 3",system-ui,sans-serif;margin:10px 0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.feat .ar,.card .ar,.tile .ar,.tile2 .ar{color:#b3b3b3;font-size:13px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grid{grid-template-columns:repeat(auto-fill,minmax(168px,1fr));gap:12px}
+.grid>.song,.song{background:transparent!important;border:0!important;border-radius:6px;padding:8px!important;margin-bottom:2px}
+.grid>.song:hover,.song:hover{background:#1f1f1f!important}
+.song .cv{width:52px!important;height:52px!important;border-radius:4px!important}
+.song b{font-weight:600}
+.song small{color:#b3b3b3}
+#bnav{left:0!important;right:0!important;bottom:0!important;transform:none!important;width:auto!important;border-radius:0!important;background:#000!important;border-top:1px solid #222!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;display:flex!important;grid-template-columns:none!important;justify-content:space-around;padding:8px 4px calc(10px + env(safe-area-inset-bottom,0px))!important}
+#bnav button,#bnav a{color:#b3b3b3!important;background:none!important;border-radius:0!important;gap:4px!important;font-weight:600}
+#bnav button.on,#bnav a.on{color:#fff!important;background:none!important}
+#bnav button.on svg,#bnav a.on svg{transform:none!important}
+#pbar{left:8px!important;right:8px!important;bottom:calc(72px + env(safe-area-inset-bottom,0px))!important;border-radius:8px!important;background:#282828!important;border:0!important;box-shadow:0 8px 24px rgba(0,0,0,.55);padding:8px 10px!important}
+#pbar .pcov{border-radius:4px!important}
+#pnow{font-weight:600}
+.iconbtn{background:transparent!important;border:0!important}
+#pbar{display:grid!important;grid-template-columns:48px minmax(0,1fr) 44px;align-items:center;column-gap:10px;row-gap:6px}
+#pbar .pcov{grid-column:1;grid-row:1;width:48px!important;height:48px!important}
+#pnow{grid-column:2;grid-row:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#pvBtn{grid-column:3;grid-row:1;width:44px!important;height:44px!important;border-radius:50%!important;background:#fff!important;color:#000!important;border:0!important;font-size:18px!important;padding:0!important;justify-self:end}
+#pbar .pv-prog{grid-column:1/-1;grid-row:2;margin:0}
+#pbar audio{display:none}
+@media (max-width:640px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:10px!important}}
+.grid>.card{background:#181818!important;border:0!important;border-radius:8px!important;padding:10px!important;transition:background .2s}
+.grid>.card:hover{background:#282828!important}
+.grid>.card .cv{border-radius:6px!important}
+.grid>.card h3{font:700 15px "Source Sans 3",system-ui,sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.grid>.card .note,.grid>.card p{display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
 </style>
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4"></script>
 </head>
