@@ -444,7 +444,9 @@ $("subInfo").textContent=subActive()?"Abonnement actif jusqu'au "+new Date(S.sub
 drawMusic();drawRails();drawPl();drawAlbForm();drawMyAlb();drawTickets();drawCert();drawTrophy()}
 function need(){if(!S.user){toast("Créez d'abord un compte.");$("dAuth").showModal();return false}return true}
 var pending=null;
-function ask(txt,fn){if(!need())return;pending=fn;$("pWhat").textContent=txt;$("dPay").showModal()}
+/* Mode gratuit : PAY reste à false tant que les paiements ne sont pas activés (réglage « payments_enabled » dans Supabase). */
+var PAY=false;
+function ask(txt,fn){if(!need())return;if(!PAY){fn();return}pending=fn;$("pWhat").textContent=txt;$("dPay").showModal()}
 function priceOf(x){return (x&&x.pr)||200}
 function shareOf(x,name){if(!x.sp)return x.a===name?1:0;var e=x.sp.filter(function(s){return s.n===name})[0];return e?e.p/100:0}
 function artistsOf(x){return x.sp?x.sp.map(function(s){return s.n}):[x.a]}
@@ -454,6 +456,8 @@ function discOf(n){var c=((S.listens||{})[n])||0,best=null;DISQUES.forEach(funct
 function drawDisc(){var d=$("discBox");if(d&&S.user&&S.user.role==="artiste")d.innerHTML=discOf(S.user.name)}
 var sb=supabase.createClient("https://loqxgegixjnrfiihthjq.supabase.co","sb_publishable_ei0GgZ26l3KJv8qTCWS3Cg_iizOBYgR");
 var authMode="signup";
+function loadPaySwitch(){try{sb.from("settings").select("value").eq("key","payments_enabled").maybeSingle().then(function(r){PAY=!!(r&&r.data&&r.data.value===true);if(typeof render==="function")render()},function(){})}catch(e){}}
+loadPaySwitch();
 function setAuthMode(m){authMode=m;var s=m==="signup";$("aTitle").textContent=s?"Créer un compte":"Se connecter";$("aSignFields").hidden=!s;$("aAccWrap").hidden=!s;$("aOk").textContent=s?"Créer mon compte":"Se connecter";$("aSwitch").textContent=s?"J'ai déjà un compte":"Créer un compte"}
 $("aSwitch").onclick=function(){setAuthMode(authMode==="signup"?"login":"signup")};
 $("authBtn").onclick=function(){setAuthMode("signup");$("dAuth").showModal()};
@@ -719,7 +723,7 @@ if(V.f==="gold")L=L.filter(function(x){return x.s>=GOLD});
 if(V.f==="mine")L=L.filter(function(x){return shareOf(x,me)>0});
 L.sort(function(a,b){if(V.f==="pop"||V.f==="gold")return b.s-a.s;
 var ma=shareOf(a,me)>0?1:0,mb=shareOf(b,me)>0?1:0;return mb-ma||b.at-a.at});
-var h="";L.forEach(function(x){var mine=shareOf(x,me)>0,days=Math.max(0,Math.ceil((x.at+YEAR-now)/864e5)),can=S.owned[x.id],
+var h="";L.forEach(function(x){var mine=shareOf(x,me)>0,days=Math.max(0,Math.ceil((x.at+YEAR-now)/864e5)),can=!PAY||S.owned[x.id],
 myv=S.user?(S.votes[S.user.mail+"|"+x.id]||0):0,bio=S.bios[x.a]||"";
 h+='<article class="card" id="s-'+x.id+'">'+cover(x)+'<div class="cb"><div class="ttl"><b>'+esc(x.t)+'</b>'+(x.s>=GOLD?' <span class="gold">Disque d\'or</span>':'')+'</div>'+
 '<div class="art"><a href="artiste.html?n='+encodeURIComponent(x.a)+'">'+esc(x.a)+'</a>'+badgeOf(x.a)+(x.sp&&x.sp.length>1?' feat. '+esc(x.sp.slice(1).map(function(s){return s.n}).join(', ')):'')+(mine?' (vous)':'')+'</div>'+(bio?'<p class="bio">'+esc(bio)+'</p>':'')+(x.cr?'<small class="cr">Crédits : '+esc(x.cr)+'</small>':'')+
@@ -795,8 +799,9 @@ else{var id2=b.dataset.play;if(!need())return;recordPlay(id2);save();var a=$("pl
 showPlayer(id2,a);render()}});
 function recordPlay(id){var x=findSong(id);if(!x||!S.user)return;S.credits=S.credits||{};S.subPool=S.subPool||{};S.subEarn=S.subEarn||{};S.listens=S.listens||{};S.plays=S.plays||[];
 var k=S.user.mail+"|"+id,c=S.credits[k]||0,pool=S.subPool[S.user.mail],fromSub=false;
-if(c<=0){if(subActive()&&pool&&pool.left>0&&!S.owned[id])fromSub=true;else return}
+if(PAY&&c<=0){if(subActive()&&pool&&pool.left>0&&!S.owned[id])fromSub=true;else return}
 var day=new Date().toDateString();if(S.plays.some(function(p){return p.k===k&&p.d===day}))return;
+if(!PAY){S.listens[id]=(S.listens[id]||0)+1;S.plays.push({k:k,d:day});save();return}
 var arts=artistsOf(x);
 if(fromSub){pool.left-=1;S.subLog=S.subLog||[];arts.forEach(function(n){S.subLog.push({a:n,amt:Math.round(15/arts.length),at:Date.now()})})}else{S.credits[k]=c-1;if(c-1===0)toast("Vos 10 écoutes offertes à l'artiste sont utilisées. Merci !")}
 arts.forEach(function(n){S.plays.push({k:k,id:id,a:n,at:Date.now(),d:day});S.listens[n]=(S.listens[n]||0)+1});
@@ -805,7 +810,7 @@ function plOf(){return S.user?S.playlists.filter(function(p){return p.mail===S.u
 function drawPl(){var ok=S.user&&subActive();$("plMake").hidden=!ok;
 $("plInfo").textContent=!S.user?"Connectez-vous pour voir vos playlists.":ok?"Ajoutez des chansons avec le lien « + Playlist » sous chaque chanson.":"Les playlists sont réservées aux abonnés. Prenez un abonnement pour en créer.";
 var h="";plOf().forEach(function(p){h+='<div class="box" style="margin-bottom:10px"><b>'+esc(p.name)+'</b> <small class="note">('+p.ids.length+' titres)</small> · <a href="#" data-delpl="'+p.id+'">Supprimer</a>';
-p.ids.forEach(function(id){var x=S.songs.filter(function(s){return s.id===id&&vis(s)})[0];if(!x)return;var can=S.owned[id]||subActive();
+p.ids.forEach(function(id){var x=S.songs.filter(function(s){return s.id===id&&vis(s)})[0];if(!x)return;var can=!PAY||S.owned[id]||subActive();
 h+='<div class="song" style="margin:8px 0 0">'+cover(x)+'<div class="t"><b>'+esc(x.t)+'</b><small>'+esc(x.a)+'</small></div>'+(can?'<button data-play="'+x.id+'">Écouter</button>':'<button class="alt" data-prev="'+x.id+'">Extrait 10 s</button><button data-buy="'+x.id+'">Débloquer '+F(priceOf(x))+'</button>')+'<button class="alt" data-rm="'+p.id+'|'+x.id+'">Retirer</button></div>'});
 h+='</div>'});$("plList").innerHTML=h}
 function openPl(id){if(!S.user||!subActive()){toast("Les playlists sont réservées aux abonnés.");return}
